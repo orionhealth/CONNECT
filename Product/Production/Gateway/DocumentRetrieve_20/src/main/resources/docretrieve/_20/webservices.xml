@@ -52,7 +52,7 @@ http://cxf.apache.org/core http://cxf.apache.org/schemas/core.xsd ">
 
     <!-- Entity services -->
 
-    <jaxws:endpoint xmlns:edr="urn:gov:hhs:fha:nhinc:entitydocretrieve" id="EntityDocumentRetrieve"
+    <!--jaxws:endpoint xmlns:edr="urn:gov:hhs:fha:nhinc:entitydocretrieve" id="EntityDocumentRetrieve"
         address="/EntityService/EntityDocRetrieve" serviceName="edr:EntityDocRetrieve" endpointName="edr:EntityDocRetrievePortSoap"
         implementor="#entityDocRetrieveUnsecured" wsdlLocation="classpath:/wsdl/EntityDocRetrieve.wsdl">
         <jaxws:handlers>
@@ -61,7 +61,7 @@ http://cxf.apache.org/core http://cxf.apache.org/schemas/core.xsd ">
         <jaxws:properties>          
             <entry key="mtom-enabled" value="true" />
         </jaxws:properties>
-    </jaxws:endpoint>
+    </jaxws:endpoint-->
     <!-- EntityUnsecured interface makes Proxy Call to Secured Interface -->
     <jaxws:endpoint xmlns:edr="urn:gov:hhs:fha:nhinc:entitydocretrieve" id="EntityDocumentRetrieveProxy_a0"
         address="/EntityServiceProxy/EntityDocRetrieveUnsecured" serviceName="edr:EntityDocRetrieve" endpointName="edr:EntityDocRetrievePortSoap"

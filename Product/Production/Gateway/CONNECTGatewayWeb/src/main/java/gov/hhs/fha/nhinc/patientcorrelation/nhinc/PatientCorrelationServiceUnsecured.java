@@ -75,13 +75,15 @@ public class PatientCorrelationServiceUnsecured implements
 
     public AddPatientCorrelationResponseType addPatientCorrelation(
             AddPatientCorrelationRequestType addPatientCorrelationRequest) {
-        AssertionType assertionType = SAML2AssertionExtractor.getInstance().extractSamlAssertion(context);
+    	//Commented out as it caused NullPointerException after WSS4JInInterceptor was added to bean configuration
+    	//AssertionType assertionType = SAML2AssertionExtractor.getInstance().extractSamlAssertion(context);
 
         if (addPatientCorrelationRequest != null && addPatientCorrelationRequest.getAssertion() != null) {
             addPatientCorrelationRequest.getAssertion().setMessageId(createMessageId(context));
         }
 
-        return service.addPatientCorrelation(addPatientCorrelationRequest, assertionType);
+        //return service.addPatientCorrelation(addPatientCorrelationRequest, assertionType);
+        return service.addPatientCorrelation(addPatientCorrelationRequest, null);
     }
 
     private String createMessageId(WebServiceContext context) {

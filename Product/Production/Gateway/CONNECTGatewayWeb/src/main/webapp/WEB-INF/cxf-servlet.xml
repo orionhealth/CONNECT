@@ -54,6 +54,17 @@ http://cxf.apache.org/core http://cxf.apache.org/schemas/core.xsd ">
         address="/GatewayService/PatientCorrelationServiceUnsecured" serviceName="tns:PatientCorrelationService"
         endpointName="tns:PatientCorrelationPort" implementor="gov.hhs.fha.nhinc.patientcorrelation.nhinc.PatientCorrelationServiceUnsecured"
         wsdlLocation="classpath:wsdl/NhincComponentPatientCorrelation.wsdl">
+        <jaxws:inInterceptors>
+            <bean class="org.apache.cxf.ws.security.wss4j.WSS4JInInterceptor">
+                <constructor-arg>
+                    <map>
+                        <entry key="action" value="UsernameToken" />
+                        <entry key="passwordType" value="PasswordDigest" />
+                        <entry key="passwordCallbackClass" value="gov.hhs.fha.nhinc.callback.cxf.CXFDigestPasswordCallbackHandler" />
+                    </map>
+                </constructor-arg>
+            </bean>
+        </jaxws:inInterceptors>
     </jaxws:endpoint>
 
     <jaxws:endpoint xmlns:tns="urn:gov:hhs:fha:nhinc:nhinccomponentpatientcorrelation" id="PatientCorrelationSecured"

@@ -76,6 +76,18 @@ http://cxf.apache.org/core http://cxf.apache.org/schemas/core.xsd ">
         <jaxws:handlers>
             <ref bean="TransactionHandler" />
         </jaxws:handlers>
+		<jaxws:inInterceptors>
+			<bean class="org.apache.cxf.ws.security.wss4j.WSS4JInInterceptor">
+				<constructor-arg>
+					<map>
+						<entry key="action" value="UsernameToken" />
+						<entry key="passwordType" value="PasswordDigest" />
+						<entry key="passwordCallbackClass"
+							value="gov.hhs.fha.nhinc.callback.cxf.CXFDigestPasswordCallbackHandler" />
+					</map>
+				</constructor-arg>
+			</bean>
+		</jaxws:inInterceptors>
     </jaxws:endpoint>
 
 
@@ -130,14 +142,14 @@ http://cxf.apache.org/core http://cxf.apache.org/schemas/core.xsd ">
         </jaxws:handlers>
     </jaxws:endpoint>
 
-    <jaxws:endpoint xmlns:tns="urn:gov:hhs:fha:nhinc:entitypatientdiscoveryasyncreq" id="EntityPatientDiscoveryAsyncReq"
+    <!--jaxws:endpoint xmlns:tns="urn:gov:hhs:fha:nhinc:entitypatientdiscoveryasyncreq" id="EntityPatientDiscoveryAsyncReq"
         address="/EntityService/EntityPatientDiscoveryDeferredRequestUnsecured" serviceName="tns:EntityPatientDiscoveryAsyncReq"
         endpointName="tns:EntityPatientDiscoveryAsyncReqPortSoap" implementor="#entityPDReqUnsecured"
         wsdlLocation="classpath:wsdl/EntityPatientDiscoveryAsyncReq.wsdl">
         <jaxws:handlers>
             <ref bean="TransactionHandler" />
         </jaxws:handlers>
-    </jaxws:endpoint>
+    </jaxws:endpoint-->
 
 
     <!-- Patient Discovery Deferred Response -->
@@ -189,13 +201,13 @@ http://cxf.apache.org/core http://cxf.apache.org/schemas/core.xsd ">
         </jaxws:handlers>
     </jaxws:endpoint>
 
-    <jaxws:endpoint xmlns:tns="urn:gov:hhs:fha:nhinc:entitypatientdiscoveryasyncresp" id="EntityPatientDiscoveryAsyncResp"
+    <!--jaxws:endpoint xmlns:tns="urn:gov:hhs:fha:nhinc:entitypatientdiscoveryasyncresp" id="EntityPatientDiscoveryAsyncResp"
         address="/EntityService/EntityPatientDiscoveryDeferredResponseUnsecured" serviceName="tns:EntityPatientDiscoveryAsyncResp"
         endpointName="tns:EntityPatientDiscoveryAsyncRespPortSoap" implementor="#entityPDRespUnsecured"
         wsdlLocation="classpath:wsdl/EntityPatientDiscoveryAsyncResp.wsdl">
         <jaxws:handlers>
             <ref bean="TransactionHandler" />
         </jaxws:handlers>
-    </jaxws:endpoint>
+    </jaxws:endpoint-->
 
 </beans>

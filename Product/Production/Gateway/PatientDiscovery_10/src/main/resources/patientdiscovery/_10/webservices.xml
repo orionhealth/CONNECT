@@ -95,7 +95,7 @@ http://cxf.apache.org/core http://cxf.apache.org/schemas/core.xsd ">
     <!-- Patient Discovery Deferred Request -->
 
     <!-- Nhin services -->
-
+	<!--
     <jaxws:endpoint xmlns:tns="urn:ihe:iti:xcpd:2009" id="RespondingGatewayDeferredRequest_Service"
         address="/NhinService/NhinPatientDiscoveryAsyncReq" serviceName="tns:RespondingGatewayDeferredRequest_Service"
         endpointName="tns:RespondingGatewayDeferredRequest_Port" implementor="#nhinPDReq"
@@ -117,9 +117,9 @@ http://cxf.apache.org/core http://cxf.apache.org/schemas/core.xsd ">
             <ref bean="TransactionHandler" />
         </jaxws:handlers>
     </jaxws:endpoint>
-
+	-->
     <!-- Entity services -->
-
+	<!--
     <jaxws:endpoint xmlns:tns="urn:gov:hhs:fha:nhinc:entitypatientdiscoverysecuredasyncreq" id="EntityPatientDiscoverySecuredAsyncReq"
         address="/EntityService/EntityPatientDiscoveryDeferredRequestSecured" serviceName="tns:EntityPatientDiscoverySecuredAsyncReq"
         endpointName="tns:EntityPatientDiscoverySecuredAsyncReqPortSoap" implementor="#entityPDReqSecured"
@@ -142,20 +142,20 @@ http://cxf.apache.org/core http://cxf.apache.org/schemas/core.xsd ">
         </jaxws:handlers>
     </jaxws:endpoint>
 
-    <!--jaxws:endpoint xmlns:tns="urn:gov:hhs:fha:nhinc:entitypatientdiscoveryasyncreq" id="EntityPatientDiscoveryAsyncReq"
+    <jaxws:endpoint xmlns:tns="urn:gov:hhs:fha:nhinc:entitypatientdiscoveryasyncreq" id="EntityPatientDiscoveryAsyncReq"
         address="/EntityService/EntityPatientDiscoveryDeferredRequestUnsecured" serviceName="tns:EntityPatientDiscoveryAsyncReq"
         endpointName="tns:EntityPatientDiscoveryAsyncReqPortSoap" implementor="#entityPDReqUnsecured"
         wsdlLocation="classpath:wsdl/EntityPatientDiscoveryAsyncReq.wsdl">
         <jaxws:handlers>
             <ref bean="TransactionHandler" />
         </jaxws:handlers>
-    </jaxws:endpoint-->
-
+    </jaxws:endpoint>
+	-->
 
     <!-- Patient Discovery Deferred Response -->
 
     <!-- Nhin services -->
-
+	<!--
     <jaxws:endpoint xmlns:tns="urn:ihe:iti:xcpd:2009" id="RespondingGatewayDeferredResp_Service" address="/NhinService/NhinPatientDiscoveryAsyncResp"
         serviceName="tns:RespondingGatewayDeferredResp_Service" endpointName="tns:RespondingGatewayDeferredResponse_Port"
         implementor="#nhinPDResp" wsdlLocation="classpath:wsdl/NhinPatientDiscoveryDeferredResponse.wsdl">
@@ -176,9 +176,9 @@ http://cxf.apache.org/core http://cxf.apache.org/schemas/core.xsd ">
             <ref bean="TransactionHandler" />
         </jaxws:handlers>
     </jaxws:endpoint>
-
+	-->
     <!-- Entity services -->
-
+	<!--
     <jaxws:endpoint xmlns:tns="urn:gov:hhs:fha:nhinc:entitypatientdiscoverysecuredasyncresp" id="EntityPatientDiscoverySecuredAsyncResp"
         address="/EntityService/EntityPatientDiscoveryDeferredResponseSecured" serviceName="tns:EntityPatientDiscoverySecuredAsyncResp"
         endpointName="tns:EntityPatientDiscoverySecuredAsyncRespPortSoap" implementor="#entityPDRespSecured"
@@ -201,13 +201,14 @@ http://cxf.apache.org/core http://cxf.apache.org/schemas/core.xsd ">
         </jaxws:handlers>
     </jaxws:endpoint>
 
-    <!--jaxws:endpoint xmlns:tns="urn:gov:hhs:fha:nhinc:entitypatientdiscoveryasyncresp" id="EntityPatientDiscoveryAsyncResp"
+    <jaxws:endpoint xmlns:tns="urn:gov:hhs:fha:nhinc:entitypatientdiscoveryasyncresp" id="EntityPatientDiscoveryAsyncResp"
         address="/EntityService/EntityPatientDiscoveryDeferredResponseUnsecured" serviceName="tns:EntityPatientDiscoveryAsyncResp"
         endpointName="tns:EntityPatientDiscoveryAsyncRespPortSoap" implementor="#entityPDRespUnsecured"
         wsdlLocation="classpath:wsdl/EntityPatientDiscoveryAsyncResp.wsdl">
         <jaxws:handlers>
             <ref bean="TransactionHandler" />
         </jaxws:handlers>
-    </jaxws:endpoint-->
+    </jaxws:endpoint>
+	-->
 
 </beans>

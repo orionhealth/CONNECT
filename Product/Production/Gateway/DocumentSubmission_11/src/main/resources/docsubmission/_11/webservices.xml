@@ -28,6 +28,7 @@
     </cxf:bus>
 
     <!-- Nhin services -->
+	<!--
     <jaxws:endpoint xmlns:nds="urn:ihe:iti:xdr:2007" id="NhinDocSubmission" address="/DocumentRepositoryXDR_Service"
         serviceName="nds:DocumentRepositoryXDR_Service" endpointName="nds:DocumentRepositoryXDR_Port_Soap" implementor="#nhinXDR"
         wsdlLocation="classpath:wsdl/NhinXDR.wsdl">
@@ -56,9 +57,10 @@
             <ref bean="TransactionHandler" />
         </jaxws:handlers>
     </jaxws:endpoint>
-
+	-->
     <!-- Entity services -->
-    <!--jaxws:endpoint xmlns:eds="urn:gov:hhs:fha:nhinc:nhincentityxdr" id="EntityDocSubmissionUnsecured"
+	<!--
+    <jaxws:endpoint xmlns:eds="urn:gov:hhs:fha:nhinc:nhincentityxdr" id="EntityDocSubmissionUnsecured"
         address="/EntityService/EntityDocSubmissionUnsecured" serviceName="eds:EntityXDR_Service" endpointName="eds:EntityXDR_Port"
         implementor="#entityXDRUnsecured" wsdlLocation="classpath:wsdl/EntityXDR.wsdl">
         <jaxws:handlers>
@@ -67,7 +69,7 @@
         <jaxws:properties>
             <entry key="mtom-enabled" value="true" />
         </jaxws:properties>
-    </jaxws:endpoint-->
+    </jaxws:endpoint>
 
     <jaxws:endpoint xmlns:edss="urn:gov:hhs:fha:nhinc:nhincentityxdrsecured" id="EntityDocSubmissionSecured"
         address="/EntityService/EntityDocSubmissionSecured" serviceName="edss:EntityXDRSecured_Service" endpointName="edss:EntityXDRSecured_Port"
@@ -96,11 +98,11 @@
             <ref bean="TransactionHandler" />
         </jaxws:handlers>
     </jaxws:endpoint>
-
+	-->
     <!-- Document Submission Deferred Request -->
 
     <!-- Nhin services -->
-
+	<!--
     <jaxws:endpoint xmlns:tns="urn:ihe:iti:xdr:2007" id="NhinXDRRequest" address="/NhinService/XDRRequest_Service"
         serviceName="tns:XDRDeferredRequest_Service" endpointName="tns:XDRDeferredRequest_Port_Soap" implementor="#nhinXDRDeferredRequest"
         wsdlLocation="classpath:wsdl/NhinXDRDeferredRequest.wsdl">
@@ -129,10 +131,10 @@
             <ref bean="TransactionHandler" />
         </jaxws:handlers>
     </jaxws:endpoint>
-
+	-->
     <!-- Entity services -->
-
-    <!--jaxws:endpoint xmlns:tns="urn:gov:hhs:fha:nhinc:nhincentityxdr:async:request" id="EntityDocSubmissionDeferredRequestUnsecured"
+	<!--
+    <jaxws:endpoint xmlns:tns="urn:gov:hhs:fha:nhinc:nhincentityxdr:async:request" id="EntityDocSubmissionDeferredRequestUnsecured"
         address="/EntityService/EntityDocSubmissionDeferredRequestUnsecured" serviceName="tns:EntityXDRAsyncRequest_Service"
         endpointName="tns:EntityXDRAsyncRequest_Port" implementor="#entityXDRDeferredRequestUnsecured" wsdlLocation="classpath:wsdl/EntityXDRRequest.wsdl">
         <jaxws:handlers>
@@ -141,7 +143,7 @@
         <jaxws:properties>
             <entry key="mtom-enabled" value="true" />
         </jaxws:properties>
-    </jaxws:endpoint-->
+    </jaxws:endpoint>
 
     <jaxws:endpoint xmlns:tns="urn:gov:hhs:fha:nhinc:nhincentityxdrsecured:async:request" id="EntityDocSubmissionDeferredRequestSecured"
         address="/EntityService/EntityDocSubmissionDeferredRequestSecured" serviceName="tns:EntityXDRSecuredAsyncRequest_Service"
@@ -171,12 +173,12 @@
             <ref bean="TransactionHandler" />
         </jaxws:handlers>
     </jaxws:endpoint>
-
+	-->
 
     <!-- Document Submission Deferred Response -->
 
     <!-- Nhin services -->
-
+	<!--
     <jaxws:endpoint xmlns:tns="urn:ihe:iti:xdr:2007" id="NhinXDRResponse" address="/NhinService/XDRResponse_Service"
         serviceName="tns:XDRDeferredResponse_Service" endpointName="tns:XDRDeferredResponse_Port_Soap" implementor="#nhinXDRDeferredResponse"
         wsdlLocation="classpath:wsdl/NhinXDRDeferredResponse.wsdl">
@@ -197,16 +199,16 @@
             <ref bean="TransactionHandler" />
         </jaxws:handlers>
     </jaxws:endpoint>
-
+	-->
     <!-- Entity services -->
-
-    <!--jaxws:endpoint xmlns:tns="urn:gov:hhs:fha:nhinc:nhincentityxdr:async:response" id="EntityDocSubmissionDeferredResponseUnsecured"
+	<!--
+    <jaxws:endpoint xmlns:tns="urn:gov:hhs:fha:nhinc:nhincentityxdr:async:response" id="EntityDocSubmissionDeferredResponseUnsecured"
         address="/EntityService/EntityDocSubmissionDeferredResponseUnsecured" serviceName="tns:EntityXDRAsyncResponse_Service"
         endpointName="tns:EntityXDRAsyncResponse_Port" implementor="#entityXDRDeferredResponseUnsecured" wsdlLocation="classpath:wsdl/EntityXDRResponse.wsdl">
         <jaxws:handlers>
             <ref bean="TransactionHandler" />
         </jaxws:handlers>
-    </jaxws:endpoint-->
+    </jaxws:endpoint>
 
     <jaxws:endpoint xmlns:tns="urn:gov:hhs:fha:nhinc:nhincentityxdrsecured:async:response" id="EntityDocSubmissionDeferredResponseSecured"
         address="/EntityService/EntityDocSubmissionDeferredResponseSecured" serviceName="tns:EntityXDRSecuredAsyncResponse_Service"
@@ -228,5 +230,5 @@
             <ref bean="TransactionHandler" />
         </jaxws:handlers>
     </jaxws:endpoint>
-
+	-->
 </beans>

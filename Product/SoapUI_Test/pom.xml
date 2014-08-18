@@ -106,7 +106,7 @@
                                 <artifactItem>
                                     <groupId>org.connectopensource</groupId>
                                     <artifactId>CONNECTCommonTypesLib</artifactId>
-                                    <version>4.0.7</version>
+                                    <version>4.0.7-OrionPatched</version>
                                     <type>jar</type>
                                 </artifactItem>
                             </artifactItems>

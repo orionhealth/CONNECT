@@ -25,7 +25,7 @@ http://cxf.apache.org/core http://cxf.apache.org/schemas/core.xsd ">
     </cxf:bus>
 
     <!-- Nhin Services -->
-
+	<!--
     <jaxws:endpoint xmlns:nds="urn:ihe:iti:xdr:2007" id="NhinDocSubmission_g1" address="/DocumentRepositoryXDR_Service"
         serviceName="nds:DocumentRepositoryXDR_Service" endpointName="nds:DocumentRepositoryXDR_Port_Soap" implementor="#nhinXDR_g1"
         wsdlLocation="classpath:wsdl/NhinXDR20.wsdl">
@@ -54,9 +54,9 @@ http://cxf.apache.org/core http://cxf.apache.org/schemas/core.xsd ">
             <ref bean="TransactionHandler" />
         </jaxws:handlers>
     </jaxws:endpoint>
-
+	-->
     <!-- Entity services -->
-
+	<!--
     <jaxws:endpoint xmlns:eds="urn:gov:hhs:fha:nhinc:nhincentityxdr" id="EntityDocSubmissionUnsecured_g1"
         address="/EntityService/EntityDocSubmissionUnsecured" serviceName="eds:EntityXDR_Service" endpointName="eds:EntityXDR_Port"
         implementor="#entityXDRUnsecured_g1" wsdlLocation="classpath:wsdl/EntityXDR.wsdl">
@@ -95,12 +95,12 @@ http://cxf.apache.org/core http://cxf.apache.org/schemas/core.xsd ">
             <ref bean="TransactionHandler" />
         </jaxws:handlers>
     </jaxws:endpoint>
-
+	-->
 
     <!-- Document Submission Deferred Request -->
 
     <!-- Nhin services -->
-
+	<!--
     <jaxws:endpoint xmlns:tns="urn:ihe:iti:xdr:2007" id="NhinXDRRequest20" address="/NhinService/XDRRequest_Service"
         serviceName="tns:XDRDeferredRequest20_Service" endpointName="tns:XDRDeferredRequest20_Port_Soap" implementor="#nhinXDRDeferredRequest_g1"
         wsdlLocation="classpath:wsdl/NhinXDRDeferredRequest20.wsdl">
@@ -129,9 +129,9 @@ http://cxf.apache.org/core http://cxf.apache.org/schemas/core.xsd ">
             <ref bean="TransactionHandler" />
         </jaxws:handlers>
     </jaxws:endpoint>
-
+	-->
     <!-- Entity services -->
-
+	<!--
     <jaxws:endpoint xmlns:tns="urn:gov:hhs:fha:nhinc:nhincentityxdr:async:request" id="EntityDocSubmissionDeferredRequestUnsecured_g1"
         address="/EntityService/EntityDocSubmissionDeferredRequestUnsecured" serviceName="tns:EntityXDRAsyncRequest_Service"
         endpointName="tns:EntityXDRAsyncRequest_Port" implementor="#entityXDRDeferredRequestUnsecured_g1" wsdlLocation="classpath:wsdl/EntityXDRRequest.wsdl">
@@ -172,12 +172,12 @@ http://cxf.apache.org/core http://cxf.apache.org/schemas/core.xsd ">
             <ref bean="TransactionHandler" />
         </jaxws:handlers>
     </jaxws:endpoint>
-
+	-->
 
     <!-- Document Submission Deferred Response -->
 
     <!-- Nhin services -->
-
+	<!--
     <jaxws:endpoint xmlns:tns="urn:ihe:iti:xdr:2007" id="NhinXDRResponse20" address="/NhinService/XDRResponse_Service"
         serviceName="tns:XDRDeferredResponse20_Service" endpointName="tns:XDRDeferredResponse20_Port_Soap" implementor="#nhinXDRDeferredResponse_g1"
         wsdlLocation="classpath:wsdl/NhinXDRDeferredResponse20.wsdl">
@@ -198,9 +198,9 @@ http://cxf.apache.org/core http://cxf.apache.org/schemas/core.xsd ">
             <ref bean="TransactionHandler" />
         </jaxws:handlers>
     </jaxws:endpoint>
-
+	-->
     <!-- Entity services -->
-
+	<!--
     <jaxws:endpoint xmlns:tns="urn:gov:hhs:fha:nhinc:nhincentityxdr:async:response" id="EntityDocSubmissionDeferredResponseUnsecured_g1"
         address="/EntityService/EntityDocSubmissionDeferredResponseUnsecured" serviceName="tns:EntityXDRAsyncResponse_Service"
         endpointName="tns:EntityXDRAsyncResponse_Port" implementor="#entityXDRDeferredResponseUnsecured_g1"
@@ -231,5 +231,5 @@ http://cxf.apache.org/core http://cxf.apache.org/schemas/core.xsd ">
             <ref bean="TransactionHandler" />
         </jaxws:handlers>
     </jaxws:endpoint>
-
+	-->
 </beans>

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -28,9 +28,9 @@ package gov.hhs.fha.nhinc.callback.openSAML;
 
 import gov.hhs.fha.nhinc.cryptostore.StoreUtil;
 
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.FileInputStream;
 import java.security.KeyStore;
 import java.security.KeyStore.PrivateKeyEntry;
 import java.security.KeyStoreException;
@@ -42,36 +42,37 @@ import java.security.cert.X509Certificate;
 import java.security.interfaces.RSAPublicKey;
 import java.util.HashMap;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author mweaver
  *
  */
 public class CertificateManagerImpl implements CertificateManager {
-    private static final Logger LOG = Logger.getLogger(CertificateManagerImpl.class);
+
+    private static final Logger LOG = LoggerFactory.getLogger(CertificateManagerImpl.class);
 
     private KeyStore keyStore = null;
     private KeyStore trustStore = null;
-    
+
     public static final String TRUST_STORE_TYPE_KEY = "javax.net.ssl.trustStoreType";
-	public static final String TRUST_STORE_PASSWORD_KEY = "javax.net.ssl.trustStorePassword";
-	public static final String TRUST_STORE_KEY = "javax.net.ssl.trustStore";
-	public static final  String KEY_STORE_TYPE_KEY = "javax.net.ssl.keyStoreType";
+    public static final String TRUST_STORE_PASSWORD_KEY = "javax.net.ssl.trustStorePassword";
+    public static final String TRUST_STORE_KEY = "javax.net.ssl.trustStore";
+    public static final String KEY_STORE_TYPE_KEY = "javax.net.ssl.keyStoreType";
     public static final String KEY_STORE_PASSWORD_KEY = "javax.net.ssl.keyStorePassword";
     public static final String KEY_STORE_KEY = "javax.net.ssl.keyStore";
-    
+    public static final String JKS_TYPE = "JKS";
+    public static final String PKCS11_TYPE = "PKCS11";
+    private static final String KEYSTORE_ERROR_MSG = "Error initializing KeyStore: {}";
 
     private CertificateManagerImpl() {
         try {
-            if (keyStore == null) {
-                initKeyStore();
-            }
-            if (trustStore == null) {
-                initTrustStore();
-            }
-        } catch (Exception e) {
-            LOG.error("unable to initialize keystores", e);
+            initKeyStore();
+            initTrustStore();
+
+        } catch (final Exception e) {
+            LOG.error("Unable to initialize keystores: " + e.getLocalizedMessage(), e);
         }
     }
 
@@ -81,24 +82,26 @@ public class CertificateManagerImpl implements CertificateManager {
 
     /**
      * For Unit testing, to pass in testable system properties to the instance.
+     *
      * @param keyStoreProperties
      * @param trustStoreProperties
      * @return
      */
     static CertificateManager getInstance(final HashMap<String, String> keyStoreProperties,
-    		final HashMap<String,String> trustStoreProperties) {
-    	return new CertificateManagerImpl(){
-    		@Override
-    		protected HashMap<String, String> getKeyStoreSystemProperties(){
-    			return keyStoreProperties;
-    		}
-    		@Override
-    		protected HashMap<String, String> getTrustStoreSystemProperties(){
-    			return trustStoreProperties;
-    		}
-    	};
+            final HashMap<String, String> trustStoreProperties) {
+        return new CertificateManagerImpl() {
+            @Override
+            protected HashMap<String, String> getKeyStoreSystemProperties() {
+                return keyStoreProperties;
+            }
+
+            @Override
+            protected HashMap<String, String> getTrustStoreSystemProperties() {
+                return trustStoreProperties;
+            }
+        };
     }
-    
+
     /**
      * @return the keyStore
      */
@@ -125,49 +128,43 @@ public class CertificateManagerImpl implements CertificateManager {
         LOG.debug("SamlCallbackHandler.initKeyStore() -- Begin");
 
         InputStream is = null;
-        
-        HashMap<String, String> keyStoreProperties = getKeyStoreSystemProperties();
+
+        final HashMap<String, String> keyStoreProperties = getKeyStoreSystemProperties();
         String storeType = keyStoreProperties.get(KEY_STORE_TYPE_KEY);
-        String password = keyStoreProperties.get(KEY_STORE_PASSWORD_KEY);
-        String storeLoc = keyStoreProperties.get(KEY_STORE_KEY);
+        final String password = keyStoreProperties.get(KEY_STORE_PASSWORD_KEY);
+        final String storeLoc = keyStoreProperties.get(KEY_STORE_KEY);
 
         if (storeType == null) {
             LOG.error("javax.net.ssl.keyStoreType is not defined");
             LOG.warn("Default to JKS keyStoreType");
-            storeType = "JKS";
+            storeType = JKS_TYPE;
         }
-        if (password == null || storeLoc == null) {
-            LOG.error("Store password or store location not defined");
-            LOG.error("Please define javax.net.ssl.keyStorePassword and javax.net.ssl.keyStore");
-        }
-
-        if ("JKS".equals(storeType) && storeLoc == null) {
-            LOG.error("javax.net.ssl.keyStore is not defined");
-        } else {
-            try {
-                keyStore = KeyStore.getInstance(storeType);
-                is = new FileInputStream(storeLoc);
-                keyStore.load(is, password.toCharArray());
-            } catch (NoSuchAlgorithmException ex) {
-                LOG.error("Error initializing KeyStore: " + ex);
-                throw new Exception(ex.getMessage());
-            } catch (CertificateException ex) {
-                LOG.error("Error initializing KeyStore: " + ex);
-                throw new Exception(ex.getMessage());
-            } catch (KeyStoreException ex) {
-                LOG.error("Error initializing KeyStore: " + ex);
-                throw new Exception(ex.getMessage());
-            } finally {
+        if (password !=null){
+            if (JKS_TYPE.equals(storeType) && storeLoc == null) {
+                LOG.error("javax.net.ssl.keyStore is not defined");
+            } else {
                 try {
-                    if (is != null) {
-                        is.close();
+                    keyStore = KeyStore.getInstance(storeType);
+                    if (!PKCS11_TYPE.equalsIgnoreCase(storeType)) {
+                        is = new FileInputStream(storeLoc);
                     }
-                } catch (IOException ex) {
-                    LOG.debug("KeyStoreCallbackHandler " + ex);
+                    keyStore.load(is, password.toCharArray());
+                } catch (final NoSuchAlgorithmException|CertificateException|KeyStoreException ex) {
+                    LOG.error(KEYSTORE_ERROR_MSG, ex.getLocalizedMessage(), ex);
+                    throw new Exception(ex.getMessage());
+                } finally {
+                    try {
+                        if (is != null) {
+                            is.close();
+                        }
+                    } catch (final IOException ex) {
+                        LOG.debug("KeyStoreCallbackHandler {}", ex);
+                    }
                 }
             }
+        }else{
+            LOG.error("Please define javax.net.ssl.keyStorePassword");
         }
-
         LOG.debug("SamlCallbackHandler.initKeyStore() -- End");
     }
 
@@ -181,41 +178,43 @@ public class CertificateManagerImpl implements CertificateManager {
         LOG.debug("SamlCallbackHandler.initTrustStore() -- Begin");
 
         InputStream is = null;
-        
-        HashMap<String, String> trustStoreProperties = getTrustStoreSystemProperties();
+
+        final HashMap<String, String> trustStoreProperties = getTrustStoreSystemProperties();
         String storeType = trustStoreProperties.get(TRUST_STORE_TYPE_KEY);
-        String password = trustStoreProperties.get(TRUST_STORE_PASSWORD_KEY);
-        String storeLoc = trustStoreProperties.get(TRUST_STORE_KEY);
+        final String password = trustStoreProperties.get(TRUST_STORE_PASSWORD_KEY);
+        final String storeLoc = trustStoreProperties.get(TRUST_STORE_KEY);
 
         if (storeType == null) {
             LOG.error("javax.net.ssl.trustStoreType is not defined in domain.xml");
             LOG.warn("Default to JKS trustStoreType");
-            storeType = "JKS";
+            storeType = JKS_TYPE;
         }
         if (password != null) {
-            if ("JKS".equals(storeType) && storeLoc == null) {
+            if (JKS_TYPE.equals(storeType) && storeLoc == null) {
                 LOG.error("javax.net.ssl.trustStore is not defined in domain.xml");
             } else {
                 try {
                     trustStore = KeyStore.getInstance(storeType);
-                    is = new FileInputStream(storeLoc);
+                    if (!PKCS11_TYPE.equalsIgnoreCase(storeType)) {
+                        is = new FileInputStream(storeLoc);
+                    }
                     trustStore.load(is, password.toCharArray());
-                } catch (NoSuchAlgorithmException ex) {
-                    LOG.error("Error initializing TrustStore: " + ex);
+                } catch (final NoSuchAlgorithmException ex) {
+                    LOG.error("Error initializing TrustStore: {}", ex.getLocalizedMessage(), ex);
                     throw new Exception(ex.getMessage());
-                } catch (CertificateException ex) {
-                    LOG.error("Error initializing TrustStore: " + ex);
+                } catch (final CertificateException ex) {
+                    LOG.error("Error initializing TrustStore: {}", ex.getLocalizedMessage(), ex);
                     throw new IOException(ex.getMessage());
-                } catch (KeyStoreException ex) {
-                    LOG.error("Error initializing TrustStore: " + ex);
+                } catch (final KeyStoreException ex) {
+                    LOG.error("Error initializing TrustStore: {}", ex.getLocalizedMessage(), ex);
                     throw new IOException(ex.getMessage());
                 } finally {
                     try {
                         if (is != null) {
                             is.close();
                         }
-                    } catch (IOException ex) {
-                        LOG.debug("KeyStoreCallbackHandler " + ex);
+                    } catch (final IOException ex) {
+                        LOG.debug("KeyStoreCallbackHandler {}", ex);
                     }
                 }
             }
@@ -230,6 +229,7 @@ public class CertificateManagerImpl implements CertificateManager {
      *
      * @see gov.hhs.fha.nhinc.callback.openSAML.CertificateManager#getDefaultCertificate()
      */
+    @Override
     public X509Certificate getDefaultCertificate() throws Exception {
         return (X509Certificate) getPrivateKeyEntry().getCertificate();
     }
@@ -248,21 +248,21 @@ public class CertificateManagerImpl implements CertificateManager {
         LOG.debug("SamlCallbackHandler.getDefaultPrivKeyCert() -- Begin");
         KeyStore.PrivateKeyEntry pkEntry = null;
 
-        String client_key_alias = StoreUtil.getInstance().getPrivateKeyAlias();
+        final String client_key_alias = StoreUtil.getInstance().getPrivateKeyAlias();
         if (client_key_alias != null) {
-            String password = getKeyStoreSystemProperties().get(KEY_STORE_PASSWORD_KEY);
+            final String password = getKeyStoreSystemProperties().get(KEY_STORE_PASSWORD_KEY);
             if (password != null) {
                 try {
                     pkEntry = (KeyStore.PrivateKeyEntry) keyStore.getEntry(client_key_alias,
                             new KeyStore.PasswordProtection(password.toCharArray()));
 
-                } catch (NoSuchAlgorithmException ex) {
+                } catch (final NoSuchAlgorithmException ex) {
                     LOG.error("Error initializing Private Key: " + ex);
                     throw new Exception(ex.getMessage());
-                } catch (KeyStoreException ex) {
+                } catch (final KeyStoreException ex) {
                     LOG.error("Error initializing Private Key: " + ex);
                     throw new Exception(ex.getMessage());
-                } catch (UnrecoverableEntryException ex) {
+                } catch (final UnrecoverableEntryException ex) {
                     LOG.error("Error initializing Private Key: " + ex);
                     throw new Exception(ex.getMessage());
                 }
@@ -286,30 +286,30 @@ public class CertificateManagerImpl implements CertificateManager {
      */
     @Override
     public RSAPublicKey getDefaultPublicKey() {
-
         try {
             return (RSAPublicKey) getDefaultCertificate().getPublicKey();
-        } catch (Exception e) {
-            LOG.error(e);
+        } catch (final Exception e) {
+            LOG.error("Could not get default public key: " + e.getLocalizedMessage(), e);
 
         }
+
         return null;
     }
-    
-    protected HashMap<String, String> getTrustStoreSystemProperties(){
-    	HashMap<String, String> map = new HashMap<String, String>();
-    	map.put(TRUST_STORE_KEY, System.getProperty(TRUST_STORE_KEY));
-    	map.put(TRUST_STORE_PASSWORD_KEY, System.getProperty(TRUST_STORE_PASSWORD_KEY));
-    	map.put(TRUST_STORE_TYPE_KEY, System.getProperty(TRUST_STORE_TYPE_KEY));
-    	return map;
+
+    protected HashMap<String, String> getTrustStoreSystemProperties() {
+        final HashMap<String, String> map = new HashMap<>();
+        map.put(TRUST_STORE_KEY, System.getProperty(TRUST_STORE_KEY));
+        map.put(TRUST_STORE_PASSWORD_KEY, System.getProperty(TRUST_STORE_PASSWORD_KEY));
+        map.put(TRUST_STORE_TYPE_KEY, System.getProperty(TRUST_STORE_TYPE_KEY));
+        return map;
     }
-    
-    protected HashMap<String, String> getKeyStoreSystemProperties(){
-    	HashMap<String, String> map = new HashMap<String, String>();
-    	map.put(KEY_STORE_KEY, System.getProperty(KEY_STORE_KEY));
-    	map.put(KEY_STORE_TYPE_KEY, System.getProperty(KEY_STORE_TYPE_KEY));
-    	map.put(KEY_STORE_PASSWORD_KEY, System.getProperty(KEY_STORE_PASSWORD_KEY));
-    	return map;
+
+    protected HashMap<String, String> getKeyStoreSystemProperties() {
+        final HashMap<String, String> map = new HashMap<>();
+        map.put(KEY_STORE_KEY, System.getProperty(KEY_STORE_KEY));
+        map.put(KEY_STORE_TYPE_KEY, System.getProperty(KEY_STORE_TYPE_KEY));
+        map.put(KEY_STORE_PASSWORD_KEY, System.getProperty(KEY_STORE_PASSWORD_KEY));
+        return map;
     }
 
 }

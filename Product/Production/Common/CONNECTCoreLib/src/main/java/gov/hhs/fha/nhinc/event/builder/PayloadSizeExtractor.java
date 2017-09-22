@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,18 +26,15 @@
  */
 package gov.hhs.fha.nhinc.event.builder;
 
-import javax.xml.bind.JAXBElement;
-
-import oasis.names.tc.ebxml_regrep.xsd.rim._3.ExtrinsicObjectType;
-import oasis.names.tc.ebxml_regrep.xsd.rim._3.IdentifiableType;
-
-import org.apache.log4j.Logger;
-
 import com.google.common.base.Function;
 import com.google.common.base.Optional;
-
 import gov.hhs.fha.nhinc.document.DocumentConstants;
 import gov.hhs.fha.nhinc.util.JaxbDocumentUtils;
+import javax.xml.bind.JAXBElement;
+import oasis.names.tc.ebxml_regrep.xsd.rim._3.ExtrinsicObjectType;
+import oasis.names.tc.ebxml_regrep.xsd.rim._3.IdentifiableType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Extracts the payload size off an Extrinsic Object.
@@ -45,10 +42,9 @@ import gov.hhs.fha.nhinc.util.JaxbDocumentUtils;
  * ExtrinsicObject/Slot[@name=size]/ValueList/Value[0]
  *
  */
-public class PayloadSizeExtractor implements
-        Function<JAXBElement<? extends IdentifiableType>, Optional<String>> {
+public class PayloadSizeExtractor implements Function<JAXBElement<? extends IdentifiableType>, Optional<String>> {
 
-    private static final Logger LOG = Logger.getLogger(PayloadSizeExtractor.class);
+    private static final Logger LOG = LoggerFactory.getLogger(PayloadSizeExtractor.class);
 
     @Override
     public Optional<String> apply(JAXBElement<? extends IdentifiableType> jaxbElement) {
@@ -57,7 +53,8 @@ public class PayloadSizeExtractor implements
         IdentifiableType value = jaxbElement.getValue();
         if (value instanceof ExtrinsicObjectType) {
             ExtrinsicObjectType extrinsicObjectType = (ExtrinsicObjectType) value;
-            payloadSize = JaxbDocumentUtils.findSlotType(extrinsicObjectType.getSlot(), DocumentConstants.EBXML_RESPONSE_SIZE_SLOTNAME);
+            payloadSize = JaxbDocumentUtils.findSlotType(extrinsicObjectType.getSlot(),
+                    DocumentConstants.EBXML_RESPONSE_SIZE_SLOTNAME);
         } else {
             LOG.warn("Passed in element has an unexpected type.  Expecting ExtrinsicObjectType.  Returning as absent.");
         }

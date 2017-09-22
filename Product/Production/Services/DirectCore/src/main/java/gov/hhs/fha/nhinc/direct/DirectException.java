@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -28,10 +28,9 @@ package gov.hhs.fha.nhinc.direct;
 
 import gov.hhs.fha.nhinc.direct.event.DirectEventLogger;
 import gov.hhs.fha.nhinc.direct.event.DirectEventType;
-
 import javax.mail.internet.MimeMessage;
-
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Exceptions for {@link MimeMessageBuilder}.
@@ -39,7 +38,7 @@ import org.apache.log4j.Logger;
 public class DirectException extends RuntimeException {
 
     private static final long serialVersionUID = 4636463959045310435L;
-    private static final Logger LOG = Logger.getLogger(DirectException.class);
+    private static final Logger LOG = LoggerFactory.getLogger(DirectException.class);
     private static DirectEventLogger directEventLogger;
 
     /**

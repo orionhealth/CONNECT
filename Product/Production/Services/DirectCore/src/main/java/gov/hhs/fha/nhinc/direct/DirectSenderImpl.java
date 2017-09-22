@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,19 +30,18 @@ import gov.hhs.fha.nhinc.direct.event.DirectEventLogger;
 import gov.hhs.fha.nhinc.direct.event.DirectEventType;
 import gov.hhs.fha.nhinc.direct.messagemonitoring.impl.MessageMonitoringAPI;
 import gov.hhs.fha.nhinc.mail.MailSender;
-
 import javax.mail.Address;
 import javax.mail.internet.MimeMessage;
-import org.apache.log4j.Logger;
-
 import org.nhindirect.xd.common.DirectDocuments;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Used to send outbound direct messages.
  */
 public class DirectSenderImpl extends DirectAdapter implements DirectSender {
 
-    private static final Logger LOG = Logger.getLogger(DirectSenderImpl.class);
+    private static final Logger LOG = LoggerFactory.getLogger(DirectSenderImpl.class);
     private static final String MSG_SUBJECT = "DIRECT Message";
     private static final String MSG_TEXT = "DIRECT Message body text";
 
@@ -68,7 +67,8 @@ public class DirectSenderImpl extends DirectAdapter implements DirectSender {
         } catch (Exception e) {
             //if its security error then return send a message back to sender
             failed = true;
-            errorMessage = e.getMessage();
+            errorMessage = e.getLocalizedMessage();
+            LOG.error("Encounter sendOutBoundDirect error {}", errorMessage, e);
             //TODO: drop the message to a delete bin directory for future ref
             return;
         } finally {

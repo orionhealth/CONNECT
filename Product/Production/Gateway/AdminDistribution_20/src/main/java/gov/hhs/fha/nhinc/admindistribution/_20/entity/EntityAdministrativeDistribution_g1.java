@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,20 +27,20 @@
 package gov.hhs.fha.nhinc.admindistribution._20.entity;
 
 import gov.hhs.fha.nhinc.admindistribution.aspect.ADRequestTransformingBuilder;
+import gov.hhs.fha.nhinc.admindistribution.aspect.EDXLDistributionEventDescriptionBuilder;
 import gov.hhs.fha.nhinc.admindistribution.outbound.OutboundAdminDistribution;
 import gov.hhs.fha.nhinc.aspect.OutboundMessageEvent;
 import gov.hhs.fha.nhinc.common.nhinccommon.AssertionType;
 import gov.hhs.fha.nhinc.common.nhinccommonentity.RespondingGatewaySendAlertMessageType;
 import gov.hhs.fha.nhinc.entityadmindistribution.AdministrativeDistributionPortType;
-import gov.hhs.fha.nhinc.event.DefaultEventDescriptionBuilder;
 import gov.hhs.fha.nhinc.messaging.server.BaseService;
-
 import javax.annotation.Resource;
 import javax.xml.ws.BindingType;
 import javax.xml.ws.WebServiceContext;
 import javax.xml.ws.soap.Addressing;
+import javax.xml.ws.soap.SOAPBinding;
 
-@BindingType(value = javax.xml.ws.soap.SOAPBinding.SOAP12HTTP_BINDING)
+@BindingType(value = SOAPBinding.SOAP12HTTP_BINDING)
 @Addressing(enabled = true)
 public class EntityAdministrativeDistribution_g1 extends BaseService implements AdministrativeDistributionPortType {
 
@@ -48,9 +48,7 @@ public class EntityAdministrativeDistribution_g1 extends BaseService implements 
     private OutboundAdminDistribution outboundAdminDist;
 
     @Override
-    @OutboundMessageEvent(serviceType = "Admin Distribution", version = "2.0",
-            afterReturningBuilder = DefaultEventDescriptionBuilder.class,
-            beforeBuilder = ADRequestTransformingBuilder.class)
+    @OutboundMessageEvent(serviceType = "Admin Distribution", version = "2.0", afterReturningBuilder = EDXLDistributionEventDescriptionBuilder.class, beforeBuilder = ADRequestTransformingBuilder.class)
     public void sendAlertMessage(RespondingGatewaySendAlertMessageType body) {
         AssertionType assertion = getAssertion(context, body.getAssertion());
 
@@ -72,6 +70,6 @@ public class EntityAdministrativeDistribution_g1 extends BaseService implements 
      * @return the outbound admin distribution
      */
     public OutboundAdminDistribution getOutboundAdminDistribution() {
-        return this.outboundAdminDist;
+        return outboundAdminDist;
     }
 }

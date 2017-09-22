@@ -1,28 +1,28 @@
 /*
- * Copyright (c) 2009-2013, United States Government, as represented by the Secretary of Health and Human Services. 
- * All rights reserved. 
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
+ * All rights reserved.
  *
- * Redistribution and use in source and binary forms, with or without 
- * modification, are permitted provided that the following conditions are met: 
- *     * Redistributions of source code must retain the above 
- *       copyright notice, this list of conditions and the following disclaimer. 
- *     * Redistributions in binary form must reproduce the above copyright 
- *       notice, this list of conditions and the following disclaimer in the documentation 
- *       and/or other materials provided with the distribution. 
- *     * Neither the name of the United States Government nor the 
- *       names of its contributors may be used to endorse or promote products 
- *       derived from this software without specific prior written permission. 
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *     * Redistributions of source code must retain the above
+ *       copyright notice, this list of conditions and the following disclaimer.
+ *     * Redistributions in binary form must reproduce the above copyright
+ *       notice, this list of conditions and the following disclaimer in the documentation
+ *       and/or other materials provided with the distribution.
+ *     * Neither the name of the United States Government nor the
+ *       names of its contributors may be used to endorse or promote products
+ *       derived from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
- * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED 
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE 
- * DISCLAIMED. IN NO EVENT SHALL THE UNITED STATES GOVERNMENT BE LIABLE FOR ANY 
- * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES 
- * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; 
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND 
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT 
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS 
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE UNITED STATES GOVERNMENT BE LIABLE FOR ANY
+ * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 package gov.hhs.fha.nhinc.openSAML.extraction;
 
@@ -50,7 +50,6 @@ import java.util.Map;
 import javax.xml.namespace.QName;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.cxf.common.util.StringUtils;
-import org.apache.log4j.Logger;
 import org.apache.ws.security.WSSecurityException;
 import org.apache.ws.security.saml.ext.OpenSAMLUtil;
 import org.opensaml.saml2.core.Assertion;
@@ -66,17 +65,19 @@ import org.opensaml.saml2.core.Subject;
 import org.opensaml.xml.XMLObject;
 import org.opensaml.xml.schema.XSAny;
 import org.opensaml.xml.util.AttributeMap;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 /**
  * @author mweaver
- * 
+ *
  */
 public class OpenSAMLAssertionExtractorImpl implements SAMLExtractorDOM {
 
-    private static final Logger LOG = Logger.getLogger(OpenSAMLAssertionExtractorImpl.class);
+    private static final Logger LOG = LoggerFactory.getLogger(OpenSAMLAssertionExtractorImpl.class);
     private static final String EMPTY_STRING = "";
     private static final String X509_FORMAT = "urn:oasis:names:tc:SAML:1.1:nameid-format:X509SubjectName";
     private static final String ACCESS_CONSENT_POLICY_ATTRIBUTE_NAME = "AccessConsentPolicy";
@@ -84,8 +85,8 @@ public class OpenSAMLAssertionExtractorImpl implements SAMLExtractorDOM {
 
     /**
      * This method is used to extract the SAML assertion information.
-     * 
-     * @param Element element
+     *
+     * @param element
      * @return AssertionType
      */
     @Override
@@ -115,14 +116,14 @@ public class OpenSAMLAssertionExtractorImpl implements SAMLExtractorDOM {
 
     /**
      * This method will return the first Assertion encountered in the passed in element.
-     * 
+     *
      * @param element the xml element to extract the assertion from
      * @return The first encountered Assertion object in the element
      */
     private Assertion extractSaml2Assertion(final Element element) {
-
         if (element.getNamespaceURI().equals(SamlConstants.SAML2_ASSERTION_NS)
                 && element.getLocalName().equals(SamlConstants.SAML2_ASSERTION_TAG)) {
+
             return convertToAssertion(element);
         }
 
@@ -164,7 +165,7 @@ public class OpenSAMLAssertionExtractorImpl implements SAMLExtractorDOM {
 
     /**
      * This method is used to populate the Attribute Statement.
-     * 
+     *
      * @param saml2Assertion saml2 assertion
      * @param target target assertion
      */
@@ -211,8 +212,8 @@ public class OpenSAMLAssertionExtractorImpl implements SAMLExtractorDOM {
 
                 } else if (attribute.getName().equals(NhincConstants.INST_ACCESS_CONSENT_ATTR)) {
                     List<String> instAccessConsentId = transformXMLtoString(attribute.getAttributeValues());
-                    target.getSamlAuthzDecisionStatement().getEvidence().getAssertion()
-                            .getInstanceAccessConsentPolicy().addAll(instAccessConsentId);
+                    target.getSamlAuthzDecisionStatement().getEvidence().getAssertion().getInstanceAccessConsentPolicy()
+                            .addAll(instAccessConsentId);
                     LOG.debug("Assertion.SamlAuthzDecisionStatement.Evidence.Assertion.InstanceAccessConsentPolicy = "
                             + instAccessConsentId);
 
@@ -242,7 +243,7 @@ public class OpenSAMLAssertionExtractorImpl implements SAMLExtractorDOM {
      * @return The same list, with XMLObjects converted to a String representation
      */
     private List<String> transformXMLtoString(List<XMLObject> attributeValues) {
-        List<String> stringList = new ArrayList<String>();
+        List<String> stringList = new ArrayList<>();
         for (XMLObject item : attributeValues) {
             stringList.add(item.toString());
         }
@@ -255,7 +256,7 @@ public class OpenSAMLAssertionExtractorImpl implements SAMLExtractorDOM {
 
     /**
      * This method is used to populate the Authentication Statement Information.
-     * 
+     *
      * @param saml2Assertion saml2 assertion
      * @param target target assertion
      */
@@ -263,14 +264,14 @@ public class OpenSAMLAssertionExtractorImpl implements SAMLExtractorDOM {
 
         LOG.debug("Executing Saml2AssertionExtractor.populateAuthenticationStatement()...");
         SamlAuthnStatementType samlAuthnStatement = new SamlAuthnStatementType();
-        if (null == saml2Assertion.getAuthnStatements() || saml2Assertion.getAuthnStatements().size() == 0) {
+        if (null == saml2Assertion.getAuthnStatements() || saml2Assertion.getAuthnStatements().isEmpty()) {
             return;
         }
         AuthnStatement source = saml2Assertion.getAuthnStatements().get(0);
         samlAuthnStatement.setAuthInstant(source.getAuthnInstant().toString());
         samlAuthnStatement.setSessionIndex(source.getSessionIndex());
-        samlAuthnStatement.setAuthContextClassRef(source.getAuthnContext().getAuthnContextClassRef()
-                .getAuthnContextClassRef().toString());
+        samlAuthnStatement
+                .setAuthContextClassRef(source.getAuthnContext().getAuthnContextClassRef().getAuthnContextClassRef());
 
         if (source.getSubjectLocality() != null) {
             samlAuthnStatement.setSubjectLocalityDNSName(source.getSubjectLocality().getDNSName());
@@ -283,7 +284,7 @@ public class OpenSAMLAssertionExtractorImpl implements SAMLExtractorDOM {
 
     /**
      * This method is used to populate the Subject Information into the target assertion.
-     * 
+     *
      * @param saml2Assertion saml2 assertion
      * @param target target assertion
      */
@@ -309,7 +310,7 @@ public class OpenSAMLAssertionExtractorImpl implements SAMLExtractorDOM {
 
     /**
      * This method is used to populate the Authorization Decision Statement Information.
-     * 
+     *
      * @param saml2Assertion saml2 assertion
      * @param target target assertion
      */
@@ -383,15 +384,21 @@ public class OpenSAMLAssertionExtractorImpl implements SAMLExtractorDOM {
                 }
             }
         }
-
-        // Translate Evidence Conditions
-        Conditions saml2EvidenceCondition = saml2EvidenceAssertion.getConditions();
-
-        SamlAuthzDecisionStatementEvidenceConditionsType targetConditions = new SamlAuthzDecisionStatementEvidenceConditionsType();
-        targetEvidenceAssertion.setConditions(targetConditions);
-
-        targetConditions.setNotBefore(saml2EvidenceCondition.getNotBefore().toString());
-        targetConditions.setNotOnOrAfter(saml2EvidenceCondition.getNotOnOrAfter().toString());
+        // Only create the Conditions if NotBefore and/or NotOnOrAfter is present
+        if (saml2EvidenceAssertion.getConditions() != null
+                && (saml2EvidenceAssertion.getConditions().getNotBefore() != null
+                        || saml2EvidenceAssertion.getConditions().getNotOnOrAfter() != null)) {
+            // Translate Evidence Conditions
+            Conditions saml2EvidenceCondition = saml2EvidenceAssertion.getConditions();
+            SamlAuthzDecisionStatementEvidenceConditionsType targetConditions = new SamlAuthzDecisionStatementEvidenceConditionsType();
+            targetEvidenceAssertion.setConditions(targetConditions);
+            if (saml2EvidenceCondition.getNotBefore() != null) {
+                targetConditions.setNotBefore(saml2EvidenceCondition.getNotBefore().toString());
+            }
+            if (saml2EvidenceCondition.getNotOnOrAfter() != null) {
+                targetConditions.setNotOnOrAfter(saml2EvidenceCondition.getNotOnOrAfter().toString());
+            }
+        }
 
         // Translate Evidence Issuer
         Issuer saml2EvidenceIssuer = saml2EvidenceAssertion.getIssuer();
@@ -402,7 +409,7 @@ public class OpenSAMLAssertionExtractorImpl implements SAMLExtractorDOM {
 
     /**
      * This method is used to construct HL7 PurposeOfUse Attribute, and adds it to the Assertion.
-     * 
+     *
      * @param attribute attribute
      * @param target target assertion
      */
@@ -424,7 +431,7 @@ public class OpenSAMLAssertionExtractorImpl implements SAMLExtractorDOM {
     /**
      * Initializes the assertion object to contain empty strings for all values. These are overwritten in the extraction
      * process with real values if they are available
-     * 
+     *
      * @param assertOut The Assertion element being written to
      */
     private AssertionType initializeAssertion() {
@@ -505,7 +512,7 @@ public class OpenSAMLAssertionExtractorImpl implements SAMLExtractorDOM {
         try {
             formRaw = EMPTY_STRING.getBytes(StringUtil.UTF8_CHARSET);
         } catch (UnsupportedEncodingException ex) {
-            LOG.error("Error converting String to UTF8 format: " + ex.getMessage());
+            LOG.error("Error converting String to UTF8 format: {}", ex.getLocalizedMessage(), ex);
         }
         assertOut.setSamlSignature(samlSignature);
         samlSignature.setSignatureValue(formRaw);
@@ -519,7 +526,7 @@ public class OpenSAMLAssertionExtractorImpl implements SAMLExtractorDOM {
 
     /**
      * This method is used to construct HL7 Subject Role Attribute, and adds it to the Assertion.
-     * 
+     *
      * @param attribute attribute
      * @param target target assertion
      */

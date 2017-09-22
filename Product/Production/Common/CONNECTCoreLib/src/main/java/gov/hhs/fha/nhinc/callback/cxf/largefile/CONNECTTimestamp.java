@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,19 +27,19 @@
 package gov.hhs.fha.nhinc.callback.cxf.largefile;
 
 import java.util.Date;
-
-import org.apache.log4j.Logger;
 import org.apache.ws.security.WSSecurityException;
 import org.apache.ws.security.message.token.Timestamp;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Element;
 
 /**
  * @author akong
- * 
+ *
  */
 public class CONNECTTimestamp extends Timestamp {
 
-    private static final Logger LOG = Logger.getLogger(CONNECTTimestamp.class);
+    private static final Logger LOG = LoggerFactory.getLogger(CONNECTTimestamp.class);
 
     /**
      * {@inheritDoc}
@@ -50,7 +50,7 @@ public class CONNECTTimestamp extends Timestamp {
 
     /**
      * Initializes the class with the given timestamp.
-     * 
+     *
      * @param timestamp
      * @throws WSSecurityException
      */
@@ -61,7 +61,7 @@ public class CONNECTTimestamp extends Timestamp {
     /**
      * Return true if the current Timestamp is expired, meaning if the "Expires" value is before the current time. It
      * returns false if there is no Expires value.
-     * 
+     *
      * @param invocationDate the passed in invocation date to compare the expiration date with. if null, current time
      *            will be used.
      */
@@ -79,7 +79,7 @@ public class CONNECTTimestamp extends Timestamp {
     /**
      * Return true if the "Created" value is before the current time minus the timeToLive argument, and if the Created
      * value is not "in the future".
-     * 
+     *
      * @param timeToLive the value in seconds for the validity of the Created time
      * @param futureTimeToLive the value in seconds for the future validity of the Created time
      * @param invocationDate the passed in invocation date to compare the expiration date with. if null, current time

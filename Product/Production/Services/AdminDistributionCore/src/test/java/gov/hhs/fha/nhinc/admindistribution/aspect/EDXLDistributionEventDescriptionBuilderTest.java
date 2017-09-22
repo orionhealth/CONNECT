@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -34,26 +34,22 @@ import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
+import com.google.common.collect.ImmutableList;
 import gov.hhs.fha.nhinc.common.nhinccommon.AssertionType;
 import gov.hhs.fha.nhinc.event.AssertionEventDescriptionBuilder;
 import gov.hhs.fha.nhinc.event.BaseDescriptionBuilderTest;
 import gov.hhs.fha.nhinc.event.EventDescription;
-
 import java.util.List;
-
 import javax.xml.datatype.XMLGregorianCalendar;
-
 import oasis.names.tc.emergency.edxl.de._1.EDXLDistribution;
 import oasis.names.tc.emergency.edxl.de._1.StatusValues;
-
 import org.junit.Before;
 import org.junit.Test;
 
-import com.google.common.collect.ImmutableList;
-
 /**
  * @author akong
- * 
+ *
  */
 public class EDXLDistributionEventDescriptionBuilderTest extends BaseDescriptionBuilderTest {
 
@@ -66,8 +62,8 @@ public class EDXLDistributionEventDescriptionBuilderTest extends BaseDescription
 
     @Test
     public void handlesAssertionCorrectly() {
-        assertTrue(AssertionEventDescriptionBuilder.class
-                .isAssignableFrom(EDXLDistributionEventDescriptionBuilder.class));
+        assertTrue(
+                AssertionEventDescriptionBuilder.class.isAssignableFrom(EDXLDistributionEventDescriptionBuilder.class));
         builder.setArguments(mock(AssertionType.class));
         assertTrue(builder.getAssertion().isPresent());
     }

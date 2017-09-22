@@ -1,31 +1,40 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
     <parent>
         <groupId>org.connectopensource</groupId>
         <artifactId>Production</artifactId>
-        <version>4.4.1</version>
+        <version>4.7.0-HOTFIX-1</version>
     </parent>
-    <modelVersion>4.0.0</modelVersion>
+
     <artifactId>Services</artifactId>
     <name>${project.artifactId}</name>
     <packaging>pom</packaging>
+    <modelVersion>4.0.0</modelVersion>
+
+    <properties>
+        <skip.unpack>false</skip.unpack>
+        <skip.source>false</skip.source>
+    </properties>
+
     <modules>
         <module>AdapterAuthenticationCore</module>
         <module>AuditRepositoryCore</module>
+        <module>AuditRepositoryEJB</module>
         <module>ConnectionManagerCore</module>
-        <module>DocRegistryCore</module>
+        <module>RedactionEngineCore</module>
         <module>DocRepositoryCore</module>
         <module>PatientCorrelationCore</module>
         <module>PolicyEngineCore</module>
-        <module>RedactionEngineCore</module>
+        <module>SharedEngineCore</module>
+        <module>DocumentQueryCore</module>
+        <module>DocRegistryCore</module>
         <module>PatientDiscoveryCore</module>
         <module>DocumentSubmissionCore</module>
         <module>CORE_X12DocumentSubmissionCore</module>
         <module>DocumentRetrieveCore</module>
-        <module>DocumentQueryCore</module>
         <module>AdminDistributionCore</module>
-        <module>SharedEngineCore</module>
     </modules>
-    
+
     <profiles>
         <profile>
             <id>DirectTest</id>
@@ -43,33 +52,4 @@
             </modules>
         </profile>
     </profiles>
-    
-    <properties>
-        <skip.unpack>false</skip.unpack>
-        <skip.source>false</skip.source>
-    </properties>
-    <dependencies>
-        <dependency>
-            <groupId>org.connectopensource</groupId>
-            <artifactId>Properties</artifactId>
-            <version>${project.parent.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.connectopensource</groupId>
-            <artifactId>CONNECTCommonTypesLib</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.connectopensource</groupId>
-            <artifactId>CONNECTCoreLib</artifactId>
-            <version>${project.parent.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.connectopensource</groupId>
-            <artifactId>CONNECTCoreLib</artifactId>
-            <version>${project.parent.version}</version>
-            <type>test-jar</type>
-            <scope>test</scope>
-        </dependency>
-    </dependencies>
 </project>

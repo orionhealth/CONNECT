@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -34,24 +34,24 @@ import gov.hhs.fha.nhinc.messaging.client.CONNECTClientFactory;
 import gov.hhs.fha.nhinc.messaging.service.port.ServicePortDescriptor;
 import gov.hhs.fha.nhinc.nhinclib.NhincConstants;
 import gov.hhs.fha.nhinc.nhinclib.NullChecker;
-import gov.hhs.fha.nhinc.patientdiscovery.aspect.PRPAIN201305UV02EventDescriptionBuilder;
 import gov.hhs.fha.nhinc.patientdiscovery.aspect.MCCIIN000002UV01EventDescriptionBuilder;
+import gov.hhs.fha.nhinc.patientdiscovery.aspect.PRPAIN201305UV02EventDescriptionBuilder;
 import gov.hhs.fha.nhinc.transform.subdisc.HL7AckTransforms;
 import gov.hhs.fha.nhinc.webserviceproxy.WebServiceProxyHelper;
-
-import org.apache.log4j.Logger;
 import org.hl7.v3.AsyncAdapterPatientDiscoveryErrorRequestType;
 import org.hl7.v3.MCCIIN000002UV01;
 import org.hl7.v3.PRPAIN201305UV02;
 import org.hl7.v3.PRPAIN201306UV02;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
- * 
+ *
  * @author jhoppesc
  */
 public class AdapterPatientDiscoveryDeferredReqErrorProxyWebServiceUnsecuredImpl implements
         AdapterPatientDiscoveryDeferredReqErrorProxy {
-    private static final Logger LOG = Logger.getLogger(AdapterPatientDiscoveryDeferredReqErrorProxyWebServiceUnsecuredImpl.class);
+    private static final Logger LOG = LoggerFactory.getLogger(AdapterPatientDiscoveryDeferredReqErrorProxyWebServiceUnsecuredImpl.class);
     private WebServiceProxyHelper oProxyHelper = null;
 
     public AdapterPatientDiscoveryDeferredReqErrorProxyWebServiceUnsecuredImpl() {
@@ -63,9 +63,10 @@ public class AdapterPatientDiscoveryDeferredReqErrorProxyWebServiceUnsecuredImpl
     }
 
     @AdapterDelegationEvent(beforeBuilder = PRPAIN201305UV02EventDescriptionBuilder.class,
-            afterReturningBuilder = MCCIIN000002UV01EventDescriptionBuilder.class, 
+            afterReturningBuilder = MCCIIN000002UV01EventDescriptionBuilder.class,
             serviceType = "Patient Discovery Deferred Request",
             version = "1.0")
+    @Override
     public MCCIIN000002UV01 processPatientDiscoveryAsyncReqError(PRPAIN201305UV02 request, PRPAIN201306UV02 response,
             AssertionType assertion, String errMsg) {
         LOG.debug("Begin processPatientDiscoveryAsyncReqError");
@@ -86,11 +87,11 @@ public class AdapterPatientDiscoveryDeferredReqErrorProxyWebServiceUnsecuredImpl
                 } else if (NullChecker.isNullish(errMsg)) {
                     LOG.error("targets was null");
                 } else {
-                    ServicePortDescriptor<AdapterPatientDiscoveryAsyncReqErrorPortType> portDescriptor = 
+                    ServicePortDescriptor<AdapterPatientDiscoveryAsyncReqErrorPortType> portDescriptor =
                             new PatientDiscoveryDeferredReqErrorUnsecuredServicePortDescriptor();
                     CONNECTClient<AdapterPatientDiscoveryAsyncReqErrorPortType> client = CONNECTClientFactory
                             .getInstance().getCONNECTClientUnsecured(portDescriptor, url, assertion);
-                    AsyncAdapterPatientDiscoveryErrorRequestType msg = 
+                    AsyncAdapterPatientDiscoveryErrorRequestType msg =
                             new AsyncAdapterPatientDiscoveryErrorRequestType();
                     msg.setAssertion(assertion);
                     msg.setPRPAIN201305UV02(request);

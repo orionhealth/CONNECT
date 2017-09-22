@@ -1,41 +1,38 @@
 /*
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services. 
- * All rights reserved. 
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
+ * All rights reserved.
  *
- * Redistribution and use in source and binary forms, with or without 
- * modification, are permitted provided that the following conditions are met: 
- *     * Redistributions of source code must retain the above 
- *       copyright notice, this list of conditions and the following disclaimer. 
- *     * Redistributions in binary form must reproduce the above copyright 
- *       notice, this list of conditions and the following disclaimer in the documentation 
- *       and/or other materials provided with the distribution. 
- *     * Neither the name of the United States Government nor the 
- *       names of its contributors may be used to endorse or promote products 
- *       derived from this software without specific prior written permission. 
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *     * Redistributions of source code must retain the above
+ *       copyright notice, this list of conditions and the following disclaimer.
+ *     * Redistributions in binary form must reproduce the above copyright
+ *       notice, this list of conditions and the following disclaimer in the documentation
+ *       and/or other materials provided with the distribution.
+ *     * Neither the name of the United States Government nor the
+ *       names of its contributors may be used to endorse or promote products
+ *       derived from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
- * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED 
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE 
- * DISCLAIMED. IN NO EVENT SHALL THE UNITED STATES GOVERNMENT BE LIABLE FOR ANY 
- * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES 
- * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; 
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND 
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT 
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS 
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE UNITED STATES GOVERNMENT BE LIABLE FOR ANY
+ * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 package gov.hhs.fha.nhinc.gateway.executorservice;
 
 import gov.hhs.fha.nhinc.common.nhinccommon.NhinTargetSystemType;
 import gov.hhs.fha.nhinc.nhinclib.NhincConstants;
 import gov.hhs.fha.nhinc.properties.PropertyAccessor;
-
-import java.io.CharArrayWriter;
-import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.Map;
-
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Singleton class that holds the ExecutorService configs as follows - concurrentPoolSize is the size of the pool for
@@ -43,18 +40,18 @@ import org.apache.log4j.Logger;
  * largejobSizePercent is used in checkExecutorTaskIsLarge to determine if a task should be executed using the large job
  * executor service. If the task will fanout to a list of n targets, then the task is a large job if n >=
  * largejobSizePercent * concurrentPoolSize
- * 
+ *
  * // * - timeoutValues Map // * URLConnection offers setConnectTimeout() and setReadTimeout() methods // * to set the
  * web service urlconnection timeouts. // * Connect timeout is time to establish the http/https urlconnection in millis
  * // * Request timeout is the read timeout for the http/https urlconnection // * (after urlconnection established) in
  * millis // * // * Note that the timeout settings are metro based // * CONNECT_TIMEOUT_NAME =
  * "com.sun.xml.ws.connect.timeout" // * REQUEST_TIMEOUT_NAME = "com.sun.xml.ws.request.timeout"
- * 
+ *
  * @author paul.eftis
  */
 public class ExecutorServiceHelper {
 
-    private static final Logger LOG = Logger.getLogger(ExecutorServiceHelper.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ExecutorServiceHelper.class);
 
     // default pool size is 100
     private static int concurrentPoolSize;
@@ -82,10 +79,10 @@ public class ExecutorServiceHelper {
             // get large job percentage
             String largejobSizePercentStr = propertyAccessor.getProperty(NhincConstants.GATEWAY_PROPERTY_FILE,
                     NhincConstants.LARGEJOB_SIZE_PERCENT);
-            
+
             // convert to a decimal percent; throws exception for illegal Integer values
-            largejobSizePercent = (double)(new Integer(largejobSizePercentStr)) / 100.0;
-            
+            largejobSizePercent = (double) new Integer(largejobSizePercentStr) / 100.0;
+
             if (largejobSizePercent <= 0 || largejobSizePercent >= 1) {
                 throw new NumberFormatException("largejobSizePercentString must be between 0 and 100, exclusive");
             }
@@ -104,7 +101,8 @@ public class ExecutorServiceHelper {
                 + " largejobPoolSize=" + largejobPoolSize + " largejobSizePercent=" + largejobSizePercent);
     }
 
-    private static class SingletonHolder { 
+    private static class SingletonHolder {
+
         public static final ExecutorServiceHelper INSTANCE = new ExecutorServiceHelper();
     }
 
@@ -132,9 +130,8 @@ public class ExecutorServiceHelper {
     /**
      * Used to determine if a task should be executed using the large job executor service. If targetListCount >=
      * largejobSizePercent * concurrentPoolSize then it is a large job.
-     * 
-     * @param targetListCount
-     *            is the fan-out count for the task
+     *
+     * @param targetListCount is the fan-out count for the task
      * @return boolean true if task should be run using large job executor service
      */
     public static boolean checkExecutorTaskIsLarge(int targetListCount) {
@@ -150,21 +147,20 @@ public class ExecutorServiceHelper {
 
     /**
      * Useful util to dump complete exception stack trace
-     * 
-     * @param ex
+     *
+     * @param e
      */
-    public static void outputCompleteException(Exception ex) {
-        String err = "EXCEPTION:" + ex.getMessage() + "\r\n";
-        CharArrayWriter caw = new CharArrayWriter();
-        ex.printStackTrace(new PrintWriter(caw));
-        err += caw.toString();
-        LOG.error(err);
+    public static void outputCompleteException(Exception e) {
+        LOG.error("EXCEPTION: " + e.getLocalizedMessage(), e);
     }
 
     /**
      * Useful util to output exception info in a formatted string
-     * 
+     *
      * @param ex
+     * @param target
+     * @param serviceName
+     * @return
      */
     public static String getFormattedExceptionInfo(Exception ex, NhinTargetSystemType target, String serviceName) {
         String err = "EXCEPTION: " + ex.getClass().getCanonicalName() + "\r\nEXCEPTION Cause Message: "

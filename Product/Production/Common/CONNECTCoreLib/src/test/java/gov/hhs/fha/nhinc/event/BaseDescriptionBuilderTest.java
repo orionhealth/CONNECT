@@ -1,7 +1,5 @@
-/**
- * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
- *
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services.
+/*
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,9 +30,9 @@ import static org.mockito.Mockito.mock;
 
 /**
  * Helper class for concrete builder test classes. To use this superclass:
- * 
+ *
  * <pre>
- * @Test public void myTest() {
+ * &#64;Test public void myTest() {
  *   ClassBeingBuiltFrom from = ...;
  *   // build from up for the test case
  *   ConcreteBuilder builder = new ConcreteBuilder(from);  // or however the construction occurs

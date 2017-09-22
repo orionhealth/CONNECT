@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,34 +26,31 @@
  */
 package gov.hhs.fha.nhinc.saml;
 
+import gov.hhs.fha.nhinc.properties.PropertyAccessorFileUtilities;
+import java.util.Properties;
 import static org.junit.Assert.assertNull;
+import org.junit.Test;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-
-import java.util.Properties;
-
-import org.junit.Test;
-
-import gov.hhs.fha.nhinc.properties.PropertyAccessorFileUtilities;
 
 /**
  * @author akong
  *
  */
 public class SAMLConfigFactoryTest {
-    
+
     @Test
     public void verifyClone() {
         Properties samlProperties = new Properties();
         PropertyAccessorFileUtilities propFileUtil = mock(PropertyAccessorFileUtilities.class);
-        
+
         when(propFileUtil.loadPropertyFile("saml")).thenReturn(samlProperties);
-        
+
         SAMLConfigFactory configFactory = new SAMLConfigFactory(propFileUtil);
-        
+
         Properties samlProp1 = configFactory.getConfiguration();
-        ((Properties) samlProp1).put("keyTest", "valueTest");
-        
+        samlProp1.put("keyTest", "valueTest");
+
         Properties samlProp2 = configFactory.getConfiguration();
         assertNull(samlProp2.get("keyTest"));
     }

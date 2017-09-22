@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -28,27 +28,37 @@ package gov.hhs.fha.nhinc.direct;
 
 import gov.hhs.fha.nhinc.event.EventLoggerFactory;
 import gov.hhs.fha.nhinc.mail.ManageTaskScheduler;
+import gov.hhs.fha.nhinc.persistence.HibernateUtilFactory;
 import gov.hhs.fha.nhinc.proxy.ComponentProxyFactory;
-import org.apache.log4j.Logger;
-import org.hibernate.SessionFactory;
 import org.nhindirect.gateway.smtp.GatewayState;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Direct Client Factory responsible for {@link DirectAdapter}.
  */
 public class DirectAdapterFactory extends DirectAdapterEntity {
 
-    private static final Logger LOG = Logger.getLogger(DirectAdapterFactory.class);
+    private static final Logger LOG = LoggerFactory.getLogger(DirectAdapterFactory.class);
     private static final String BEAN_NAME_MANAGE_TASK_SCHEDULER = "manageTaskScheduler";
 
     /**
-     * Register Handlers will invoke getInstance, thereby loading the spring
-     * context and task scheduler for polling mail servers.
+     * Register Handlers will invoke getInstance, thereby loading the spring context and task scheduler for polling mail
+     * servers.
      */
     public void registerHandlers() {
-        //initialize the HibernateUtil when the Direct Servlet is initialized.. DO NOT Remove this.
-        SessionFactory session = gov.hhs.fha.nhinc.event.persistence.HibernateUtil.getSessionFactory();
-        session = gov.hhs.fha.nhinc.direct.messagemonitoring.persistence.HibernateUtil.getSessionFactory();
+        /**
+         * TODO: There is a race condition on accessing the SessionFactory for both Direct Message Monitoring a Event
+         * Persistence; initializing both when the Direct Servlet is initialized as a workaround. <br/>
+         * DO NOT remove either of the following two lines of code until this issue is resolved.
+         */
+
+        gov.hhs.fha.nhinc.event.persistence.HibernateUtil eventHibernateUtil = HibernateUtilFactory
+                .getEventHibernateUtil();
+
+        gov.hhs.fha.nhinc.direct.messagemonitoring.persistence.HibernateUtil messageHibernateUtil = HibernateUtilFactory
+                .getMsgMonitorHibernateUtil();
+
         LOG.trace("Registering event Loggers");
         EventLoggerFactory.getInstance().registerLoggers();
         LOG.trace("Registering handlers...");
@@ -57,13 +67,13 @@ public class DirectAdapterFactory extends DirectAdapterEntity {
 
     /**
      * Stops the default Spring Direct TaskScheduler
-     *
      */
     private void stopTaskScheduler() {
         LOG.trace("stop the Spring Task Scheduler...");
-        //get the manage bean scheduler
-        ManageTaskScheduler manageTaskScheduler = (ManageTaskScheduler) (new ComponentProxyFactory(CONFIG_FILE_NAME)).getInstance(BEAN_NAME_MANAGE_TASK_SCHEDULER, ManageTaskScheduler.class);
-        //call the bean clean to shutdown the spring default task scheduler
+        // get the manage bean scheduler
+        ManageTaskScheduler manageTaskScheduler = new ComponentProxyFactory(CONFIG_FILE_NAME)
+                .getInstance(BEAN_NAME_MANAGE_TASK_SCHEDULER, ManageTaskScheduler.class);
+        // call the bean clean to shutdown the spring default task scheduler
         if (manageTaskScheduler != null) {
             manageTaskScheduler.clean();
         }
@@ -71,11 +81,10 @@ public class DirectAdapterFactory extends DirectAdapterEntity {
 
     /**
      * Stops the Direct Agent Settings Manager (
-     *
      */
     private void stopAgentSettingsManager() {
         LOG.trace("stop the Direct Agent Settings Manager...");
-        //stop the agent settings if its running
+        // stop the agent settings if its running
         if (GatewayState.getInstance().isAgentSettingManagerRunning()) {
             GatewayState.getInstance().stopAgentSettingsManager();
         }
@@ -83,13 +92,12 @@ public class DirectAdapterFactory extends DirectAdapterEntity {
 
     /**
      * Stops all the active threads
-     *
      */
     public void stopAll() {
         LOG.trace("stop All ...");
-        //stop the spring task sceduler
+        // stop the spring task sceduler
         stopTaskScheduler();
-        //stop the Direct Agent Settings Manager
+        // stop the Direct Agent Settings Manager
         stopAgentSettingsManager();
     }
 }

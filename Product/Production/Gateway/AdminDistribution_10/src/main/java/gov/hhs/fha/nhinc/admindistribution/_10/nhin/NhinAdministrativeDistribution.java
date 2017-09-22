@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,29 +30,25 @@ import gov.hhs.fha.nhinc.admindistribution.aspect.EDXLDistributionEventDescripti
 import gov.hhs.fha.nhinc.admindistribution.inbound.InboundAdminDistribution;
 import gov.hhs.fha.nhinc.aspect.InboundMessageEvent;
 import gov.hhs.fha.nhinc.common.nhinccommon.AssertionType;
-import gov.hhs.fha.nhinc.event.DefaultEventDescriptionBuilder;
 import gov.hhs.fha.nhinc.messaging.server.BaseService;
 import gov.hhs.fha.nhinc.nhinadmindistribution.RespondingGatewayAdministrativeDistributionPortType;
-
 import javax.annotation.Resource;
 import javax.xml.ws.BindingType;
 import javax.xml.ws.WebServiceContext;
 import javax.xml.ws.soap.Addressing;
-
+import javax.xml.ws.soap.SOAPBinding;
 import oasis.names.tc.emergency.edxl.de._1.EDXLDistribution;
 
-@BindingType(value = javax.xml.ws.soap.SOAPBinding.SOAP12HTTP_BINDING)
+@BindingType(value = SOAPBinding.SOAP12HTTP_BINDING)
 @Addressing(enabled = true)
-public class NhinAdministrativeDistribution extends BaseService implements
-        RespondingGatewayAdministrativeDistributionPortType {
+public class NhinAdministrativeDistribution extends BaseService
+        implements RespondingGatewayAdministrativeDistributionPortType {
 
     private WebServiceContext context;
     private InboundAdminDistribution inboundAdminDist;
 
     @Override
-    @InboundMessageEvent(serviceType = "Admin Distribution", version = "1.0",
-            afterReturningBuilder = EDXLDistributionEventDescriptionBuilder.class,
-            beforeBuilder = EDXLDistributionEventDescriptionBuilder.class)
+    @InboundMessageEvent(serviceType = "Admin Distribution", version = "1.0", afterReturningBuilder = EDXLDistributionEventDescriptionBuilder.class, beforeBuilder = EDXLDistributionEventDescriptionBuilder.class)
     public void sendAlertMessage(EDXLDistribution body) {
         AssertionType assertion = getAssertion(context, null);
         inboundAdminDist.sendAlertMessage(body, assertion);
@@ -73,6 +69,6 @@ public class NhinAdministrativeDistribution extends BaseService implements
      * @return the inbound admin distribution
      */
     public InboundAdminDistribution getInboundAdminDistribution() {
-        return this.inboundAdminDist;
+        return inboundAdminDist;
     }
 }

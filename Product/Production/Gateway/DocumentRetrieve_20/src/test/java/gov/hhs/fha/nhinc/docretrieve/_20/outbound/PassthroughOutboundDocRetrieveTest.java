@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,40 +26,46 @@
  */
 package gov.hhs.fha.nhinc.docretrieve._20.outbound;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
-import java.lang.reflect.Method;
-
 import gov.hhs.fha.nhinc.aspect.OutboundProcessingEvent;
 import gov.hhs.fha.nhinc.common.nhinccommon.AssertionType;
 import gov.hhs.fha.nhinc.common.nhinccommon.NhinTargetCommunitiesType;
 import gov.hhs.fha.nhinc.docretrieve.aspect.RetrieveDocumentSetRequestTypeDescriptionBuilder;
 import gov.hhs.fha.nhinc.docretrieve.aspect.RetrieveDocumentSetResponseTypeDescriptionBuilder;
+import gov.hhs.fha.nhinc.docretrieve.audit.DocRetrieveAuditLogger;
 import gov.hhs.fha.nhinc.docretrieve.entity.OutboundDocRetrieveOrchestratable;
 import gov.hhs.fha.nhinc.nhinclib.NhincConstants.ADAPTER_API_LEVEL;
 import gov.hhs.fha.nhinc.orchestration.CONNECTOutboundOrchestrator;
 import ihe.iti.xds_b._2007.RetrieveDocumentSetRequestType;
 import ihe.iti.xds_b._2007.RetrieveDocumentSetResponseType;
 import ihe.iti.xds_b._2007.RetrieveDocumentSetResponseType.DocumentResponse;
-
+import java.lang.reflect.Method;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import org.junit.Before;
 import org.junit.Test;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * @author akong
- * 
+ *
  */
 public class PassthroughOutboundDocRetrieveTest {
+
+    DocRetrieveAuditLogger logger;
+
+    @Before
+    public void setup() {
+        logger = mock(DocRetrieveAuditLogger.class);
+    }
 
     @Test
     public void hasOutboundProcessingEvent() throws Exception {
         Class<PassthroughOutboundDocRetrieve> clazz = PassthroughOutboundDocRetrieve.class;
         Method method = clazz.getMethod("respondingGatewayCrossGatewayRetrieve", RetrieveDocumentSetRequestType.class,
-                AssertionType.class, NhinTargetCommunitiesType.class, ADAPTER_API_LEVEL.class);
+            AssertionType.class, NhinTargetCommunitiesType.class, ADAPTER_API_LEVEL.class);
         OutboundProcessingEvent annotation = method.getAnnotation(OutboundProcessingEvent.class);
         assertNotNull(annotation);
         assertEquals(RetrieveDocumentSetRequestTypeDescriptionBuilder.class, annotation.beforeBuilder());
@@ -67,7 +73,7 @@ public class PassthroughOutboundDocRetrieveTest {
         assertEquals("Retrieve Document", annotation.serviceType());
         assertEquals("2.0", annotation.version());
     }
-    
+
     @Test
     public void invoke() {
 
@@ -75,21 +81,21 @@ public class PassthroughOutboundDocRetrieveTest {
         AssertionType assertion = new AssertionType();
         NhinTargetCommunitiesType targets = new NhinTargetCommunitiesType();
         RetrieveDocumentSetResponseType dr30Response = createDR30Response();
-        
+
         // Mocks
         CONNECTOutboundOrchestrator orchestrator = mock(CONNECTOutboundOrchestrator.class);
         OutboundDocRetrieveOrchestratable orchResponse = mock(OutboundDocRetrieveOrchestratable.class);
         // Method Stubbing
         when(orchestrator.process(any(OutboundDocRetrieveOrchestratable.class))).thenReturn(orchResponse);
-        
+
         when(orchResponse.getResponse()).thenReturn(dr30Response);
 
         // Actual invocation
-        PassthroughOutboundDocRetrieve outboundDocRetrieve = new PassthroughOutboundDocRetrieve(orchestrator);
-        
+        PassthroughOutboundDocRetrieve outboundDocRetrieve = new PassthroughOutboundDocRetrieve(orchestrator, logger);
+
         RetrieveDocumentSetResponseType actualResponse = outboundDocRetrieve.respondingGatewayCrossGatewayRetrieve(
-                request, assertion, targets, ADAPTER_API_LEVEL.LEVEL_a0);
-        
+            request, assertion, targets, ADAPTER_API_LEVEL.LEVEL_a0);
+
         // Verify that the response is DR20 spec compliant
         assertEquals(2, actualResponse.getDocumentResponse().size());
         assertNull(actualResponse.getDocumentResponse().get(0).getNewDocumentUniqueId());
@@ -97,18 +103,18 @@ public class PassthroughOutboundDocRetrieveTest {
         assertNull(actualResponse.getDocumentResponse().get(1).getNewDocumentUniqueId());
         assertNull(actualResponse.getDocumentResponse().get(1).getNewRepositoryUniqueId());
     }
-    
+
     private RetrieveDocumentSetResponseType createDR30Response() {
         RetrieveDocumentSetResponseType dr30Response = new RetrieveDocumentSetResponseType();
         dr30Response.getDocumentResponse().add(new DocumentResponse());
         dr30Response.getDocumentResponse().add(new DocumentResponse());
-        
+
         dr30Response.getDocumentResponse().get(0).setNewDocumentUniqueId("docId0");
         dr30Response.getDocumentResponse().get(0).setNewRepositoryUniqueId("repoId0");
-        
+
         dr30Response.getDocumentResponse().get(1).setNewDocumentUniqueId("docId1");
         dr30Response.getDocumentResponse().get(1).setNewRepositoryUniqueId("repoId1");
-                
+
         return dr30Response;
     }
 

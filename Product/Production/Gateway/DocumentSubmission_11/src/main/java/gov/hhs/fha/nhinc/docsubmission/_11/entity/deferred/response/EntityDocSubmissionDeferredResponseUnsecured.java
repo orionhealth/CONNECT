@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,32 +32,30 @@ import gov.hhs.fha.nhinc.docsubmission.aspect.DocSubmissionArgTransformerBuilder
 import gov.hhs.fha.nhinc.docsubmission.outbound.deferred.response.OutboundDocSubmissionDeferredResponse;
 import gov.hhs.fha.nhinc.nhincentityxdr.async.response.EntityXDRAsyncResponsePortType;
 import gov.hhs.healthit.nhin.XDRAcknowledgementType;
-
 import javax.annotation.Resource;
 import javax.xml.ws.BindingType;
 import javax.xml.ws.WebServiceContext;
 import javax.xml.ws.soap.Addressing;
+import javax.xml.ws.soap.SOAPBinding;
 
-
-@BindingType(value = javax.xml.ws.soap.SOAPBinding.SOAP12HTTP_BINDING)
+@BindingType(value = SOAPBinding.SOAP12HTTP_BINDING)
 @Addressing(enabled = true)
 public class EntityDocSubmissionDeferredResponseUnsecured implements EntityXDRAsyncResponsePortType {
-    
+
     private WebServiceContext context;
     private OutboundDocSubmissionDeferredResponse outboundDocSubmissionResponse;
 
     @Override
     @OutboundMessageEvent(beforeBuilder = DocSubmissionArgTransformerBuilder.class,
-    afterReturningBuilder = DocSubmissionArgTransformerBuilder.class, 
-    serviceType = "Document Submission Deferred Response",
-    version = "1.1")
+        afterReturningBuilder = DocSubmissionArgTransformerBuilder.class,
+        serviceType = "Document Submission Deferred Response",
+        version = "1.1")
     public XDRAcknowledgementType provideAndRegisterDocumentSetBAsyncResponse(
-            RespondingGatewayProvideAndRegisterDocumentSetResponseRequestType 
-            provideAndRegisterDocumentSetAsyncRespRequest) {
+        RespondingGatewayProvideAndRegisterDocumentSetResponseRequestType provideAndRegisterDocumentSetAsyncRespRequest) {
         return new EntityDocSubmissionDeferredResponseImpl(outboundDocSubmissionResponse)
-                .provideAndRegisterDocumentSetBAsyncResponse(provideAndRegisterDocumentSetAsyncRespRequest, context);
+            .provideAndRegisterDocumentSetBAsyncResponse(provideAndRegisterDocumentSetAsyncRespRequest, context);
     }
-    
+
     @Resource
     public void setContext(WebServiceContext context) {
         this.context = context;

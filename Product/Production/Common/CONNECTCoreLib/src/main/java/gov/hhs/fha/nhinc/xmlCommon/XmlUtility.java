@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -39,7 +39,8 @@ import javax.xml.transform.TransformerFactoryConfigurationError;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.xpath.XPathExpressionException;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -57,7 +58,7 @@ import org.w3c.dom.ls.LSSerializer;
  */
 public class XmlUtility {
 
-    private static final Logger LOG = Logger.getLogger(XmlUtility.class);
+    private static final Logger LOG = LoggerFactory.getLogger(XmlUtility.class);
 
     public static String getNodeValue(Node node) {
         String value = null;
@@ -75,7 +76,8 @@ public class XmlUtility {
         return (DOMImplementationLS) document.getImplementation();
     }
 
-    public static String serializeElement(Element element) throws TransformerFactoryConfigurationError, TransformerException {
+    public static String serializeElement(Element element)
+            throws TransformerFactoryConfigurationError, TransformerException {
         String serializedElement = null;
         if (element != null) {
             StringWriter output = new StringWriter();
@@ -106,6 +108,7 @@ public class XmlUtility {
      * @return
      * @throws javax.xml.xpath.XPathExpressionException
      */
+    @Deprecated
     public static Node performXpathQuery(String sourceXml, String xpathQuery) throws XPathExpressionException {
         return XpathHelper.performXpathQuery(sourceXml, xpathQuery);
     }
@@ -117,6 +120,7 @@ public class XmlUtility {
      * @return
      * @throws javax.xml.xpath.XPathExpressionException
      */
+    @Deprecated
     public static Node performXpathQuery(Element sourceElement, String xpathQuery) throws XPathExpressionException {
         return XpathHelper.performXpathQuery(sourceElement, xpathQuery);
     }
@@ -129,6 +133,7 @@ public class XmlUtility {
      * @return
      * @throws javax.xml.xpath.XPathExpressionException
      */
+    @Deprecated
     public static Node performXpathQuery(Element sourceElement, String xpathQuery, NamespaceContext namespaceContext)
             throws XPathExpressionException {
         return XpathHelper.performXpathQuery(sourceElement, xpathQuery, namespaceContext);
@@ -141,10 +146,11 @@ public class XmlUtility {
             if (XmlUtfHelper.isUtf16(xml)) {
                 try {
                     element = convertXmlToElementWorker(xml);
-                } catch (Exception ex) {
+                } catch (Exception e) {
                     // Exception may be due to the encoding of the message being incorrect.
                     // retry using UTF-8
-                    LOG.warn("failed to perform xml to element - retrying with UTF-8");
+                    LOG.warn("Failed to convert xml to element, retrying with UTF-8: {}", e.getLocalizedMessage());
+                    LOG.trace("Failed to convert xml to element, retrying with UTF-8: {}", e.getLocalizedMessage(), e);
                     xml = XmlUtfHelper.convertToUtf8(xml);
                     element = convertXmlToElementWorker(xml);
                 }
@@ -157,8 +163,8 @@ public class XmlUtility {
 
     private static Element initializeElement() {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-        DocumentBuilder builder = null;
-        Document document = null;
+        DocumentBuilder builder;
+        Document document;
         Element docElement = null;
 
         try {
@@ -188,9 +194,9 @@ public class XmlUtility {
 
     public static Element getSingleChildElement(Element element, String namespaceURI, String localName) {
         Element childElement = null;
-        if ((element != null) && (NullChecker.isNotNullish(namespaceURI) && (NullChecker.isNotNullish(localName)))) {
+        if (element != null && NullChecker.isNotNullish(namespaceURI) && NullChecker.isNotNullish(localName)) {
             NodeList result = element.getElementsByTagNameNS(namespaceURI, localName);
-            if ((result != null) && (result.getLength() >= 1)) {
+            if (result != null && result.getLength() >= 1) {
                 childElement = (Element) result.item(0);
             }
         }

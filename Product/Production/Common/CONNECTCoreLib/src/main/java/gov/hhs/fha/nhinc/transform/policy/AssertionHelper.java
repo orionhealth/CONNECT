@@ -1,28 +1,28 @@
 /*
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services. 
- * All rights reserved. 
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
+ * All rights reserved.
  *
- * Redistribution and use in source and binary forms, with or without 
- * modification, are permitted provided that the following conditions are met: 
- *     * Redistributions of source code must retain the above 
- *       copyright notice, this list of conditions and the following disclaimer. 
- *     * Redistributions in binary form must reproduce the above copyright 
- *       notice, this list of conditions and the following disclaimer in the documentation 
- *       and/or other materials provided with the distribution. 
- *     * Neither the name of the United States Government nor the 
- *       names of its contributors may be used to endorse or promote products 
- *       derived from this software without specific prior written permission. 
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *     * Redistributions of source code must retain the above
+ *       copyright notice, this list of conditions and the following disclaimer.
+ *     * Redistributions in binary form must reproduce the above copyright
+ *       notice, this list of conditions and the following disclaimer in the documentation
+ *       and/or other materials provided with the distribution.
+ *     * Neither the name of the United States Government nor the
+ *       names of its contributors may be used to endorse or promote products
+ *       derived from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
- * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED 
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE 
- * DISCLAIMED. IN NO EVENT SHALL THE UNITED STATES GOVERNMENT BE LIABLE FOR ANY 
- * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES 
- * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; 
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND 
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT 
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS 
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE UNITED STATES GOVERNMENT BE LIABLE FOR ANY
+ * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 package gov.hhs.fha.nhinc.transform.policy;
 
@@ -40,34 +40,24 @@ import java.util.TimeZone;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
-import oasis.names.tc.xacml._2_0.context.schema.os.ActionType;
 import oasis.names.tc.xacml._2_0.context.schema.os.RequestType;
 import oasis.names.tc.xacml._2_0.context.schema.os.ResourceType;
-import oasis.names.tc.xacml._2_0.context.schema.os.AttributeType;
 import oasis.names.tc.xacml._2_0.context.schema.os.SubjectType;
-import org.apache.log4j.Logger;
 import org.hl7.v3.II;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
- * 
+ *
  * @author rayj
  */
 public class AssertionHelper {
 
-    private static final Logger LOG = Logger.getLogger(AssertionHelper.class);
+    private static final Logger LOG = LoggerFactory.getLogger(AssertionHelper.class);
     private static final boolean appendAttributesIfNull = false;
 
     public void appendAssertionDataToRequest(RequestType policyRequest, AssertionType assertion) {
         LOG.debug("begin appending assertion data to xacml request");
-
-        // if (log.isDebugEnabled()) {
-        // CheckPolicyRequestMarshaller marshaller = new CheckPolicyRequestMarshaller();
-        // String message =
-        // XmlUtility.serializeElementIgnoreFaults(marshaller.marshalCheckPolicyRequest(policyRequest));
-        // log.debug("begin transformAdhocQueryToCheckPolicy [" + message + "]");
-        // }
-
-        // PurposeOfUseHelper.appendPurposeOfUse(policyRequest, assertion);
 
         if (assertion != null) {
             appendAuthnStatementAuthnInstant(policyRequest, assertion);
@@ -106,27 +96,13 @@ public class AssertionHelper {
         LOG.debug("end appending assertion data to xacml request");
     }
 
-    private ActionType getAction(RequestType policyRequest) {
-        if (policyRequest == null) {
-            throw new NullPointerException("policy request is null");
-        }
-
-        ActionType action = policyRequest.getAction();
-        if (action == null) {
-            action = new ActionType();
-            policyRequest.setAction(action);
-        }
-
-        return action;
-    }
-
     private SubjectType getSubject(RequestType policyXacmlRequest) {
 
         if (policyXacmlRequest == null) {
             throw new NullPointerException("policy request request is null");
         }
 
-        SubjectType subject = null;
+        SubjectType subject;
         if (policyXacmlRequest.getSubject() != null && !policyXacmlRequest.getSubject().isEmpty()) {
             subject = policyXacmlRequest.getSubject().get(0);
         } else {
@@ -142,7 +118,7 @@ public class AssertionHelper {
             throw new NullPointerException("policy request is null");
         }
 
-        ResourceType resource = null;
+        ResourceType resource;
         if (policyRequest.getResource() != null && !policyRequest.getResource().isEmpty()) {
             resource = policyRequest.getResource().get(0);
         } else {
@@ -153,21 +129,9 @@ public class AssertionHelper {
         return resource;
     }
 
-    private boolean doesAtributeExist(ActionType action, String attributeName) {
-        boolean found = false;
-        for (AttributeType attribute : action.getAttribute()) {
-            if (attributeName.contentEquals(attribute.getAttributeId())) {
-                found = true;
-                break;
-
-            }
-        }
-        return found;
-    }
-
     public String extractUserName(AssertionType assertion) {
         String username = null;
-        if ((assertion != null) && (assertion.getUserInfo() != null) && (assertion.getUserInfo().getUserName() != null)) {
+        if (assertion != null && assertion.getUserInfo() != null && assertion.getUserInfo().getUserName() != null) {
             username = assertion.getUserInfo().getUserName();
         }
 
@@ -176,8 +140,8 @@ public class AssertionHelper {
 
     public String extractUserHomeCommunity(AssertionType assertion) {
         String username = null;
-        if ((assertion != null) && (assertion.getUserInfo() != null) && (assertion.getUserInfo().getOrg() != null)
-                && (assertion.getUserInfo().getOrg().getHomeCommunityId() != null)) {
+        if (assertion != null && assertion.getUserInfo() != null && assertion.getUserInfo().getOrg() != null
+                && assertion.getUserInfo().getOrg().getHomeCommunityId() != null) {
             username = assertion.getUserInfo().getOrg().getHomeCommunityId();
         }
 
@@ -186,8 +150,8 @@ public class AssertionHelper {
 
     public String extractPurpose(AssertionType assertion) {
         String purpose = null;
-        if ((assertion != null) && (assertion.getPurposeOfDisclosureCoded() != null)
-                && (assertion.getPurposeOfDisclosureCoded().getCode() != null)) {
+        if (assertion != null && assertion.getPurposeOfDisclosureCoded() != null
+                && assertion.getPurposeOfDisclosureCoded().getCode() != null) {
             purpose = assertion.getPurposeOfDisclosureCoded().getCode();
         }
 
@@ -196,9 +160,8 @@ public class AssertionHelper {
 
     public String extractUserRole(AssertionType assertion) {
         String userRole = null;
-        if ((assertion != null) && (assertion.getUserInfo() != null)
-                && (assertion.getUserInfo().getRoleCoded() != null)
-                && (assertion.getUserInfo().getRoleCoded().getCode() != null)) {
+        if (assertion != null && assertion.getUserInfo() != null && assertion.getUserInfo().getRoleCoded() != null
+                && assertion.getUserInfo().getRoleCoded().getCode() != null) {
             userRole = assertion.getUserInfo().getRoleCoded().getCode();
         }
 
@@ -357,7 +320,7 @@ public class AssertionHelper {
 
     private String extractUserOrganizationName(AssertionType assertion) {
         String value = null;
-        if ((assertion.getUserInfo() != null) && (assertion.getUserInfo().getOrg() != null)) {
+        if (assertion.getUserInfo() != null && assertion.getUserInfo().getOrg() != null) {
             LOG.debug("Extracting UserOrganizationName");
             value = assertion.getUserInfo().getOrg().getName();
             LOG.debug("Extracted UserOrganizationName value=" + value);
@@ -378,10 +341,11 @@ public class AssertionHelper {
             try {
                 orgIdURI = new URI(attributeValue);
             } catch (URISyntaxException ex) {
-                LOG.warn("User Organization in SAML is not a valid URI, it will not be included in message to policy engine");
+                LOG.warn("User org in SAML is not a valid URI, it will not be included in message to policy engine: {}",
+                        ex.getLocalizedMessage(), ex);
             }
         } else {
-            LOG.warn("User Organization in SAML is not a valid URI, it will not be included in message to policy engine");
+            LOG.warn("User org in SAML is not a valid URI, it will not be included in message to policy engine");
         }
         AttributeHelper attrHelper = new AttributeHelper();
         attrHelper.appendAttributeToParent(parent, attributeId, dataType, orgIdURI, appendAttributesIfNull);
@@ -390,7 +354,7 @@ public class AssertionHelper {
 
     private String extractUserOrganizationId(AssertionType assertion) {
         String value = null;
-        if ((assertion.getUserInfo() != null) && (assertion.getUserInfo().getOrg() != null)) {
+        if (assertion.getUserInfo() != null && assertion.getUserInfo().getOrg() != null) {
             LOG.debug("Extracting UserOrganizationId");
             value = assertion.getUserInfo().getOrg().getHomeCommunityId();
             LOG.debug("Extracted UserOrganizationId value=" + value);
@@ -411,10 +375,14 @@ public class AssertionHelper {
             try {
                 orgIdURI = new URI(attributeValue);
             } catch (URISyntaxException ex) {
-                LOG.warn("Home Community in SAML is not a valid URI, it will not be included in message to policy engine");
+                LOG.warn("Home Community in SAML is not a valid URI, it will not be included in message to policy"
+                        + " engine: {}", ex.getLocalizedMessage());
+                LOG.trace("Home Community in SAML is not a valid URI, it will not be included in message to policy"
+                        + " engine: {}", ex.getLocalizedMessage(), ex);
             }
         } else {
-            LOG.warn("User Organization in SAML is not a valid URI, it will not be included in message to policy engine");
+            LOG.warn("User Organization in SAML is not a valid URI, it will not be included in message to policy"
+                    + " engine");
         }
         AttributeHelper attrHelper = new AttributeHelper();
         attrHelper.appendAttributeToParent(parent, attributeId, dataType, orgIdURI, appendAttributesIfNull);
@@ -423,7 +391,7 @@ public class AssertionHelper {
 
     private String extractHomeCommunityName(AssertionType assertion) {
         String value = null;
-        if ((assertion.getHomeCommunity() != null)) {
+        if (assertion.getHomeCommunity() != null) {
             LOG.debug("Extracting HomeCommunityName");
             value = assertion.getHomeCommunity().getHomeCommunityId();
             LOG.debug("Extracted HomeCommunityName value=" + value);
@@ -447,7 +415,7 @@ public class AssertionHelper {
     private II extractUniquePatientId(AssertionType assertion) {
         II iiValue = null;
         String patId = null;
-        if ((assertion.getUniquePatientId() != null && assertion.getUniquePatientId().size() > 0)) {
+        if (assertion.getUniquePatientId() != null && assertion.getUniquePatientId().size() > 0) {
             LOG.debug("Extracting UniquePatientId");
             // Take first identifier found
             for (String id : assertion.getUniquePatientId()) {
@@ -489,8 +457,7 @@ public class AssertionHelper {
 
     private String extractUserRoleCode(AssertionType assertion) {
         String value = null;
-        if ((assertion != null) && (assertion.getUserInfo() != null)
-                && (assertion.getUserInfo().getRoleCoded() != null)) {
+        if (assertion != null && assertion.getUserInfo() != null && assertion.getUserInfo().getRoleCoded() != null) {
             value = assertion.getUserInfo().getRoleCoded().getCode();
         } else {
             LOG.warn("Unable to find user role in SAML, will not be included in message to policy engine");
@@ -512,8 +479,7 @@ public class AssertionHelper {
 
     private String extractUserRoleCodeSystem(AssertionType assertion) {
         String value = null;
-        if ((assertion != null) && (assertion.getUserInfo() != null)
-                && (assertion.getUserInfo().getRoleCoded() != null)) {
+        if (assertion != null && assertion.getUserInfo() != null && assertion.getUserInfo().getRoleCoded() != null) {
             value = assertion.getUserInfo().getRoleCoded().getCodeSystem();
         } else {
             LOG.warn("Unable to find user role in SAML, will not be included in message to policy engine");
@@ -535,8 +501,7 @@ public class AssertionHelper {
 
     private String extractUserRoleCodeSystemName(AssertionType assertion) {
         String value = null;
-        if ((assertion != null) && (assertion.getUserInfo() != null)
-                && (assertion.getUserInfo().getRoleCoded() != null)) {
+        if (assertion != null && assertion.getUserInfo() != null && assertion.getUserInfo().getRoleCoded() != null) {
             value = assertion.getUserInfo().getRoleCoded().getCodeSystemName();
         } else {
             LOG.warn("Unable to find user role in SAML, will not be included in message to policy engine");
@@ -558,8 +523,7 @@ public class AssertionHelper {
 
     private String extractUserRoleCodeDiplayName(AssertionType assertion) {
         String value = null;
-        if ((assertion != null) && (assertion.getUserInfo() != null)
-                && (assertion.getUserInfo().getRoleCoded() != null)) {
+        if (assertion != null && assertion.getUserInfo() != null && assertion.getUserInfo().getRoleCoded() != null) {
             value = assertion.getUserInfo().getRoleCoded().getDisplayName();
         } else {
             LOG.warn("Unable to find user role in SAML, will not be included in message to policy engine");
@@ -581,7 +545,7 @@ public class AssertionHelper {
 
     private String extractPurposeOfUseCode(AssertionType assertion) {
         String value = null;
-        if ((assertion != null) && (assertion.getPurposeOfDisclosureCoded() != null)) {
+        if (assertion != null && assertion.getPurposeOfDisclosureCoded() != null) {
             value = assertion.getPurposeOfDisclosureCoded().getCode();
         }
 
@@ -601,7 +565,7 @@ public class AssertionHelper {
 
     private String extractPurposeOfUseCodeSystem(AssertionType assertion) {
         String value = null;
-        if ((assertion != null) && (assertion.getPurposeOfDisclosureCoded() != null)) {
+        if (assertion != null && assertion.getPurposeOfDisclosureCoded() != null) {
             value = assertion.getPurposeOfDisclosureCoded().getCodeSystem();
         }
 
@@ -621,7 +585,7 @@ public class AssertionHelper {
 
     private String extractPurposeOfUseCodeSystemName(AssertionType assertion) {
         String value = null;
-        if ((assertion != null) && (assertion.getPurposeOfDisclosureCoded() != null)) {
+        if (assertion != null && assertion.getPurposeOfDisclosureCoded() != null) {
             value = assertion.getPurposeOfDisclosureCoded().getCodeSystemName();
         }
 
@@ -641,7 +605,7 @@ public class AssertionHelper {
 
     private String extractPurposeOfUseCodeDisplayName(AssertionType assertion) {
         String value = null;
-        if ((assertion != null) && (assertion.getPurposeOfDisclosureCoded() != null)) {
+        if (assertion != null && assertion.getPurposeOfDisclosureCoded() != null) {
             value = assertion.getPurposeOfDisclosureCoded().getDisplayName();
         }
 
@@ -666,7 +630,8 @@ public class AssertionHelper {
             value = assertion.getSamlAuthzDecisionStatement().getDecision();
             LOG.debug("Extracted AuthzDecisionStatementDecision value=" + value);
         } else {
-            LOG.warn("Unable to find AuthzDecisionStatementDecision in SAML, will not be included in message to policy engine");
+            LOG.warn("Unable to find AuthzDecisionStatementDecision in SAML, will not be included in message to "
+                    + "policy engine");
         }
 
         return value;
@@ -733,14 +698,15 @@ public class AssertionHelper {
 
     private String extractAuthzDecisionStatementEvidenceAssertionID(AssertionType assertion) {
         String value = null;
-        if ((assertion.getSamlAuthzDecisionStatement() != null)
-                && (assertion.getSamlAuthzDecisionStatement().getEvidence() != null)
-                && (assertion.getSamlAuthzDecisionStatement().getEvidence().getAssertion() != null)) {
+        if (assertion.getSamlAuthzDecisionStatement() != null
+                && assertion.getSamlAuthzDecisionStatement().getEvidence() != null
+                && assertion.getSamlAuthzDecisionStatement().getEvidence().getAssertion() != null) {
             LOG.debug("Extracting AuthzDecisionStatementEvidenceAssertionID");
             value = assertion.getSamlAuthzDecisionStatement().getEvidence().getAssertion().getId();
             LOG.debug("Extracted AuthzDecisionStatementEvidenceAssertionID value=" + value);
         } else {
-            LOG.warn("Unable to find AuthzDecisionStatement Evidence Assertion in SAML, will not be included in message to policy engine");
+            LOG.warn("Unable to find AuthzDecisionStatement Evidence Assertion in SAML, will not be included in "
+                    + "message to policy engine");
         }
 
         return value;
@@ -760,20 +726,22 @@ public class AssertionHelper {
 
     private String extractAuthzDecisionStatementEvidenceAssertionIssueInstant(AssertionType assertion) {
         String value = null;
-        if ((assertion.getSamlAuthzDecisionStatement() != null)
-                && (assertion.getSamlAuthzDecisionStatement().getEvidence() != null)
-                && (assertion.getSamlAuthzDecisionStatement().getEvidence().getAssertion() != null)) {
+        if (assertion.getSamlAuthzDecisionStatement() != null
+                && assertion.getSamlAuthzDecisionStatement().getEvidence() != null
+                && assertion.getSamlAuthzDecisionStatement().getEvidence().getAssertion() != null) {
             LOG.debug("Extracting AuthzDecisionStatementEvidenceAssertionIssueInstant");
             value = assertion.getSamlAuthzDecisionStatement().getEvidence().getAssertion().getIssueInstant();
             LOG.debug("Extracted AuthzDecisionStatementEvidenceAssertionIssueInstant value=" + value);
         } else {
-            LOG.debug("Unable to find AuthzDecisionStatement Evidence Assertion in SAML, will not be included in message to policy engine");
+            LOG.debug("Unable to find AuthzDecisionStatement Evidence Assertion in SAML, will not be included in"
+                    + " message to policy engine");
         }
 
         return value;
     }
 
-    private void appendAuthzDecisionStatementEvidenceAssertionVersion(RequestType policyRequest, AssertionType assertion) {
+    private void appendAuthzDecisionStatementEvidenceAssertionVersion(RequestType policyRequest,
+            AssertionType assertion) {
         LOG.debug("begin appending AuthzDecisionStatementEvidenceAssertionVersion");
         ResourceType parent = getResource(policyRequest);
         String attributeId = XacmlAttributeId.AuthzDecisionStatementEvidenceAssertionVersion;
@@ -786,21 +754,23 @@ public class AssertionHelper {
 
     private String extractAuthzDecisionStatementEvidenceAssertionVersion(AssertionType assertion) {
         String value = null;
-        if ((assertion.getSamlAuthzDecisionStatement() != null)
-                && (assertion.getSamlAuthzDecisionStatement().getEvidence() != null)
-                && (assertion.getSamlAuthzDecisionStatement().getEvidence().getAssertion() != null)) {
+        if (assertion.getSamlAuthzDecisionStatement() != null
+                && assertion.getSamlAuthzDecisionStatement().getEvidence() != null
+                && assertion.getSamlAuthzDecisionStatement().getEvidence().getAssertion() != null) {
             LOG.debug("Extracting AuthzDecisionStatementEvidenceAssertionVersion");
             value = assertion.getSamlAuthzDecisionStatement().getEvidence().getAssertion().getVersion();
             LOG.debug("Extracted AuthzDecisionStatementEvidenceAssertionVersion value=" + value);
         } else {
-            LOG.warn("Unable to find AuthzDecisionStatement Evidence Assertion in SAML, will not be included in message to policy engine");
+            LOG.warn("Unable to find AuthzDecisionStatement Evidence Assertion in SAML, will not be included in message"
+                    + " to policy engine");
         }
 
         return value;
 
     }
 
-    private void appendAuthzDecisionStatementEvidenceAssertionIssuer(RequestType policyRequest, AssertionType assertion) {
+    private void appendAuthzDecisionStatementEvidenceAssertionIssuer(RequestType policyRequest,
+            AssertionType assertion) {
         LOG.debug("begin appending AuthzDecisionStatementEvidenceAssertionIssuer");
         ResourceType parent = getResource(policyRequest);
         String attributeId = XacmlAttributeId.AuthzDecisionStatementEvidenceAssertionIssuer;
@@ -813,14 +783,15 @@ public class AssertionHelper {
 
     private String extractAuthzDecisionStatementEvidenceAssertionIssuer(AssertionType assertion) {
         String value = null;
-        if ((assertion.getSamlAuthzDecisionStatement() != null)
-                && (assertion.getSamlAuthzDecisionStatement().getEvidence() != null)
-                && (assertion.getSamlAuthzDecisionStatement().getEvidence().getAssertion() != null)) {
+        if (assertion.getSamlAuthzDecisionStatement() != null
+                && assertion.getSamlAuthzDecisionStatement().getEvidence() != null
+                && assertion.getSamlAuthzDecisionStatement().getEvidence().getAssertion() != null) {
             LOG.debug("Extracting AuthzDecisionStatementEvidenceAssertionIssuer");
             value = assertion.getSamlAuthzDecisionStatement().getEvidence().getAssertion().getIssuer();
             LOG.debug("Extracted AuthzDecisionStatementEvidenceAssertionIssuer value=" + value);
         } else {
-            LOG.warn("Unable to find AuthzDecisionStatement Evidence Assertion in SAML, will not be included in message to policy engine");
+            LOG.warn(
+                    "Unable to find AuthzDecisionStatement Evidence Assertion in SAML, will not be included in message to policy engine");
         }
 
         return value;
@@ -828,16 +799,17 @@ public class AssertionHelper {
 
     private String extractAuthzDecisionStatementEvidenceAssertionConditionsNotBefore(AssertionType assertion) {
         String value = null;
-        if ((assertion.getSamlAuthzDecisionStatement() != null)
-                && (assertion.getSamlAuthzDecisionStatement().getEvidence() != null)
-                && (assertion.getSamlAuthzDecisionStatement().getEvidence().getAssertion() != null)
-                && (assertion.getSamlAuthzDecisionStatement().getEvidence().getAssertion().getConditions() != null)) {
+        if (assertion.getSamlAuthzDecisionStatement() != null
+                && assertion.getSamlAuthzDecisionStatement().getEvidence() != null
+                && assertion.getSamlAuthzDecisionStatement().getEvidence().getAssertion() != null
+                && assertion.getSamlAuthzDecisionStatement().getEvidence().getAssertion().getConditions() != null) {
             LOG.debug("Extracting AuthzDecisionStatementEvidenceAssertionConditionsNotBefore");
             value = assertion.getSamlAuthzDecisionStatement().getEvidence().getAssertion().getConditions()
                     .getNotBefore();
             LOG.debug("Extracted AuthzDecisionStatementEvidenceAssertionConditionsNotBefore value=" + value);
         } else {
-            LOG.warn("Unable to find AuthzDecisionStatement Evidence Assertion Condition in SAML, will not be included in message to policy engine");
+            LOG.warn("Unable to find AuthzDecisionStatement Evidence Assertion Condition in SAML, will not be included"
+                    + " in message to policy engine");
         }
 
         return value;
@@ -858,16 +830,17 @@ public class AssertionHelper {
 
     private String extractAuthzDecisionStatementEvidenceAssertionConditionsNotOnOrAfter(AssertionType assertion) {
         String value = null;
-        if ((assertion.getSamlAuthzDecisionStatement() != null)
-                && (assertion.getSamlAuthzDecisionStatement().getEvidence() != null)
-                && (assertion.getSamlAuthzDecisionStatement().getEvidence().getAssertion() != null)
-                && (assertion.getSamlAuthzDecisionStatement().getEvidence().getAssertion().getConditions() != null)) {
+        if (assertion.getSamlAuthzDecisionStatement() != null
+                && assertion.getSamlAuthzDecisionStatement().getEvidence() != null
+                && assertion.getSamlAuthzDecisionStatement().getEvidence().getAssertion() != null
+                && assertion.getSamlAuthzDecisionStatement().getEvidence().getAssertion().getConditions() != null) {
             LOG.debug("Extracting AuthzDecisionStatementEvidenceAssertionConditionsNotOnOrAfter");
             value = assertion.getSamlAuthzDecisionStatement().getEvidence().getAssertion().getConditions()
                     .getNotOnOrAfter();
             LOG.debug("Extracted AuthzDecisionStatementEvidenceAssertionConditionsNotOnOrAfter value=" + value);
         } else {
-            LOG.warn("Unable to find AuthzDecisionStatement Evidence Assertion Condition in SAML, will not be included in message to policy engine");
+            LOG.warn("Unable to find AuthzDecisionStatement Evidence Assertion Condition in SAML, will not be included"
+                    + " in message to policy engine");
         }
 
         return value;
@@ -896,6 +869,7 @@ public class AssertionHelper {
                 DatatypeFactory xmlDateFactory = DatatypeFactory.newInstance();
                 xmlDate = xmlDateFactory.newXMLGregorianCalendar(time.trim());
             } catch (IllegalArgumentException iaex) {
+                LOG.warn("Exception with UTC format calendar creation: {}", iaex.getLocalizedMessage(), iaex);
                 try {
                     // try simple date format - backward compatibility
                     SimpleDateFormat dateForm = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
@@ -904,13 +878,12 @@ public class AssertionHelper {
                     cal.setTime(dateForm.parse(time));
                     DatatypeFactory xmlDateFactory = DatatypeFactory.newInstance();
                     xmlDate = xmlDateFactory.newXMLGregorianCalendar(cal);
-                } catch (DatatypeConfigurationException ex) {
-                    LOG.error("Date form is expected to be in dateTime format");
-                } catch (ParseException ex) {
-                    LOG.error("Date form is expected to be in dateTime format");
+                } catch (DatatypeConfigurationException | ParseException ex) {
+                    LOG.error("Date form is expected to be in dateTime format: {}", ex.getLocalizedMessage(), ex);
                 }
             } catch (DatatypeConfigurationException dtex) {
-                LOG.error("Problem in creating XML Date Factory. Setting default date");
+                LOG.error("Problem creating XML Date Factory, setting default date: {}", dtex.getLocalizedMessage(),
+                        dtex);
             }
         }
         return xmlDate;
@@ -918,16 +891,17 @@ public class AssertionHelper {
 
     private List<String> extractAuthzDecisionStatementEvidenceAssertionAccessConsentPolicy(AssertionType assertion) {
         List<String> value = null;
-        if ((assertion.getSamlAuthzDecisionStatement() != null)
-                && (assertion.getSamlAuthzDecisionStatement().getEvidence() != null)
-                && (assertion.getSamlAuthzDecisionStatement().getEvidence().getAssertion() != null)
-                && (!assertion.getSamlAuthzDecisionStatement().getEvidence().getAssertion().getAccessConsentPolicy()
-                        .isEmpty())) {
+        if (assertion.getSamlAuthzDecisionStatement() != null
+                && assertion.getSamlAuthzDecisionStatement().getEvidence() != null
+                && assertion.getSamlAuthzDecisionStatement().getEvidence().getAssertion() != null
+                && !assertion.getSamlAuthzDecisionStatement().getEvidence().getAssertion().getAccessConsentPolicy()
+                        .isEmpty()) {
             LOG.debug("Extracting AuthzDecisionStatementEvidenceAssertionAccessConsentPolicy");
             value = assertion.getSamlAuthzDecisionStatement().getEvidence().getAssertion().getAccessConsentPolicy();
             LOG.debug("Extracted AuthzDecisionStatementEvidenceAssertionAccessConsentPolicy value=" + value);
         } else {
-            LOG.warn("Unable to find AuthzDecisionStatement Evidence Assertion in SAML, will not be included in message to policy engine");
+            LOG.warn("Unable to find AuthzDecisionStatement Evidence Assertion in SAML, will not be included in"
+                    + " message to policy engine");
         }
 
         return value;
@@ -948,17 +922,18 @@ public class AssertionHelper {
     private List<String> extractAuthzDecisionStatementEvidenceAssertionInstanceAccessConsentPolicy(
             AssertionType assertion) {
         List<String> value = null;
-        if ((assertion.getSamlAuthzDecisionStatement() != null)
-                && (assertion.getSamlAuthzDecisionStatement().getEvidence() != null)
-                && (assertion.getSamlAuthzDecisionStatement().getEvidence().getAssertion() != null)
-                && (!assertion.getSamlAuthzDecisionStatement().getEvidence().getAssertion()
-                        .getInstanceAccessConsentPolicy().isEmpty())) {
+        if (assertion.getSamlAuthzDecisionStatement() != null
+                && assertion.getSamlAuthzDecisionStatement().getEvidence() != null
+                && assertion.getSamlAuthzDecisionStatement().getEvidence().getAssertion() != null
+                && !assertion.getSamlAuthzDecisionStatement().getEvidence().getAssertion()
+                        .getInstanceAccessConsentPolicy().isEmpty()) {
             LOG.debug("Extracting AuthzDecisionStatementEvidenceAssertionInstanceAccessConsentPolicy");
             value = assertion.getSamlAuthzDecisionStatement().getEvidence().getAssertion()
                     .getInstanceAccessConsentPolicy();
             LOG.debug("Extracted AuthzDecisionStatementEvidenceAssertionInstanceAccessConsentPolicy value=" + value);
         } else {
-            LOG.warn("Unable to find AuthzDecisionStatement Evidence Assertion in SAML, will not be included in message to policy engine");
+            LOG.warn("Unable to find AuthzDecisionStatement Evidence Assertion in SAML, will not be included in"
+                    + " message to policy engine");
         }
 
         return value;
@@ -970,7 +945,8 @@ public class AssertionHelper {
         ResourceType parent = getResource(policyRequest);
         String attributeId = XacmlAttributeId.AuthzDecisionStatementEvidenceAssertionInstanceAccessConsentPolicy;
         String dataType = Constants.DataTypeAnyURI;
-        List<String> attributeValue = extractAuthzDecisionStatementEvidenceAssertionInstanceAccessConsentPolicy(assertion);
+        List<String> attributeValue = extractAuthzDecisionStatementEvidenceAssertionInstanceAccessConsentPolicy(
+                assertion);
         AttributeHelper attrHelper = new AttributeHelper();
         attrHelper.appendAttributeToParent(parent, attributeId, dataType, attributeValue, appendAttributesIfNull);
         LOG.debug("end appending AuthzDecisionStatementEvidenceAssertionInstanceAccessConsentPolicy");

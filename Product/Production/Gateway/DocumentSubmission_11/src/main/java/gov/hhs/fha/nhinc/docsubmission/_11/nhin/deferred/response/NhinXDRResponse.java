@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,42 +26,42 @@
  */
 package gov.hhs.fha.nhinc.docsubmission._11.nhin.deferred.response;
 
-import gov.hhs.healthit.nhin.XDRAcknowledgementType;
-import oasis.names.tc.ebxml_regrep.xsd.rs._3.RegistryResponseType;
 import gov.hhs.fha.nhinc.aspect.InboundMessageEvent;
 import gov.hhs.fha.nhinc.docsubmission.aspect.DeferredResponseDescriptionBuilder;
 import gov.hhs.fha.nhinc.docsubmission.inbound.deferred.response.InboundDocSubmissionDeferredResponse;
-
+import gov.hhs.healthit.nhin.XDRAcknowledgementType;
 import javax.annotation.Resource;
 import javax.xml.ws.BindingType;
 import javax.xml.ws.WebServiceContext;
 import javax.xml.ws.soap.Addressing;
+import javax.xml.ws.soap.SOAPBinding;
+import oasis.names.tc.ebxml_regrep.xsd.rs._3.RegistryResponseType;
 
 /**
- * 
+ *
  * @author JHOPPESC
  */
-@BindingType(value = javax.xml.ws.soap.SOAPBinding.SOAP12HTTP_BINDING)
+@BindingType(value = SOAPBinding.SOAP12HTTP_BINDING)
 @Addressing(enabled = true)
 public class NhinXDRResponse implements ihe.iti.xdr._2007.XDRDeferredResponsePortType {
+
     private WebServiceContext context;
     private InboundDocSubmissionDeferredResponse inboundDocSubmissionResponse;
 
     /**
      * The web service implementation for Document Submission response.
-     * 
-     * @param body
-     *            the message body
+     *
+     * @param body the message body
      * @return an acknowledgement
      */
     @Override
     @InboundMessageEvent(serviceType = "Document Submission Deferred Response", version = "1.1",
-            beforeBuilder = DeferredResponseDescriptionBuilder.class,
-            afterReturningBuilder = DeferredResponseDescriptionBuilder.class)
+        beforeBuilder = DeferredResponseDescriptionBuilder.class,
+        afterReturningBuilder = DeferredResponseDescriptionBuilder.class)
     public XDRAcknowledgementType provideAndRegisterDocumentSetBDeferredResponse(
-            RegistryResponseType body) {
+        RegistryResponseType body) {
         return new NhinDocSubmissionDeferredResponseImpl(inboundDocSubmissionResponse)
-                .provideAndRegisterDocumentSetBResponse(body, context);
+            .provideAndRegisterDocumentSetBResponse(body, context);
     }
 
     public void setInboundDocSubmissionResponse(InboundDocSubmissionDeferredResponse inboundDocSubmissionResponse) {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2014, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -44,7 +44,6 @@
  STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
  THE POSSIBILITY OF SUCH DAMAGE.
  */
-
 package gov.hhs.fha.nhinc.directconfig.dao.impl;
 
 import gov.hhs.fha.nhinc.directconfig.dao.CertificateDao;
@@ -59,8 +58,10 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
@@ -74,7 +75,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public class CertificateDaoImpl implements CertificateDao {
 
-    private static final Log log = LogFactory.getLog(CertificateDaoImpl.class);
+    private static final Log LOG = LogFactory.getLog(CertificateDaoImpl.class);
 
     /**
      * {@inheritDoc}
@@ -83,31 +84,29 @@ public class CertificateDaoImpl implements CertificateDao {
     @SuppressWarnings({ "unchecked" })
     public Certificate load(String owner, String thumbprint) {
         Session session = null;
-        Query query = null;
+        Query query;
 
-        List<Certificate> results = null;
+        List<Certificate> results;
         Certificate cert = null;
 
         try {
             session = DaoUtils.getSession();
 
-            if (session != null) {
-                query = session.getNamedQuery("getCertificates");
+            query = session.getNamedQuery("getCertificates");
 
-                query.setParameter("thumbprint", thumbprint);
+            query.setParameter("thumbprint", thumbprint);
 
-                if (owner != null) {
-                    owner = owner.toUpperCase(Locale.getDefault());
-                }
+            if (owner != null) {
+                owner = owner.toUpperCase(Locale.getDefault());
+            }
 
-                query.setParameter("owner", owner);
+            query.setParameter("owner", owner);
 
-                results = query.list();
+            results = query.list();
 
-                if (results != null && results.size() > 0) {
-                    cert = results.iterator().next();
-                    log.debug("Certificate found");
-                }
+            if (CollectionUtils.isNotEmpty(results)) {
+                cert = results.iterator().next();
+                LOG.debug("Certificate found");
             }
         } finally {
             DaoUtils.closeSession(session);
@@ -124,25 +123,23 @@ public class CertificateDaoImpl implements CertificateDao {
     public List<Certificate> list(List<Long> idList) {
         List<Certificate> results = Collections.emptyList();
 
-        if (idList != null && idList.size() > 0) {
+        if (CollectionUtils.isNotEmpty(idList)) {
             Session session = null;
-            Query query = null;
+            Query query;
 
             try {
                 session = DaoUtils.getSession();
 
-                if (session != null) {
-                    query = session.getNamedQuery("getCertificatesByIds");
-                    query.setParameterList("idList", idList);
+                query = session.getNamedQuery("getCertificatesByIds");
+                query.setParameterList("idList", idList);
 
-                    results = query.list();
+                results = query.list();
 
-                    if (results == null) {
-                        results = Collections.emptyList();
-                    }
-
-                    log.debug("Certificates found: " + results.size());
+                if (results == null) {
+                    results = Collections.emptyList();
                 }
+
+                LOG.debug("Certificates found: " + results.size());
             } finally {
                 DaoUtils.closeSession(session);
             }
@@ -160,23 +157,21 @@ public class CertificateDaoImpl implements CertificateDao {
         List<Certificate> results = null;
 
         Session session = null;
-        Query query = null;
+        Query query;
 
         try {
             session = DaoUtils.getSession();
 
-            if (session != null) {
-                query = session.getNamedQuery("getCertificatesByOwner");
-                query.setParameter("owner", owner);
+            query = session.getNamedQuery("getCertificatesByOwner");
+            query.setParameter("owner", owner);
 
-                results = query.list();
+            results = query.list();
 
-                if (results == null) {
-                    results = Collections.emptyList();
-                }
-
-                log.debug("Certificates found: " + results.size());
+            if (results == null) {
+                results = Collections.emptyList();
             }
+
+            LOG.debug("Certificates found: " + results.size());
         } finally {
             DaoUtils.closeSession(session);
         }
@@ -200,12 +195,8 @@ public class CertificateDaoImpl implements CertificateDao {
                 CertContainer container = null;
                 X509Certificate xcert = null;
 
-                try {
-                    container = cert.toCredential();
-                    xcert = container.getCert();
-                } catch (CertificateException e) {
-                    log.warn("Unable to get certificate data, possibly an IPKIX URL?");
-                }
+                container = cert.toCredential();
+                xcert = container.getCert();
 
                 if (cert.getValidStartDate() == null && xcert != null) {
                     Calendar startDate = Calendar.getInstance();
@@ -223,23 +214,18 @@ public class CertificateDaoImpl implements CertificateDao {
                     cert.setStatus(EntityStatus.NEW);
                 }
 
-                cert.setPrivateKey(container != null && container.getKey() != null);
+                cert.setPrivateKey(container.getKey() != null);
 
                 session = DaoUtils.getSession();
 
-                if (session != null) {
-                    log.debug("Saving anchor");
+                LOG.debug("Saving anchor");
 
-                    tx = session.beginTransaction();
-                    session.persist(cert);
-                    tx.commit();
-                }
-            } catch (CertificateException e) {
-                log.error("Could not convert certificate data to X509Certificate");
-                DaoUtils.rollbackTransaction(tx);
-                throw new ConfigurationStoreException(e);
-            } catch (Exception e) {
-                DaoUtils.rollbackTransaction(tx);
+                tx = session.beginTransaction();
+                session.persist(cert);
+                tx.commit();
+
+            } catch (CertificateException | HibernateException e) {
+                DaoUtils.rollbackTransaction(tx, e);
                 throw new ConfigurationStoreException(e);
             } finally {
                 DaoUtils.closeSession(session);
@@ -252,7 +238,7 @@ public class CertificateDaoImpl implements CertificateDao {
      */
     @Override
     public void save(List<Certificate> certList) {
-        if (certList != null && certList.size() > 0) {
+        if (CollectionUtils.isNotEmpty(certList)) {
             for (Certificate cert : certList) {
                 save(cert);
             }
@@ -266,27 +252,26 @@ public class CertificateDaoImpl implements CertificateDao {
     public void setStatus(List<Long> certificateIDs, EntityStatus status) {
         List<Certificate> certs = list(certificateIDs);
 
-        if (certs != null && certs.size() > 0) {
+        if (CollectionUtils.isNotEmpty(certs)) {
             Session session = null;
             Transaction tx = null;
 
-            log.debug("Setting status on " + certs.size() + " certs");
+            LOG.debug("Setting status on " + certs.size() + " certs");
 
             try {
                 session = DaoUtils.getSession();
 
-                if (session != null) {
-                    tx = session.beginTransaction();
+                tx = session.beginTransaction();
 
-                    for (Certificate cert : certs) {
-                        cert.setStatus(status);
-                        session.merge(cert);
-                    }
-
-                    tx.commit();
+                for (Certificate cert : certs) {
+                    cert.setStatus(status);
+                    session.merge(cert);
                 }
+
+                tx.commit();
+
             } catch (Exception e) {
-                DaoUtils.rollbackTransaction(tx);
+                DaoUtils.rollbackTransaction(tx, e);
                 throw new ConfigurationStoreException(e);
             } finally {
                 DaoUtils.closeSession(session);
@@ -301,27 +286,26 @@ public class CertificateDaoImpl implements CertificateDao {
     public void setStatus(String owner, EntityStatus status) {
         List<Certificate> certs = list(owner);
 
-        if (certs != null && certs.size() > 0) {
+        if (CollectionUtils.isNotEmpty(certs)) {
             Session session = null;
             Transaction tx = null;
 
-            log.debug("Setting status on " + certs.size() + " certs");
+            LOG.debug("Setting status on " + certs.size() + " certs");
 
             try {
                 session = DaoUtils.getSession();
 
-                if (session != null) {
-                    tx = session.beginTransaction();
+                tx = session.beginTransaction();
 
-                    for (Certificate cert : certs) {
-                        cert.setStatus(status);
-                        session.merge(cert);
-                    }
-
-                    tx.commit();
+                for (Certificate cert : certs) {
+                    cert.setStatus(status);
+                    session.merge(cert);
                 }
+
+                tx.commit();
+
             } catch (Exception e) {
-                DaoUtils.rollbackTransaction(tx);
+                DaoUtils.rollbackTransaction(tx, e);
                 throw new ConfigurationStoreException(e);
             } finally {
                 DaoUtils.closeSession(session);
@@ -337,26 +321,25 @@ public class CertificateDaoImpl implements CertificateDao {
         if (idList != null && idList.size() > 0) {
             Session session = null;
             Transaction tx = null;
-            Query query = null;
+            Query query;
 
-            int count = 0;
+            int count;
 
             try {
                 session = DaoUtils.getSession();
 
-                if (session != null) {
-                    tx = session.beginTransaction();
+                tx = session.beginTransaction();
 
-                    query = session.createQuery("DELETE FROM Certificate c WHERE c.id IN (:idList)");
-                    query.setParameterList("idList", idList);
+                query = session.createQuery("DELETE FROM Certificate c WHERE c.id IN (:idList)");
+                query.setParameterList("idList", idList);
 
-                    count = query.executeUpdate();
-                    tx.commit();
+                count = query.executeUpdate();
+                tx.commit();
 
-                    log.debug("Deleted " + count + " Certificates");
-                }
+                LOG.debug("Deleted " + count + " Certificates");
+
             } catch (Exception e) {
-                DaoUtils.rollbackTransaction(tx);
+                DaoUtils.rollbackTransaction(tx, e);
                 throw new ConfigurationStoreException(e);
             } finally {
                 DaoUtils.closeSession(session);
@@ -372,26 +355,25 @@ public class CertificateDaoImpl implements CertificateDao {
         if (owner != null) {
             Session session = null;
             Transaction tx = null;
-            Query query = null;
+            Query query;
 
-            int count = 0;
+            int count;
 
             try {
                 session = DaoUtils.getSession();
 
-                if (session != null) {
-                    tx = session.beginTransaction();
+                tx = session.beginTransaction();
 
-                    query = session.createQuery("DELETE FROM Certificate c WHERE UPPER(c.owner) = :owner");
-                    query.setParameter("owner", owner.toUpperCase(Locale.getDefault()));
+                query = session.createQuery("DELETE FROM Certificate c WHERE UPPER(c.owner) = :owner");
+                query.setParameter("owner", owner.toUpperCase(Locale.getDefault()));
 
-                    count = query.executeUpdate();
-                    tx.commit();
+                count = query.executeUpdate();
+                tx.commit();
 
-                    log.debug("Deleted " + count + " Certificates");
-                }
+                LOG.debug("Deleted " + count + " Certificates");
+
             } catch (Exception e) {
-                DaoUtils.rollbackTransaction(tx);
+                DaoUtils.rollbackTransaction(tx, e);
                 throw new ConfigurationStoreException(e);
             } finally {
                 DaoUtils.closeSession(session);

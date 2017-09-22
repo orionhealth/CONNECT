@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,11 +27,9 @@
 package gov.hhs.fha.nhinc.direct.xdr.audit;
 
 import gov.hhs.fha.nhinc.direct.xdr.SoapEdgeContext;
-
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Map;
-
 import org.nhindirect.common.audit.AuditContext;
 import org.nhindirect.common.audit.AuditEvent;
 import org.nhindirect.common.audit.Auditor;
@@ -40,7 +38,7 @@ import org.nhindirect.common.audit.DefaultAuditContext;
 
 /**
  * @author mweaver
- * 
+ *
  */
 public class DirectRIAuditor implements SoapEdgeAuditor {
 
@@ -50,9 +48,9 @@ public class DirectRIAuditor implements SoapEdgeAuditor {
 	 * Audits an event to the Direct RI audit logger. If a set of properties are
 	 * provided, they will be audited as additional contexts, otherwise only the
 	 * principal, category, and message will be audited.
-	 * 
+	 *
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see gov.hhs.fha.nhinc.direct.xdr.audit.SoapEdgeAuditor#audit(java.lang.String,
 	 *      java.lang.String, java.lang.String,
 	 *      gov.hhs.fha.nhinc.direct.xdr.audit.Auditable)
@@ -72,13 +70,13 @@ public class DirectRIAuditor implements SoapEdgeAuditor {
 
 	/**
 	 * Creates a set of AuditContext objects from and Auditable object.
-	 * 
+	 *
 	 * @param auditable
 	 *            A {@link Auditable} object, must not be null.
 	 * @return A Collection of @{link AuditContext} objects.
 	 */
     private Collection<? extends AuditContext> getContexts(SoapEdgeContext auditable) {
-		Collection<AuditContext> contexts = new LinkedList<AuditContext>();
+		Collection<AuditContext> contexts = new LinkedList<>();
 
 		if (auditable.getAuditableValues() != null) {
 			for (Map.Entry<String, String> entry : auditable

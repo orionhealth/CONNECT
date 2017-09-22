@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2014, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -46,12 +46,12 @@ THE POSSIBILITY OF SUCH DAMAGE.
  */
 package gov.hhs.fha.nhinc.directconfig.service.jaxws;
 
+import gov.hhs.fha.nhinc.directconfig.entity.Setting;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
-import gov.hhs.fha.nhinc.directconfig.entity.Setting;
 
 @XmlRootElement(name = "getSettingByNameResponse", namespace = "http://nhind.org/config")
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -62,7 +62,7 @@ public class GetSettingByNameResponse {
     private Setting _return;
 
     /**
-     * 
+     *
      * @return
      *     returns Setting
      */
@@ -71,7 +71,7 @@ public class GetSettingByNameResponse {
     }
 
     /**
-     * 
+     *
      * @param _return
      *     the value for the _return property
      */

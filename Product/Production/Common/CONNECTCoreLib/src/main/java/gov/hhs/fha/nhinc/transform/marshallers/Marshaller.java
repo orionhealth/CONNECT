@@ -1,28 +1,28 @@
 /*
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services. 
- * All rights reserved. 
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
+ * All rights reserved.
  *
- * Redistribution and use in source and binary forms, with or without 
- * modification, are permitted provided that the following conditions are met: 
- *     * Redistributions of source code must retain the above 
- *       copyright notice, this list of conditions and the following disclaimer. 
- *     * Redistributions in binary form must reproduce the above copyright 
- *       notice, this list of conditions and the following disclaimer in the documentation 
- *       and/or other materials provided with the distribution. 
- *     * Neither the name of the United States Government nor the 
- *       names of its contributors may be used to endorse or promote products 
- *       derived from this software without specific prior written permission. 
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *     * Redistributions of source code must retain the above
+ *       copyright notice, this list of conditions and the following disclaimer.
+ *     * Redistributions in binary form must reproduce the above copyright
+ *       notice, this list of conditions and the following disclaimer in the documentation
+ *       and/or other materials provided with the distribution.
+ *     * Neither the name of the United States Government nor the
+ *       names of its contributors may be used to endorse or promote products
+ *       derived from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
- * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED 
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE 
- * DISCLAIMED. IN NO EVENT SHALL THE UNITED STATES GOVERNMENT BE LIABLE FOR ANY 
- * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES 
- * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; 
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND 
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT 
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS 
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE UNITED STATES GOVERNMENT BE LIABLE FOR ANY
+ * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 package gov.hhs.fha.nhinc.transform.marshallers;
 
@@ -30,26 +30,23 @@ import gov.hhs.fha.nhinc.nhinclib.NullChecker;
 import gov.hhs.fha.nhinc.util.JAXBUnmarshallingUtil;
 import gov.hhs.fha.nhinc.util.StreamUtils;
 import gov.hhs.fha.nhinc.xmlCommon.XmlUtility;
-
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.StringReader;
 import java.io.StringWriter;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Element;
 
-import org.apache.log4j.Logger;
-
 /**
- * 
+ *
  * @author rayj
  */
 public class Marshaller {
 
-    private static final Logger LOG = Logger.getLogger(Marshaller.class);
+    private static final Logger LOG = LoggerFactory.getLogger(Marshaller.class);
 
     public Element marshal(Object object, String contextPath) {
         Element element = null;
@@ -75,8 +72,9 @@ public class Marshaller {
                     element = XmlUtility.convertXmlToElement(xml);
                 }
             } catch (Exception e) {
-                // "java.security.PrivilegedActionException: java.lang.ClassNotFoundException: com.sun.xml.bind.v2.ContextFactory"
-                LOG.error("Failed to marshall: " + e.getMessage(), e);
+                // "java.security.PrivilegedActionException: java.lang.ClassNotFoundException:
+                // com.sun.xml.bind.v2.ContextFactory"
+                LOG.error("Failed to marshall: {}", e.getLocalizedMessage(), e);
                 element = null;
             }
         }
@@ -84,8 +82,8 @@ public class Marshaller {
     }
 
     /**
-     * Marshalls the passed in XML Bean object into an XML Element.  
-     * 
+     * Marshalls the passed in XML Bean object into an XML Element.
+     *
      * @param object - the XML bean to be marshalled
      * @param contextPath - The name of the context. (i.e. "org.hl7.v3").
      * @param qname - the qualified name of the XML (i.e. "urn:org:hl7:v3")
@@ -101,18 +99,19 @@ public class Marshaller {
             JAXBContext jc = oHandler.getJAXBContext(contextPath);
 
             javax.xml.bind.Marshaller marshaller = jc.createMarshaller();
-            
+
             marshaller.marshal(new JAXBElement(qname, object.getClass(), object), stringWriter);
-            
+
             element = XmlUtility.convertXmlToElement(stringWriter.toString());
         } catch (Exception e) {
-            LOG.error("Failed to marshall: " + e.getMessage(), e);
+            LOG.error("Failed to marshall: {}", e.getLocalizedMessage(), e);
             element = null;
         } finally {
             try {
                 stringWriter.close();
             } catch (IOException ioe) {
-                // close quietly
+                // close quietly(ish)
+                LOG.warn("Could not close writer: {}", ioe.getLocalizedMessage(), ioe);
             }
         }
 
@@ -153,9 +152,10 @@ public class Marshaller {
                 unmarshalledObject = unmarshaller.unmarshal(util.getSafeStreamReaderFromInputStream(is));
                 LOG.debug("end unmarshal");
             } catch (Exception e) {
-                // "java.security.PrivilegedActionException: java.lang.ClassNotFoundException: com.sun.xml.bind.v2.ContextFactory"
+                // "java.security.PrivilegedActionException: java.lang.ClassNotFoundException:
+                // com.sun.xml.bind.v2.ContextFactory"
                 // use jaxb element
-                LOG.error("Failed to unmarshall: " + e.getMessage(), e);
+                LOG.error("Failed to unmarshall: {}", e.getLocalizedMessage(), e);
                 unmarshalledObject = null;
             } finally {
                 StreamUtils.closeStreamSilently(is);
@@ -170,7 +170,7 @@ public class Marshaller {
         try {
             element = XmlUtility.convertXmlToElement(xml);
         } catch (Exception ex) {
-            LOG.warn("failed to parse xml", ex);
+            LOG.warn("failed to parse xml: {}", ex.getLocalizedMessage(), ex);
         }
         return unmarshal(element, contextPath);
     }

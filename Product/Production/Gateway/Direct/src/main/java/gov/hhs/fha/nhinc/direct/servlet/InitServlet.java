@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,12 +27,11 @@
 package gov.hhs.fha.nhinc.direct.servlet;
 
 import gov.hhs.fha.nhinc.direct.DirectAdapterFactory;
-
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
-
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Web Application initialization for Direct.
@@ -40,7 +39,7 @@ import org.apache.log4j.Logger;
 public class InitServlet extends HttpServlet {
 
     private static final long serialVersionUID = -2548417535183464693L;
-    private static final Logger LOG = Logger.getLogger(InitServlet.class);
+    private static final Logger LOG = LoggerFactory.getLogger(InitServlet.class);
 
     /**
      * {@inheritDoc}

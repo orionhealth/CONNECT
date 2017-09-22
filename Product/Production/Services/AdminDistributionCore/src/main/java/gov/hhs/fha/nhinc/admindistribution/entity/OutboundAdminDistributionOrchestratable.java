@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,7 +30,6 @@ import gov.hhs.fha.nhinc.common.nhinccommon.AssertionType;
 import gov.hhs.fha.nhinc.common.nhinccommon.NhinTargetSystemType;
 import gov.hhs.fha.nhinc.common.nhinccommonentity.RespondingGatewaySendAlertMessageType;
 import gov.hhs.fha.nhinc.nhinclib.NhincConstants;
-import gov.hhs.fha.nhinc.orchestration.AuditTransformer;
 import gov.hhs.fha.nhinc.orchestration.NhinAggregator;
 import gov.hhs.fha.nhinc.orchestration.OutboundDelegate;
 import gov.hhs.fha.nhinc.orchestration.OutboundOrchestratable;
@@ -41,13 +40,16 @@ import gov.hhs.fha.nhinc.orchestration.PolicyTransformer;
  * @author nnguyen
  */
 public class OutboundAdminDistributionOrchestratable implements OutboundOrchestratable {
+
     private NhinTargetSystemType target = null;
     private AssertionType assertion = null;
     private OutboundDelegate nhinDelegate = null;
     private RespondingGatewaySendAlertMessageType request = null;
     private boolean isPassthru = false;
 
-    /**Constructor.
+    /**
+     * Constructor.
+     *
      * @param delegate OutboundDelegate delegate received.
      */
     public OutboundAdminDistributionOrchestratable(OutboundDelegate delegate) {
@@ -56,7 +58,8 @@ public class OutboundAdminDistributionOrchestratable implements OutboundOrchestr
 
     /**
      * Constructor.
-     * @param delegate OutboundDelegate delegate received. 
+     *
+     * @param delegate OutboundDelegate delegate received.
      * @param request SendAlertMessage received.
      * @param targetSystem NhinTargetSystem targetSystem received.
      * @param assertion Assertion received.
@@ -70,7 +73,7 @@ public class OutboundAdminDistributionOrchestratable implements OutboundOrchestr
     }
 
     /**
-     * @return request SendAlertMessage request. 
+     * @return request SendAlertMessage request.
      */
     public RespondingGatewaySendAlertMessageType getRequest() {
         return request;
@@ -114,13 +117,15 @@ public class OutboundAdminDistributionOrchestratable implements OutboundOrchestr
     /**
      * @return assertion Assertion assertion received.
      */
+    @Override
     public AssertionType getAssertion() {
         return assertion;
     }
 
     /**
-    *  @return serviceName Administrative_Distribution.
-    */
+     * @return serviceName Administrative_Distribution.
+     */
+    @Override
     public String getServiceName() {
         return NhincConstants.ADMIN_DIST_SERVICE_NAME;
     }
@@ -133,10 +138,11 @@ public class OutboundAdminDistributionOrchestratable implements OutboundOrchestr
     /**
      * @return boolean true if AdminDist in Passthru mode.
      */
+    @Override
     public boolean isPassthru() {
         return isPassthru;
     }
-    
+
     public void setPassthru(boolean isPassthru) {
         this.isPassthru = isPassthru;
     }
@@ -144,13 +150,7 @@ public class OutboundAdminDistributionOrchestratable implements OutboundOrchestr
     /**
      * @return throws RunTimeException when called.
      */
-    public AuditTransformer getAuditTransformer() {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    /**
-     * @return throws RunTimeException when called.
-     */
+    @Override
     public PolicyTransformer getPolicyTransformer() {
         throw new UnsupportedOperationException("Not supported yet.");
     }
@@ -158,6 +158,7 @@ public class OutboundAdminDistributionOrchestratable implements OutboundOrchestr
     /**
      * @return throws RunTimeException when called.
      */
+    @Override
     public NhinAggregator getAggregator() {
         throw new UnsupportedOperationException("Not supported yet.");
     }

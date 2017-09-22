@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,42 +26,56 @@
  */
 package gov.hhs.fha.nhinc.docretrieve.inbound;
 
+import gov.hhs.fha.nhinc.aspect.InboundProcessingEvent;
+import gov.hhs.fha.nhinc.audit.ejb.AuditEJBLogger;
+import gov.hhs.fha.nhinc.common.nhinccommon.AssertionType;
+import gov.hhs.fha.nhinc.common.nhinccommon.NhinTargetSystemType;
+import gov.hhs.fha.nhinc.docretrieve.aspect.RetrieveDocumentSetRequestTypeDescriptionBuilder;
+import gov.hhs.fha.nhinc.docretrieve.aspect.RetrieveDocumentSetResponseTypeDescriptionBuilder;
+import gov.hhs.fha.nhinc.docretrieve.audit.DocRetrieveAuditLogger;
+import gov.hhs.fha.nhinc.docretrieve.audit.transform.DocRetrieveAuditTransforms;
+import gov.hhs.fha.nhinc.docretrieve.nhin.InboundDocRetrieveDelegate;
+import gov.hhs.fha.nhinc.docretrieve.nhin.InboundDocRetrieveOrchestratable;
+import gov.hhs.fha.nhinc.docretrieve.nhin.InboundDocRetrievePolicyTransformer_g0;
+import gov.hhs.fha.nhinc.nhinclib.NhincConstants;
+import gov.hhs.fha.nhinc.orchestration.CONNECTInboundOrchestrator;
+import ihe.iti.xds_b._2007.RetrieveDocumentSetRequestType;
+import ihe.iti.xds_b._2007.RetrieveDocumentSetResponseType;
+import java.lang.reflect.Method;
+import java.util.Properties;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import gov.hhs.fha.nhinc.aspect.InboundProcessingEvent;
-import gov.hhs.fha.nhinc.common.nhinccommon.AssertionType;
-import gov.hhs.fha.nhinc.docretrieve.aspect.RetrieveDocumentSetRequestTypeDescriptionBuilder;
-import gov.hhs.fha.nhinc.docretrieve.aspect.RetrieveDocumentSetResponseTypeDescriptionBuilder;
-import gov.hhs.fha.nhinc.docretrieve.nhin.InboundDocRetrieveAuditTransformer_g0;
-import gov.hhs.fha.nhinc.docretrieve.nhin.InboundDocRetrieveDelegate;
-import gov.hhs.fha.nhinc.docretrieve.nhin.InboundDocRetrieveOrchestratable;
-import gov.hhs.fha.nhinc.docretrieve.nhin.InboundDocRetrievePolicyTransformer_g0;
-import gov.hhs.fha.nhinc.orchestration.CONNECTInboundOrchestrator;
-import ihe.iti.xds_b._2007.RetrieveDocumentSetRequestType;
-import ihe.iti.xds_b._2007.RetrieveDocumentSetResponseType;
-
-import java.lang.reflect.Method;
-
+import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Matchers.isNull;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 /**
  * @author akong
- * 
+ *
  */
 public class StandardInboundDocRetrieveTest {
+
+    private AuditEJBLogger mockEJBLogger;
+
+    @Before
+    public void setup() {
+        mockEJBLogger = mock(AuditEJBLogger.class);
+    }
 
     @Test
     public void hasInboundProcessingEvent() throws Exception {
         Class<StandardInboundDocRetrieve> clazz = StandardInboundDocRetrieve.class;
         Method method = clazz.getMethod("respondingGatewayCrossGatewayRetrieve", RetrieveDocumentSetRequestType.class,
-                AssertionType.class);
+            AssertionType.class, Properties.class);
         InboundProcessingEvent annotation = method.getAnnotation(InboundProcessingEvent.class);
         assertNotNull(annotation);
         assertEquals(RetrieveDocumentSetRequestTypeDescriptionBuilder.class, annotation.beforeBuilder());
@@ -75,9 +89,9 @@ public class StandardInboundDocRetrieveTest {
         RetrieveDocumentSetRequestType request = new RetrieveDocumentSetRequestType();
         AssertionType assertion = new AssertionType();
         RetrieveDocumentSetResponseType expectedResponse = new RetrieveDocumentSetResponseType();
+        Properties webContextProperties = new Properties();
 
         InboundDocRetrievePolicyTransformer_g0 pt = new InboundDocRetrievePolicyTransformer_g0();
-        InboundDocRetrieveAuditTransformer_g0 at = new InboundDocRetrieveAuditTransformer_g0();
         InboundDocRetrieveDelegate ad = new InboundDocRetrieveDelegate();
 
         // Mocks
@@ -91,22 +105,77 @@ public class StandardInboundDocRetrieveTest {
         when(orchestratable.getResponse()).thenReturn(expectedResponse);
 
         // Actual Invocation
-        StandardInboundDocRetrieve inboundDocRetrieve = new StandardInboundDocRetrieve(pt, at, ad, orch);
-        RetrieveDocumentSetResponseType actualResponse = inboundDocRetrieve.respondingGatewayCrossGatewayRetrieve(
-                request, assertion);
+        StandardInboundDocRetrieve inboundDocRetrieve = new StandardInboundDocRetrieve(pt, ad, orch,
+            getAuditLogger(true));
 
-        // Verify response is expected        
+        RetrieveDocumentSetResponseType actualResponse = inboundDocRetrieve.respondingGatewayCrossGatewayRetrieve(
+            request, assertion, webContextProperties);
+
+        // Verify response is expected
         assertSame(expectedResponse, actualResponse);
 
+        verify(mockEJBLogger).auditResponseMessage(eq(request), eq(actualResponse), eq(assertion),
+            isNull(NhinTargetSystemType.class), eq(NhincConstants.AUDIT_LOG_INBOUND_DIRECTION),
+            eq(NhincConstants.AUDIT_LOG_NHIN_INTERFACE), eq(Boolean.FALSE), eq(webContextProperties),
+            eq(NhincConstants.DOC_RETRIEVE_SERVICE_NAME), any(DocRetrieveAuditTransforms.class));
+
         // Verify that the orchestrator is processing the correct orchestratable
-        ArgumentCaptor<InboundDocRetrieveOrchestratable> orchArgument = ArgumentCaptor
-                .forClass(InboundDocRetrieveOrchestratable.class);
+        ArgumentCaptor< InboundDocRetrieveOrchestratable> orchArgument = ArgumentCaptor
+            .forClass(InboundDocRetrieveOrchestratable.class);
 
         verify(orch).process(orchArgument.capture());
         assertEquals(pt, orchArgument.getValue().getPolicyTransformer());
-        assertEquals(at, orchArgument.getValue().getAuditTransformer());
         assertEquals(ad, orchArgument.getValue().getDelegate());
         assertFalse(orchArgument.getValue().isPassthru());
     }
 
+    @Test
+    public void auditLoggingOffForInboundDR() {
+        RetrieveDocumentSetRequestType request = new RetrieveDocumentSetRequestType();
+        AssertionType assertion = new AssertionType();
+        RetrieveDocumentSetResponseType expectedResponse = new RetrieveDocumentSetResponseType();
+        Properties webContextProperties = new Properties();
+
+        InboundDocRetrievePolicyTransformer_g0 pt = new InboundDocRetrievePolicyTransformer_g0();
+        InboundDocRetrieveDelegate ad = new InboundDocRetrieveDelegate();
+
+        // Mocks
+        CONNECTInboundOrchestrator orch = mock(CONNECTInboundOrchestrator.class);
+
+        InboundDocRetrieveOrchestratable orchestratable = mock(InboundDocRetrieveOrchestratable.class);
+
+        // Method Stubbing
+        when(orch.process(any(InboundDocRetrieveOrchestratable.class))).thenReturn(orchestratable);
+
+        when(orchestratable.getResponse()).thenReturn(expectedResponse);
+
+        // Actual Invocation
+        StandardInboundDocRetrieve inboundDocRetrieve = new StandardInboundDocRetrieve(pt, ad, orch,
+            getAuditLogger(false));
+
+        RetrieveDocumentSetResponseType actualResponse = inboundDocRetrieve.respondingGatewayCrossGatewayRetrieve(
+            request, assertion, webContextProperties);
+
+        // Verify response is expected
+        assertSame(expectedResponse, actualResponse);
+
+        verify(mockEJBLogger, never()).auditResponseMessage(eq(request), eq(actualResponse), eq(assertion),
+            isNull(NhinTargetSystemType.class), eq(NhincConstants.AUDIT_LOG_INBOUND_DIRECTION),
+            eq(NhincConstants.AUDIT_LOG_NHIN_INTERFACE), eq(Boolean.FALSE), eq(webContextProperties),
+            eq(NhincConstants.DOC_RETRIEVE_SERVICE_NAME), any(DocRetrieveAuditTransforms.class));
+    }
+
+    private DocRetrieveAuditLogger getAuditLogger(final boolean isLoggingOn) {
+        return new DocRetrieveAuditLogger() {
+            @Override
+            protected AuditEJBLogger getAuditLogger() {
+                return mockEJBLogger;
+            }
+
+            @Override
+            protected boolean isAuditLoggingOn(String serviceName) {
+                return isLoggingOn;
+            }
+        };
+    }
 }

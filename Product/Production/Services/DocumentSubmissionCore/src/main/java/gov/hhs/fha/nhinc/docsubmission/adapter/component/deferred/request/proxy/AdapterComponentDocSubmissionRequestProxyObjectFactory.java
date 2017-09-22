@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -70,7 +70,7 @@ public class AdapterComponentDocSubmissionRequestProxyObjectFactory extends Comp
      * @return An instance of the AdapterPatientDiscoveryProxy class.
      */
     public AdapterComponentDocSubmissionRequestProxy getAdapterComponentDocSubmissionRequestProxy() {
-        return (AdapterComponentDocSubmissionRequestProxy) getBean(BEAN_NAME, AdapterComponentDocSubmissionRequestProxy.class);
+        return getBean(BEAN_NAME, AdapterComponentDocSubmissionRequestProxy.class);
     }
 
 }

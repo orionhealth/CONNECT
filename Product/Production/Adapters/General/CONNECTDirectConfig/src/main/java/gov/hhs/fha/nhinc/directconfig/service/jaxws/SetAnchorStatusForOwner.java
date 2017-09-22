@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2014, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -47,13 +47,12 @@ THE POSSIBILITY OF SUCH DAMAGE.
 
 package gov.hhs.fha.nhinc.directconfig.service.jaxws;
 
+import gov.hhs.fha.nhinc.directconfig.entity.helpers.EntityStatus;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
-
-import gov.hhs.fha.nhinc.directconfig.entity.helpers.EntityStatus;
 
 @XmlRootElement(name = "setAnchorStatusForOwner", namespace = "http://nhind.org/config")
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -69,7 +68,7 @@ public class SetAnchorStatusForOwner {
     private EntityStatus status;
 
     /**
-     * 
+     *
      * @return
      *     returns String
      */
@@ -78,7 +77,7 @@ public class SetAnchorStatusForOwner {
     }
 
     /**
-     * 
+     *
      * @param owner
      *     the value for the owner property
      */
@@ -87,7 +86,7 @@ public class SetAnchorStatusForOwner {
     }
 
     /**
-     * 
+     *
      * @return
      *     returns EntityStatus
      */
@@ -96,7 +95,7 @@ public class SetAnchorStatusForOwner {
     }
 
     /**
-     * 
+     *
      * @param status
      *     the value for the status property
      */

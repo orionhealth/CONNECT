@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2014, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,7 +24,7 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-/*
+ /*
  Copyright (c) 2010, NHIN Direct Project
  All rights reserved.
 
@@ -44,28 +44,26 @@
  STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
  THE POSSIBILITY OF SUCH DAMAGE.
  */
-
 package gov.hhs.fha.nhinc.directconfig.entity;
 
 import gov.hhs.fha.nhinc.directconfig.entity.helpers.Thumbprint;
 import gov.hhs.fha.nhinc.directconfig.exception.CertificateException;
-
 import java.io.ByteArrayInputStream;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Locale;
-
 import javax.xml.bind.annotation.XmlTransient;
 
 /**
  * JPA entity object for a trust bundle anchor
- * 
+ *
  * @author Greg Meyer
  * @since 1.2
  */
 public class TrustBundleAnchor {
+
     private Long id;
     private TrustBundle trustBundle;
     private byte[] anchorData;
@@ -81,7 +79,7 @@ public class TrustBundleAnchor {
 
     /**
      * Get the value of id.
-     * 
+     *
      * @return the value of id.
      */
     public Long getId() {
@@ -90,7 +88,7 @@ public class TrustBundleAnchor {
 
     /**
      * Set the value of id.
-     * 
+     *
      * @param id The value of id.
      */
     public void setId(Long id) {
@@ -99,7 +97,7 @@ public class TrustBundleAnchor {
 
     /**
      * Get the value of thumbprint.
-     * 
+     *
      * @return the value of thumbprint.
      */
     public String getThumbprint() {
@@ -108,7 +106,7 @@ public class TrustBundleAnchor {
 
     /**
      * Set the value of thumbprint.
-     * 
+     *
      * @param thumbprint The value of thumbprint.
      */
     public void setThumbprint(String thumbprint) {
@@ -117,7 +115,7 @@ public class TrustBundleAnchor {
 
     /**
      * Get the value of the trust bundle.
-     * 
+     *
      * @return the value of trust bundle.
      */
     @XmlTransient
@@ -127,7 +125,7 @@ public class TrustBundleAnchor {
 
     /**
      * Set the value of the trust bundle.
-     * 
+     *
      * @param trustBundle The value of the trust bundle.
      */
     public void setTrustBundle(TrustBundle trustBundle) {
@@ -137,7 +135,7 @@ public class TrustBundleAnchor {
 
     /**
      * Get the value of anchorData.
-     * 
+     *
      * @return the value of anchorData Data.
      */
     public byte[] getData() {
@@ -146,13 +144,13 @@ public class TrustBundleAnchor {
 
     /**
      * Set the value of anchorData.
-     * 
+     *
      * @param data The value of anchorData.
      * @throws CertificateException
      */
     public void setData(byte[] data) throws CertificateException {
         anchorData = data;
-        if (data == Certificate.NULL_CERT) {
+        if (data == Certificate.getNullCert()) {
             setThumbprint("");
         } else {
             loadCertFromData();
@@ -161,7 +159,7 @@ public class TrustBundleAnchor {
 
     /**
      * Get the value of validStartDate.
-     * 
+     *
      * @return the value of validStartDate.
      */
     public Calendar getValidStartDate() {
@@ -170,7 +168,7 @@ public class TrustBundleAnchor {
 
     /**
      * Set the value of validStartDate.
-     * 
+     *
      * @param validStartDate The value of validStartDate.
      */
     public void setValidStartDate(Calendar validStartDate) {
@@ -179,7 +177,7 @@ public class TrustBundleAnchor {
 
     /**
      * Get the value of validEndDate.
-     * 
+     *
      * @return the value of validEndDate.
      */
     public Calendar getValidEndDate() {
@@ -188,7 +186,7 @@ public class TrustBundleAnchor {
 
     /**
      * Set the value of validEndDate.
-     * 
+     *
      * @param validEndDate The value of validEndDate.
      */
     public void setValidEndDate(Calendar validEndDate) {
@@ -196,7 +194,7 @@ public class TrustBundleAnchor {
     }
 
     private X509Certificate loadCertFromData() throws CertificateException {
-        X509Certificate cert = null;
+        X509Certificate cert;
         try {
             validate();
             final ByteArrayInputStream bais = new ByteArrayInputStream(anchorData);
@@ -212,7 +210,7 @@ public class TrustBundleAnchor {
             this.setValidStartDate(calStartTime);
             bais.close();
         } catch (Exception e) {
-            setData(Certificate.NULL_CERT);
+            setData(Certificate.getNullCert());
             throw new CertificateException("Data cannot be converted to a valid X.509 Certificate", e);
         }
 
@@ -221,12 +219,12 @@ public class TrustBundleAnchor {
 
     /**
      * Converts the anchor data to an X509 certificate
-     * 
+     *
      * @return The anchor data as an X509 certificate
      * @throws CertificateException
      */
     public X509Certificate toCertificate() throws CertificateException {
-        X509Certificate cert = null;
+        X509Certificate cert;
         try {
             validate();
             final ByteArrayInputStream bais = new ByteArrayInputStream(anchorData);
@@ -240,12 +238,12 @@ public class TrustBundleAnchor {
     }
 
     private boolean hasData() {
-        return ((anchorData != null) && (!Arrays.equals(anchorData, Certificate.NULL_CERT)));
+        return anchorData != null && !Arrays.equals(anchorData, Certificate.getNullCert());
     }
 
     /**
      * Validate the Anchor for the existence of data.
-     * 
+     *
      * @throws CertificateException
      */
     public void validate() throws CertificateException {

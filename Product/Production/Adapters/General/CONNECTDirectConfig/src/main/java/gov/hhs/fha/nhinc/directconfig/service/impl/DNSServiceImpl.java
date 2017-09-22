@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2014, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -51,12 +51,9 @@ import gov.hhs.fha.nhinc.directconfig.dao.DNSDao;
 import gov.hhs.fha.nhinc.directconfig.entity.DNSRecord;
 import gov.hhs.fha.nhinc.directconfig.service.ConfigurationServiceException;
 import gov.hhs.fha.nhinc.directconfig.service.DNSService;
-
 import java.util.Collection;
-
 import javax.annotation.PostConstruct;
 import javax.jws.WebService;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -65,7 +62,7 @@ import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 /**
  * Web service implementation of the DNSService.
- * 
+ *
  * @author Greg Meyer
  * @since 1.1
  */

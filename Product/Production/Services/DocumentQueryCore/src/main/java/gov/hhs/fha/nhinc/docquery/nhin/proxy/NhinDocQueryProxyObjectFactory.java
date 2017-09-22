@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -39,11 +39,12 @@ public class NhinDocQueryProxyObjectFactory extends ComponentProxyObjectFactory 
     /**
      * @return CONFIG_FILE_NAME This is the filename where the Bean needs to be read to send DocQuery Requests.
      */
+    @Override
     protected String getConfigFileName() {
         return CONFIG_FILE_NAME;
     }
 
-    /** 
+    /**
      *  {@inheritDoc}
      * @see gov.hhs.fha.nhinc.docquery.nhin.proxy.NhinDocQueryProxyFactory#getNhinDocQueryProxy()
      */

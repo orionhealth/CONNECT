@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -36,7 +36,7 @@ import java.util.Date;
 public class DatabaseEvent implements Event {
 
     private Long id;
-    
+
     private String messageID;
     private String transactionID;
     private String description;
@@ -52,13 +52,14 @@ public class DatabaseEvent implements Event {
     public Long getId() {
         return id;
     }
+
     /**
      * @param id the id to set
      */
     public void setId(Long id) {
         this.id = id;
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -66,6 +67,7 @@ public class DatabaseEvent implements Event {
     public String getEventName() {
         return eventName;
     }
+
     /**
      * @param eventName the eventName to set
      */
@@ -95,7 +97,7 @@ public class DatabaseEvent implements Event {
 
     @Override
     public void setMessageID(String messageID) {
-        this.messageID =  messageID;
+        this.messageID = messageID;
     }
 
     @Override
@@ -115,7 +117,7 @@ public class DatabaseEvent implements Event {
 
     @Override
     public void setInitiatorHcid(String hcid) {
-        this.initiatorHcid = hcid;
+        initiatorHcid = hcid;
     }
 
     @Override
@@ -125,14 +127,14 @@ public class DatabaseEvent implements Event {
 
     @Override
     public void setRespondingHcid(String hcid) {
-        this.respondingHcid = hcid;
+        respondingHcid = hcid;
     }
 
     @Override
     public String getRespondingHcid() {
         return respondingHcid;
     }
-    
+
     public Date getEventTime() {
         return eventTime;
     }
@@ -140,10 +142,10 @@ public class DatabaseEvent implements Event {
     public void setEventTime(Date eventTime) {
         this.eventTime = eventTime;
     }
-    
-    public String getFormattedEventTime(){
+
+    public String getFormattedEventTime() {
         SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy hh:mm");
         return sdf.format(eventTime);
     }
-    
+
 }

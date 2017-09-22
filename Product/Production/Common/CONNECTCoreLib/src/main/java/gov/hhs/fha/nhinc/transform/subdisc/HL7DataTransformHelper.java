@@ -1,28 +1,28 @@
 /*
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services. 
- * All rights reserved. 
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
+ * All rights reserved.
  *
- * Redistribution and use in source and binary forms, with or without 
- * modification, are permitted provided that the following conditions are met: 
- *     * Redistributions of source code must retain the above 
- *       copyright notice, this list of conditions and the following disclaimer. 
- *     * Redistributions in binary form must reproduce the above copyright 
- *       notice, this list of conditions and the following disclaimer in the documentation 
- *       and/or other materials provided with the distribution. 
- *     * Neither the name of the United States Government nor the 
- *       names of its contributors may be used to endorse or promote products 
- *       derived from this software without specific prior written permission. 
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *     * Redistributions of source code must retain the above
+ *       copyright notice, this list of conditions and the following disclaimer.
+ *     * Redistributions in binary form must reproduce the above copyright
+ *       notice, this list of conditions and the following disclaimer in the documentation
+ *       and/or other materials provided with the distribution.
+ *     * Neither the name of the United States Government nor the
+ *       names of its contributors may be used to endorse or promote products
+ *       derived from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
- * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED 
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE 
- * DISCLAIMED. IN NO EVENT SHALL THE UNITED STATES GOVERNMENT BE LIABLE FOR ANY 
- * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES 
- * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; 
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND 
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT 
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS 
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE UNITED STATES GOVERNMENT BE LIABLE FOR ANY
+ * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 package gov.hhs.fha.nhinc.transform.subdisc;
 
@@ -34,8 +34,24 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.TimeZone;
 import javax.xml.bind.JAXBElement;
-import org.apache.log4j.Logger;
-import org.hl7.v3.*;
+import org.hl7.v3.ADExplicit;
+import org.hl7.v3.CD;
+import org.hl7.v3.CE;
+import org.hl7.v3.CS;
+import org.hl7.v3.ENExplicit;
+import org.hl7.v3.EnExplicitFamily;
+import org.hl7.v3.EnExplicitGiven;
+import org.hl7.v3.EnExplicitPrefix;
+import org.hl7.v3.EnExplicitSuffix;
+import org.hl7.v3.EnFamily;
+import org.hl7.v3.EnGiven;
+import org.hl7.v3.EnPrefix;
+import org.hl7.v3.II;
+import org.hl7.v3.PNExplicit;
+import org.hl7.v3.TELExplicit;
+import org.hl7.v3.TSExplicit;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -43,7 +59,7 @@ import org.hl7.v3.*;
  */
 public class HL7DataTransformHelper {
 
-    private static final Logger LOG = Logger.getLogger(HL7DataTransformHelper.class);
+    private static final Logger LOG = LoggerFactory.getLogger(HL7DataTransformHelper.class);
 
     public static II IIFactory(String root) {
         return IIFactory(root, null, null);
@@ -143,14 +159,13 @@ public class HL7DataTransformHelper {
             GregorianCalendar today = new GregorianCalendar(TimeZone.getTimeZone("GMT"));
 
             timestamp = String.valueOf(today.get(GregorianCalendar.YEAR))
-                + String.valueOf(today.get(GregorianCalendar.MONTH) + 1)
-                + String.valueOf(today.get(GregorianCalendar.DAY_OF_MONTH))
-                + String.valueOf(today.get(GregorianCalendar.HOUR_OF_DAY))
-                + String.valueOf(today.get(GregorianCalendar.MINUTE))
-                + String.valueOf(today.get(GregorianCalendar.SECOND));
+                    + String.valueOf(today.get(GregorianCalendar.MONTH) + 1)
+                    + String.valueOf(today.get(GregorianCalendar.DAY_OF_MONTH))
+                    + String.valueOf(today.get(GregorianCalendar.HOUR_OF_DAY))
+                    + String.valueOf(today.get(GregorianCalendar.MINUTE))
+                    + String.valueOf(today.get(GregorianCalendar.SECOND));
         } catch (Exception e) {
-            LOG.error("Exception when creating XMLGregorian Date");
-            LOG.error(" message: " + e.getMessage());
+            LOG.error("Exception when creating XMLGregorian Date: {}", e.getLocalizedMessage(), e);
         }
 
         if (NullChecker.isNotNullish(timestamp)) {
@@ -163,10 +178,10 @@ public class HL7DataTransformHelper {
 
     public static ENExplicit convertPNToEN(PNExplicit pnName) {
         org.hl7.v3.ObjectFactory factory = new org.hl7.v3.ObjectFactory();
-        ENExplicit enName = (ENExplicit) (factory.createENExplicit());
+        ENExplicit enName = factory.createENExplicit();
         List enNamelist = enName.getContent();
-        EnExplicitFamily familyName = null;
-        EnExplicitGiven givenName = null;
+        EnExplicitFamily familyName;
+        EnExplicitGiven givenName;
 
         List<Serializable> choice = pnName.getContent();
         Iterator<Serializable> iterSerialObjects = choice.iterator();
@@ -198,13 +213,13 @@ public class HL7DataTransformHelper {
 
     public static PNExplicit convertENtoPN(ENExplicit value) {
         org.hl7.v3.ObjectFactory factory = new org.hl7.v3.ObjectFactory();
-        PNExplicit result = (PNExplicit) (factory.createPNExplicit());
+        PNExplicit result = factory.createPNExplicit();
         List namelist = result.getContent();
-        String lastName = "";
-        String firstName = "";
+        String lastName;
+        String firstName;
 
-        EnExplicitFamily explicitFamilyName = null;
-        EnExplicitGiven explicitGivenName = null;
+        EnExplicitFamily explicitFamilyName;
+        EnExplicitGiven explicitGivenName;
 
         for (Object item : value.getContent()) {
             if (item instanceof EnFamily) {
@@ -258,9 +273,9 @@ public class HL7DataTransformHelper {
     }
 
     public static ENExplicit createEnExplicit(String firstName, String middleName, String lastName, String title,
-        String suffix) {
+            String suffix) {
         org.hl7.v3.ObjectFactory factory = new org.hl7.v3.ObjectFactory();
-        ENExplicit enName = (ENExplicit) (factory.createENExplicit());
+        ENExplicit enName = factory.createENExplicit();
         List enNamelist = enName.getContent();
 
         if (NullChecker.isNotNullish(lastName)) {
@@ -290,7 +305,7 @@ public class HL7DataTransformHelper {
     public static PNExplicit createPNExplicit(String firstName, String lastName) {
         LOG.debug("begin CreatePNExplicit");
         org.hl7.v3.ObjectFactory factory = new org.hl7.v3.ObjectFactory();
-        PNExplicit name = (PNExplicit) (factory.createPNExplicit());
+        PNExplicit name = factory.createPNExplicit();
         List namelist = name.getContent();
 
         if (NullChecker.isNotNullish(lastName)) {
@@ -333,7 +348,7 @@ public class HL7DataTransformHelper {
     }
 
     public static PNExplicit createPNExplicit(String firstName, String middleName, String lastName, String title,
-        String suffix) {
+            String suffix) {
         PNExplicit result = createPNExplicit(firstName, middleName, lastName);
         List namelist = result.getContent();
         org.hl7.v3.ObjectFactory factory = new org.hl7.v3.ObjectFactory();
@@ -352,7 +367,8 @@ public class HL7DataTransformHelper {
         return result;
     }
 
-    public static ADExplicit createADExplicit(boolean notOrdered, String street, String city, String state, String zip) {
+    public static ADExplicit createADExplicit(boolean notOrdered, String street, String city, String state,
+            String zip) {
         ADExplicit result = new ADExplicit();
 
         result.setIsNotOrdered(notOrdered);
@@ -369,7 +385,7 @@ public class HL7DataTransformHelper {
     }
 
     public static ADExplicit createADExplicit(boolean notOrdered, String street, String street1, String city,
-        String state, String zip) {
+            String state, String zip) {
         ADExplicit result = new ADExplicit();
 
         result.setIsNotOrdered(notOrdered);

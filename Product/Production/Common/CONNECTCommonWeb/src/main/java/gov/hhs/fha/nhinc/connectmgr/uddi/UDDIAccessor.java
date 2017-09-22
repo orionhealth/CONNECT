@@ -1,39 +1,38 @@
 /*
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services. 
- * All rights reserved. 
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
+ * All rights reserved.
  *
- * Redistribution and use in source and binary forms, with or without 
- * modification, are permitted provided that the following conditions are met: 
- *     * Redistributions of source code must retain the above 
- *       copyright notice, this list of conditions and the following disclaimer. 
- *     * Redistributions in binary form must reproduce the above copyright 
- *       notice, this list of conditions and the following disclaimer in the documentation 
- *       and/or other materials provided with the distribution. 
- *     * Neither the name of the United States Government nor the 
- *       names of its contributors may be used to endorse or promote products 
- *       derived from this software without specific prior written permission. 
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *     * Redistributions of source code must retain the above
+ *       copyright notice, this list of conditions and the following disclaimer.
+ *     * Redistributions in binary form must reproduce the above copyright
+ *       notice, this list of conditions and the following disclaimer in the documentation
+ *       and/or other materials provided with the distribution.
+ *     * Neither the name of the United States Government nor the
+ *       names of its contributors may be used to endorse or promote products
+ *       derived from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
- * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED 
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE 
- * DISCLAIMED. IN NO EVENT SHALL THE UNITED STATES GOVERNMENT BE LIABLE FOR ANY 
- * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES 
- * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; 
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND 
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT 
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS 
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE UNITED STATES GOVERNMENT BE LIABLE FOR ANY
+ * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 package gov.hhs.fha.nhinc.connectmgr.uddi;
 
 import gov.hhs.fha.nhinc.connectmgr.uddi.proxy.UDDIFindBusinessProxy;
 import gov.hhs.fha.nhinc.connectmgr.uddi.proxy.UDDIFindBusinessProxyObjectFactory;
 import gov.hhs.fha.nhinc.properties.PropertyAccessor;
-
 import java.util.ArrayList;
 import java.util.HashSet;
-
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.uddi.api_v3.BusinessDetail;
 import org.uddi.api_v3.BusinessInfo;
 import org.uddi.api_v3.BusinessInfos;
@@ -42,12 +41,12 @@ import org.uddi.api_v3.GetBusinessDetail;
 
 /**
  * This class is used to retrieve the connection information from the UDDI server.
- * 
+ *
  * @author Les Westberg
  */
 public class UDDIAccessor {
 
-    private static final Logger LOG = Logger.getLogger(UDDIAccessor.class);
+    private static final Logger LOG = LoggerFactory.getLogger(UDDIAccessor.class);
 
     private static String GATEWAY_PROPFILE_NAME = "gateway";
     private static String UDDI_BUSINESSES_TO_IGNORE = "UDDIBusinessesToIgnore";
@@ -56,7 +55,7 @@ public class UDDIAccessor {
     // These are configured in the gateway.properties file and will be used to eliminate
     // some of the entries we get back from the UDDI server.
     // ------------------------------------------------------------------------------------
-    private HashSet<String> m_hBusinessToIgnore = new HashSet<String>();
+    private HashSet<String> m_hBusinessToIgnore = new HashSet<>();
     private boolean m_bPropsLoaded = false; // True if the props have been loaded.
 
     /**
@@ -67,11 +66,11 @@ public class UDDIAccessor {
             try {
                 String sValue = PropertyAccessor.getInstance().getProperty(GATEWAY_PROPFILE_NAME,
                         UDDI_BUSINESSES_TO_IGNORE);
-                if ((sValue != null) && (sValue.length() > 0)) {
+                if (sValue != null && sValue.length() > 0) {
                     String saBusiness[] = sValue.split(";");
-                    if ((saBusiness != null) && (saBusiness.length > 0)) {
-                        for (int i = 0; i < saBusiness.length; i++) {
-                            m_hBusinessToIgnore.add(saBusiness[i]);
+                    if (saBusiness != null && saBusiness.length > 0) {
+                        for (String saBusines : saBusiness) {
+                            m_hBusinessToIgnore.add(saBusines);
                         }
                     }
                 }
@@ -89,14 +88,14 @@ public class UDDIAccessor {
 
     /**
      * This method extracts the business key from the business info object.
-     * 
+     *
      * @param oBusInfo The business information object containing the data.
      * @return The key that was extracted.
      */
     private String extractBusinessKey(BusinessInfo oBusInfo) {
         String sKey = "";
 
-        if ((oBusInfo != null) && (oBusInfo.getBusinessKey() != null) && (oBusInfo.getBusinessKey().length() > 0)) {
+        if (oBusInfo != null && oBusInfo.getBusinessKey() != null && oBusInfo.getBusinessKey().length() > 0) {
             sKey = oBusInfo.getBusinessKey();
         }
 
@@ -105,10 +104,10 @@ public class UDDIAccessor {
     }
 
     private void removeIgnoredBusinesses(BusinessList businessList) {
-        ArrayList<BusinessInfo> ignoredKeyList = new ArrayList<BusinessInfo>();
-        if ((businessList != null) && (businessList.getBusinessInfos() != null)
-                && (businessList.getBusinessInfos().getBusinessInfo() != null)
-                && (businessList.getBusinessInfos().getBusinessInfo().size() > 0)) {
+        ArrayList<BusinessInfo> ignoredKeyList = new ArrayList<>();
+        if (businessList != null && businessList.getBusinessInfos() != null
+                && businessList.getBusinessInfos().getBusinessInfo() != null
+                && businessList.getBusinessInfos().getBusinessInfo().size() > 0) {
             for (BusinessInfo oBusInfo : businessList.getBusinessInfos().getBusinessInfo()) {
                 String sKey = extractBusinessKey(oBusInfo);
 
@@ -123,9 +122,9 @@ public class UDDIAccessor {
     /**
      * This method is used to retrieve the data from the UDDI server. The data is returned in the form of
      * CMBusinessEntities.
-     * 
+     *
      * @return The Business Entities that were retrieved from the UDDI server.
-     * 
+     *
      */
     public BusinessDetail retrieveFromUDDIServer() throws UDDIAccessorException {
         loadProperties();
@@ -139,7 +138,7 @@ public class UDDIAccessor {
     /**
      * This method retrieves the business entities from the UDDI server. It does not retrieve the services or bindings.
      * They are retrieved on other calls. This only retrieves the business information.
-     * 
+     *
      * @return the BusinessEntities retrieved from the UDDI server.
      * @throws UDDIAccessorException
      */
@@ -149,7 +148,7 @@ public class UDDIAccessor {
             LOG.debug("Retrieving business entities from UDDI using find_business web service call.");
         }
 
-        BusinessList businessList = null;
+        BusinessList businessList;
         try {
             UDDIFindBusinessProxyObjectFactory uddiFactory = new UDDIFindBusinessProxyObjectFactory();
             UDDIFindBusinessProxy uddiProxy = uddiFactory.getUDDIBusinessInfoProxy();
@@ -172,7 +171,7 @@ public class UDDIAccessor {
             return null;
         }
 
-        BusinessDetail businessDetail = null;
+        BusinessDetail businessDetail;
         BusinessInfos businessInfos = businessList.getBusinessInfos();
         try {
             GetBusinessDetail searchParams = createSearchParamsFromBusinessKeys(businessInfos);
@@ -193,7 +192,7 @@ public class UDDIAccessor {
     private GetBusinessDetail createSearchParamsFromBusinessKeys(BusinessInfos businessInfos) {
         GetBusinessDetail searchParams = new GetBusinessDetail();
         for (BusinessInfo businessInfo : businessInfos.getBusinessInfo()) {
-            if ((businessInfo.getBusinessKey() != null) && (businessInfo.getBusinessKey().length() > 0)) {
+            if (businessInfo.getBusinessKey() != null && businessInfo.getBusinessKey().length() > 0) {
                 searchParams.getBusinessKey().add(businessInfo.getBusinessKey());
             }
         }

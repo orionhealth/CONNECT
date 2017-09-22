@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2014, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,13 +27,17 @@
 package gov.hhs.fha.nhinc.direct.receiver.proxy;
 
 import gov.hhs.fha.nhinc.direct.HeaderMap;
+
 import java.io.IOException;
 import java.util.Enumeration;
+
 import javax.mail.Header;
 import javax.mail.MessagingException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
-import org.apache.log4j.Logger;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -41,16 +45,18 @@ import org.apache.log4j.Logger;
  */
 public class DirectReceiverProxyWebServiceImpl {
 
-    private static final Logger LOG = Logger.getLogger(DirectReceiverProxyWebServiceImpl.class);
-    
+    private static final Logger LOG = LoggerFactory.getLogger(DirectReceiverProxyWebServiceImpl.class);
+
     /**
      * Constructor
      */
-    public DirectReceiverProxyWebServiceImpl() {}
+    public DirectReceiverProxyWebServiceImpl() {
+        //Default constructor
+    }
 
     /**
-     * 
-     * @param inMessage 
+     *
+     * @param inMessage
      */
     public void receiveInbound(MimeMessage inMessage) {
         LOG.debug("Begin DirectReceiverUnsecuredProxy.receiveInbound()");
@@ -59,7 +65,7 @@ public class DirectReceiverProxyWebServiceImpl {
             gov.hhs.fha.nhinc.direct.DirectReceiverPortType port = service.getDirectReceiverPortType();
             gov.hhs.fha.nhinc.direct.ConnectCustomMimeMessage message = new gov.hhs.fha.nhinc.direct.ConnectCustomMimeMessage();
             message.setContent(inMessage.getContent().toString());
-            HeaderMap aMap = null;
+            HeaderMap aMap;
             Enumeration mimeHeaders = inMessage.getAllHeaders();
             while (mimeHeaders.hasMoreElements()) {
                 Header header = (Header) mimeHeaders.nextElement();
@@ -69,16 +75,13 @@ public class DirectReceiverProxyWebServiceImpl {
                 aMap.setValue(header.getValue());
                 message.getHeadersList().add(aMap);
             }
-            InternetAddress senderAddress = (InternetAddress) inMessage.getSender();            
+            InternetAddress senderAddress = (InternetAddress) inMessage.getSender();
             message.setSender(senderAddress.getAddress());
             message.setSubject(inMessage.getSubject());
             port.receiveInbound(message);
-        } catch (IOException ex) {
-            LOG.error("Unable to call DirectReceiver WebService :" + ex.getMessage());
-        } catch (MessagingException ex) {
-            LOG.error("Unable to call DirectReceiver WebService :" + ex.getMessage());
+        } catch (IOException | MessagingException ex) {
+            LOG.error("Unable to call DirectReceiver WebService :{}", ex.getLocalizedMessage(), ex);
         }
-
         LOG.debug("End DirectReceiverUnsecuredProxy.receiveInbound()");
     }
 }

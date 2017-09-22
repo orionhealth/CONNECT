@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2014, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -47,12 +47,12 @@ THE POSSIBILITY OF SUCH DAMAGE.
 
 package gov.hhs.fha.nhinc.directconfig.service.jaxws;
 
+import gov.hhs.fha.nhinc.directconfig.service.helpers.CertificateGetOptions;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
-import gov.hhs.fha.nhinc.directconfig.service.helpers.CertificateGetOptions;
 
 @XmlRootElement(name = "listAnchors", namespace = "http://nhind.org/config")
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -71,7 +71,7 @@ public class ListAnchors {
     private CertificateGetOptions options;
 
     /**
-     * 
+     *
      * @return
      *     returns Long
      */
@@ -80,7 +80,7 @@ public class ListAnchors {
     }
 
     /**
-     * 
+     *
      * @param lastAnchorId
      *     the value for the lastAnchorId property
      */
@@ -89,7 +89,7 @@ public class ListAnchors {
     }
 
     /**
-     * 
+     *
      * @return
      *     returns int
      */
@@ -98,7 +98,7 @@ public class ListAnchors {
     }
 
     /**
-     * 
+     *
      * @param maxResults
      *     the value for the maxResults property
      */
@@ -107,7 +107,7 @@ public class ListAnchors {
     }
 
     /**
-     * 
+     *
      * @return
      *     returns CertificateGetOptions
      */
@@ -116,7 +116,7 @@ public class ListAnchors {
     }
 
     /**
-     * 
+     *
      * @param options
      *     the value for the options property
      */

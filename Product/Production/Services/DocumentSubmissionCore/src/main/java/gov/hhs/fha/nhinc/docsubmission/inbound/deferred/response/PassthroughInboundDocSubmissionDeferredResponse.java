@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,32 +27,30 @@
 package gov.hhs.fha.nhinc.docsubmission.inbound.deferred.response;
 
 import gov.hhs.fha.nhinc.common.nhinccommon.AssertionType;
-import gov.hhs.fha.nhinc.docsubmission.XDRAuditLogger;
 import gov.hhs.fha.nhinc.docsubmission.adapter.deferred.response.proxy.AdapterDocSubmissionDeferredResponseProxyObjectFactory;
+import gov.hhs.fha.nhinc.docsubmission.audit.DSDeferredResponseAuditLogger;
 import gov.hhs.healthit.nhin.XDRAcknowledgementType;
 import oasis.names.tc.ebxml_regrep.xsd.rs._3.RegistryResponseType;
 
 /**
  * @author akong
- * 
+ *
  */
 public class PassthroughInboundDocSubmissionDeferredResponse extends AbstractInboundDocSubmissionDeferredResponse {
 
-    /**
-     * Constructor.
-     */
     public PassthroughInboundDocSubmissionDeferredResponse() {
-        this(new AdapterDocSubmissionDeferredResponseProxyObjectFactory(), new XDRAuditLogger());
+        this(new AdapterDocSubmissionDeferredResponseProxyObjectFactory(), new DSDeferredResponseAuditLogger());
     }
 
     /**
      * Constructor with dependency injection of strategy components.
-     * 
+     *
      * @param adapterFactory
      * @param auditLogger
      */
     public PassthroughInboundDocSubmissionDeferredResponse(
-            AdapterDocSubmissionDeferredResponseProxyObjectFactory adapterFactory, XDRAuditLogger auditLogger) {
+        AdapterDocSubmissionDeferredResponseProxyObjectFactory adapterFactory,
+        DSDeferredResponseAuditLogger auditLogger) {
         super(adapterFactory, auditLogger);
     }
 

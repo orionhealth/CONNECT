@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,16 +26,15 @@
  */
 package gov.hhs.fha.nhinc.connectmgr.uddi.proxy;
 
-import org.apache.log4j.Logger;
-
+import gov.hhs.fha.nhinc.messaging.client.CONNECTClient;
+import gov.hhs.fha.nhinc.messaging.service.port.ServicePortDescriptor;
+import gov.hhs.fha.nhinc.nhin_uddi_api_v3.UDDIInquiryPortType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.uddi.api_v3.BusinessDetail;
 import org.uddi.api_v3.BusinessList;
 import org.uddi.api_v3.FindBusiness;
 import org.uddi.api_v3.GetBusinessDetail;
-
-import gov.hhs.fha.nhinc.messaging.client.CONNECTClient;
-import gov.hhs.fha.nhinc.messaging.service.port.ServicePortDescriptor;
-import gov.hhs.fha.nhinc.nhin_uddi_api_v3.UDDIInquiryPortType;
 
 /**
  *
@@ -43,7 +42,7 @@ import gov.hhs.fha.nhinc.nhin_uddi_api_v3.UDDIInquiryPortType;
  */
 public class UDDIFindBusinessProxyHPImpl extends UDDIFindBusinessProxyBase {
 
-    private static final Logger LOG = Logger.getLogger(UDDIFindBusinessProxyHPImpl.class);
+    private static final Logger LOG = LoggerFactory.getLogger(UDDIFindBusinessProxyHPImpl.class);
 
     /**
      *
@@ -54,19 +53,19 @@ public class UDDIFindBusinessProxyHPImpl extends UDDIFindBusinessProxyBase {
     public BusinessList findBusinessesFromUDDI() throws UDDIFindBusinessException {
         LOG.debug("Using HP Implementation for UDDI Business Info Service");
 
-        BusinessList oBusinessList = null;
+        BusinessList oBusinessList;
 
         try {
             loadProperties();
 
             FindBusiness oSearchParams = new FindBusiness();
-            
+
             int maxRows = getMaxResults();
-            
+
             if(maxRows > 0){
                  oSearchParams.setMaxRows(getMaxResults());
             }
-            
+
             ServicePortDescriptor<UDDIInquiryPortType> portDescriptor = new UDDIFindBusinessProxyServicePortDescriptor();
             CONNECTClient<UDDIInquiryPortType> client = getCONNECTClientUnsecured(portDescriptor, uddiInquiryUrl, null);
             oBusinessList = (BusinessList) client.invokePort(UDDIInquiryPortType.class, "findBusiness", oSearchParams);
@@ -84,6 +83,6 @@ public class UDDIFindBusinessProxyHPImpl extends UDDIFindBusinessProxyBase {
     public BusinessDetail getBusinessDetail(GetBusinessDetail searchParams) throws UDDIFindBusinessException {
         return super.getBusinessDetail(searchParams);
     }
-    
-    
+
+
 }

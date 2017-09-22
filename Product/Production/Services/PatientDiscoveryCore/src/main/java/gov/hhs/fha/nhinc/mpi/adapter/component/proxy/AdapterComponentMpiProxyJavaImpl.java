@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,12 +26,12 @@
  */
 package gov.hhs.fha.nhinc.mpi.adapter.component.proxy;
 
-import org.apache.log4j.Logger;
-import org.hl7.v3.PRPAIN201305UV02;
-import org.hl7.v3.PRPAIN201306UV02;
-
 import gov.hhs.fha.nhinc.common.nhinccommon.AssertionType;
 import gov.hhs.fha.nhinc.mpi.adapter.component.AdapterComponentMpiOrchImpl;
+import org.hl7.v3.PRPAIN201305UV02;
+import org.hl7.v3.PRPAIN201306UV02;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This class is used as a java implementation for calling the Adapter MPI. Obviously in order to use the java
@@ -40,7 +40,7 @@ import gov.hhs.fha.nhinc.mpi.adapter.component.AdapterComponentMpiOrchImpl;
  * @author Les Westberg
  */
 public class AdapterComponentMpiProxyJavaImpl implements AdapterComponentMpiProxy {
-    private static final Logger LOG = Logger.getLogger(AdapterComponentMpiProxyJavaImpl.class);
+    private static final Logger LOG = LoggerFactory.getLogger(AdapterComponentMpiProxyJavaImpl.class);
 
     /**
      * Find the matching candidates from the MPI.

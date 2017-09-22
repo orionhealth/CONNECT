@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -28,11 +28,12 @@ package gov.hhs.fha.nhinc.docquery.entity;
 
 /**
  * DocQuery OrchestrationContext for g0 endpoint.
- * 
+ *
  * @author paul.eftis
  */
 // CHECKSTYLE:OFF
 public class OutboundDocQueryOrchestrationContextBuilder_g0 extends OutboundDocQueryOrchestrationContextBuilder {
+
     // CHECKSTYLE:ON
     /**
      * @return strategy for g0
@@ -47,9 +48,7 @@ public class OutboundDocQueryOrchestrationContextBuilder_g0 extends OutboundDocQ
      */
     @Override
     protected OutboundDocQueryOrchestratable getOrchestratable() {
-        OutboundDocQueryOrchestratable_a0 orcha0 = new OutboundDocQueryOrchestratable_a0(getNhinDelegate(),
-                getAuditTransformer(), getPolicyTransformer(), getAssertionType(), getServiceName(),
-                getTargetSystemType(), getRequest());
-        return orcha0;
+        return new OutboundDocQueryOrchestratable_a0(getNhinDelegate(), getPolicyTransformer(), getAssertionType(),
+            getServiceName(), getTargetSystemType(), getRequest());
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-13, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -28,29 +28,27 @@ package gov.hhs.fha.nhinc.docquery.entity;
 
 import gov.hhs.fha.nhinc.common.nhinccommon.NhinTargetSystemType;
 import gov.hhs.fha.nhinc.connectmgr.ConnectionManagerException;
-import gov.hhs.fha.nhinc.docquery.DocQueryAuditLog;
 import gov.hhs.fha.nhinc.docquery.MessageGeneratorUtils;
+import gov.hhs.fha.nhinc.docquery.audit.DocQueryAuditLogger;
 import gov.hhs.fha.nhinc.docquery.nhin.proxy.NhinDocQueryProxyFactory;
 import gov.hhs.fha.nhinc.docquery.nhin.proxy.NhinDocQueryProxyObjectFactory;
 import gov.hhs.fha.nhinc.gateway.executorservice.ExecutorServiceHelper;
 import gov.hhs.fha.nhinc.nhinclib.NhincConstants.GATEWAY_API_LEVEL;
 import gov.hhs.fha.nhinc.orchestration.Orchestratable;
 import gov.hhs.fha.nhinc.orchestration.OrchestrationStrategy;
-import gov.hhs.fha.nhinc.util.HomeCommunityMap;
 import gov.hhs.fha.nhinc.webserviceproxy.WebServiceProxyHelper;
 import oasis.names.tc.ebxml_regrep.xsd.query._3.AdhocQueryResponse;
-
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author bhumphrey/paul
- * 
+ *
  */
 public abstract class OutboundDocQueryStrategy implements OrchestrationStrategy {
 
-    private static final Logger LOG = Logger.getLogger(OutboundDocQueryStrategy.class);
-
-    private DocQueryAuditLog auditLog = null;
+    private static final Logger LOG = LoggerFactory.getLogger(OutboundDocQueryStrategy.class);
+    private DocQueryAuditLogger auditLogger = null;
     private NhinDocQueryProxyFactory proxyFactory;
     private MessageGeneratorUtils messageGeneratorUtils;
     WebServiceProxyHelper webServiceProxyHelper;
@@ -65,21 +63,22 @@ public abstract class OutboundDocQueryStrategy implements OrchestrationStrategy 
     }
 
     /**
-     * 
+     *
      * @return
      */
     abstract protected String getServiceName();
 
     /**
-     * 
+     *
      * @return
      */
     abstract protected GATEWAY_API_LEVEL getAPILevel();
 
     /**
      * {@inheritDoc}
-     * 
-     * @see gov.hhs.fha.nhinc.orchestration.OrchestrationStrategy#execute(gov.hhs.fha.nhinc.orchestration.Orchestratable)
+     *
+     * @see
+     * gov.hhs.fha.nhinc.orchestration.OrchestrationStrategy#execute(gov.hhs.fha.nhinc.orchestration.Orchestratable)
      */
     @Override
     public void execute(Orchestratable message) {
@@ -106,21 +105,17 @@ public abstract class OutboundDocQueryStrategy implements OrchestrationStrategy 
      */
     public void execute(OutboundDocQueryOrchestratable message) {
 
-        getAuditLogger().auditOutboundDocQueryStrategyRequest(message.getRequest(), message.getAssertion(),
-                HomeCommunityMap.getCommunityIdFromTargetSystem(message.getTarget()));
         try {
             executeStrategy(message);
         } catch (Exception ex) {
             handleError(message, ex);
         }
 
-        getAuditLogger().auditOutboundDocQueryStrategyResponse(message.getResponse(), message.getAssertion(),
-                HomeCommunityMap.getCommunityIdFromTargetSystem(message.getTarget()));
     }
 
     /**
      * This method takes Orchestrated message request and returns response.
-     * 
+     *
      * @param message DocQueryOrchestartable message from Adapter level a0 passed.
      * @throws Exception
      * @throws ConnectionManagerException
@@ -152,11 +147,11 @@ public abstract class OutboundDocQueryStrategy implements OrchestrationStrategy 
         return webServiceProxyHelper.getUrlFromTargetSystemByGatewayAPILevel(target, getServiceName(), getAPILevel());
     }
 
-    protected DocQueryAuditLog getAuditLogger() {
-        if (auditLog == null) {
-            auditLog = new DocQueryAuditLog();
+    protected DocQueryAuditLogger getAuditLogger() {
+        if (auditLogger == null) {
+            auditLogger = new DocQueryAuditLogger();
         }
-        return auditLog;
+        return auditLogger;
     }
 
     protected void setMessageGeneratorUtils(MessageGeneratorUtils messageGeneratorUtils) {

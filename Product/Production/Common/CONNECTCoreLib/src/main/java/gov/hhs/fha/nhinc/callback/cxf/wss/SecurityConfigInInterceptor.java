@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,9 +27,7 @@
 package gov.hhs.fha.nhinc.callback.cxf.wss;
 
 import gov.hhs.fha.nhinc.callback.SamlConstants;
-
 import javax.xml.namespace.QName;
-
 import org.apache.cxf.interceptor.Fault;
 import org.apache.cxf.message.Message;
 import org.apache.cxf.phase.AbstractPhaseInterceptor;
@@ -41,7 +39,7 @@ import org.apache.ws.security.WSSConfig;
  * This interceptor will override how CXF normally handles the Signature element of the Security header by registering a
  * CONNECT security processor. That processor will inline all digest and signature values in the Signature element if
  * they are attached as a reference as otherwise CXF will erroneously consider them as invalid.
- * 
+ *
  */
 public class SecurityConfigInInterceptor extends AbstractPhaseInterceptor<Message> {
 
@@ -57,7 +55,7 @@ public class SecurityConfigInInterceptor extends AbstractPhaseInterceptor<Messag
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.apache.cxf.interceptor.Interceptor#handleMessage(org.apache.cxf.message.Message)
      */
     @Override

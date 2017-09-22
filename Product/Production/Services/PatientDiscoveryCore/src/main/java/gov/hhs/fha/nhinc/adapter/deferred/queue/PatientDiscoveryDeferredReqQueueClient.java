@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,8 +26,6 @@
  */
 package gov.hhs.fha.nhinc.adapter.deferred.queue;
 
-import org.apache.log4j.Logger;
-
 import gov.hhs.fha.nhinc.adapter.deferred.queue.service.AdapterPatientDiscoveryDeferredReqQueueProcessServicePortDescriptor;
 import gov.hhs.fha.nhinc.adapterpatientdiscoveryreqqueueprocess.AdapterPatientDiscoveryDeferredReqQueueProcessPortType;
 import gov.hhs.fha.nhinc.connectmgr.ConnectionManagerException;
@@ -40,6 +38,8 @@ import gov.hhs.fha.nhinc.messaging.service.port.ServicePortDescriptor;
 import gov.hhs.fha.nhinc.nhinclib.NhincConstants;
 import gov.hhs.fha.nhinc.nhinclib.NullChecker;
 import gov.hhs.fha.nhinc.webserviceproxy.WebServiceProxyHelper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -47,7 +47,7 @@ import gov.hhs.fha.nhinc.webserviceproxy.WebServiceProxyHelper;
  */
 public class PatientDiscoveryDeferredReqQueueClient {
 
-    private static final Logger LOG = Logger.getLogger(PatientDiscoveryDeferredReqQueueClient.class);
+    private static final Logger LOG = LoggerFactory.getLogger(PatientDiscoveryDeferredReqQueueClient.class);
     private static final String SERVICE_NAME =
             NhincConstants.PATIENT_DISCOVERY_ADAPTER_ASYNC_REQ_QUEUE_PROCESS_SERVICE_NAME;
 
@@ -68,7 +68,7 @@ public class PatientDiscoveryDeferredReqQueueClient {
      */
     public PatientDiscoveryDeferredReqQueueProcessResponseType
             processPatientDiscoveryDeferredReqQueue(String messageId) {
-        String msgText = "";
+        String msgText;
 
         PatientDiscoveryDeferredReqQueueProcessResponseType response =
                 new PatientDiscoveryDeferredReqQueueProcessResponseType();

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -31,6 +31,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.Properties;
+
 import javax.mail.MessagingException;
 import javax.mail.Session;
 import javax.mail.internet.InternetAddress;
@@ -40,7 +41,9 @@ import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMessage.RecipientType;
 import javax.xml.ws.BindingType;
 import javax.xml.ws.soap.SOAPBinding;
-import org.apache.log4j.Logger;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -49,17 +52,16 @@ import org.apache.log4j.Logger;
 @BindingType(SOAPBinding.SOAP12HTTP_BINDING)
 public class DirectReceiverServiceImpl extends DirectAdapterEntity implements DirectReceiverPortType, Serializable {
 
-    private static final Logger LOG = Logger.getLogger(DirectReceiverServiceImpl.class);
+    private static final Logger LOG = LoggerFactory.getLogger(DirectReceiverServiceImpl.class);
 
     @Override
     public void receiveInbound(ConnectCustomMimeMessage message) {
         LOG.debug("-- Begin DirectReceiverServiceImpl.receiveInbound() --");
-        try {               
-            InternetHeaders headers = new InternetHeaders();            
+        try {
+            InternetHeaders headers = new InternetHeaders();
             for (HeaderMap aHeader : message.getHeadersList()) {
                 headers.addHeader(aHeader.getKey(), aHeader.getValue());
             }
-            //byte[] content = Base64.decodeBase64(message.getContent());
             Properties prop = new Properties();
             prop.put("mail.imaps.partialfetch", false);
             Session session = Session.getDefaultInstance(prop, null);
@@ -75,12 +77,10 @@ public class DirectReceiverServiceImpl extends DirectAdapterEntity implements Di
                 addressTo[i] = new InternetAddress(message.getReceipients().get(i));
             }
             mimeMessage.setRecipients(RecipientType.TO, addressTo);
-            mimeMessage.setSubject(message.getSubject());  
+            mimeMessage.setSubject(message.getSubject());
             getDirectReceiver().receiveInbound(mimeMessage);
-        }catch (MessagingException ex) {
-            LOG.error(ex.getMessage());
-        }catch(IOException ex) {
-            LOG.error(ex.getMessage());
+        }catch (MessagingException | IOException ex) {
+            LOG.error(ex.getLocalizedMessage(),ex);
         }
         LOG.debug("-- End DirectReceiverServiceImpl.receiveInbound() --");
     }

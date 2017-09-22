@@ -1,64 +1,61 @@
 /*
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services. 
- * All rights reserved. 
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
+ * All rights reserved.
  *
- * Redistribution and use in source and binary forms, with or without 
- * modification, are permitted provided that the following conditions are met: 
- *     * Redistributions of source code must retain the above 
- *       copyright notice, this list of conditions and the following disclaimer. 
- *     * Redistributions in binary form must reproduce the above copyright 
- *       notice, this list of conditions and the following disclaimer in the documentation 
- *       and/or other materials provided with the distribution. 
- *     * Neither the name of the United States Government nor the 
- *       names of its contributors may be used to endorse or promote products 
- *       derived from this software without specific prior written permission. 
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *     * Redistributions of source code must retain the above
+ *       copyright notice, this list of conditions and the following disclaimer.
+ *     * Redistributions in binary form must reproduce the above copyright
+ *       notice, this list of conditions and the following disclaimer in the documentation
+ *       and/or other materials provided with the distribution.
+ *     * Neither the name of the United States Government nor the
+ *       names of its contributors may be used to endorse or promote products
+ *       derived from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
- * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED 
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE 
- * DISCLAIMED. IN NO EVENT SHALL THE UNITED STATES GOVERNMENT BE LIABLE FOR ANY 
- * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES 
- * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; 
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND 
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT 
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS 
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE UNITED STATES GOVERNMENT BE LIABLE FOR ANY
+ * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 package gov.hhs.fha.nhinc.patientdb.dao;
 
-import gov.hhs.fha.nhinc.nhinclib.NhincConstants;
 import gov.hhs.fha.nhinc.nhinclib.NullChecker;
 import gov.hhs.fha.nhinc.patientdb.model.Address;
 import gov.hhs.fha.nhinc.patientdb.model.Identifier;
 import gov.hhs.fha.nhinc.patientdb.model.Patient;
 import gov.hhs.fha.nhinc.patientdb.model.Phonenumber;
 import gov.hhs.fha.nhinc.patientdb.persistence.HibernateUtil;
-import gov.hhs.fha.nhinc.properties.PropertyAccessException;
-import gov.hhs.fha.nhinc.properties.PropertyAccessor;
-
+import gov.hhs.fha.nhinc.patientdb.persistence.HibernateUtilFactory;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
-
-import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
-import org.hibernate.Hibernate;
+import org.hibernate.HibernateException;
 import org.hibernate.SQLQuery;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.hibernate.criterion.Expression;
+import org.hibernate.type.StandardBasicTypes;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * PatientDAO Class provides methods to query and update Patient Data to/from MySQL Database using Hibernate
- * 
+ *
  * @author richard.ettema
  */
 public class PatientDAO {
 
-    private static final Logger LOG = Logger.getLogger(PatientDAO.class);
+    private static final Logger LOG = LoggerFactory.getLogger(PatientDAO.class);
     private static PatientDAO patientDAO = new PatientDAO();
-    private static final String ALLOW_SSN_QUERY = "mpi.db.allow.ssn.query";
 
     /**
      * Constructor
@@ -69,7 +66,7 @@ public class PatientDAO {
 
     /**
      * Singleton instance returned...
-     * 
+     *
      * @return PatientDAO
      */
     public static PatientDAO getPatientDAOInstance() {
@@ -80,10 +77,9 @@ public class PatientDAO {
     // =========================
     // Standard CRUD DML Methods
     // =========================
-
     /**
      * Create a single <code>Patient</code> record. The generated id will be available in the patientRecord.
-     * 
+     *
      * @param patientRecord
      * @return boolean
      */
@@ -95,7 +91,7 @@ public class PatientDAO {
 
         if (patientRecord != null) {
             try {
-                SessionFactory sessionFactory = HibernateUtil.getSessionFactory();
+                SessionFactory sessionFactory = getSessionFactory();
                 session = sessionFactory.openSession();
                 tx = session.beginTransaction();
                 LOG.info("Inserting Record...");
@@ -104,16 +100,20 @@ public class PatientDAO {
 
                 LOG.info("Patient Inserted seccussfully...");
                 tx.commit();
-            } catch (Exception e) {
+            } catch (HibernateException | NullPointerException e) {
                 result = false;
                 if (tx != null) {
                     tx.rollback();
                 }
-                LOG.error("Exception during insertion caused by :" + e.getMessage(), e);
+                LOG.error("Exception during insertion caused by : {}", e.getMessage(), e);
             } finally {
                 // Actual Patient insertion will happen at this step
                 if (session != null) {
-                    session.close();
+                    try {
+                        session.close();
+                    } catch (HibernateException e) {
+                        LOG.error("Exception while closing the session: {}", e.getMessage(), e);
+                    }
                 }
             }
         }
@@ -123,7 +123,7 @@ public class PatientDAO {
 
     /**
      * Read (Query) the database to get a <code>Patient</code> record based on a known id.
-     * 
+     *
      * @param id
      * @return Patient
      */
@@ -137,10 +137,10 @@ public class PatientDAO {
         }
 
         Session session = null;
-        List<Patient> queryList = null;
+        List<Patient> queryList;
         Patient foundRecord = null;
         try {
-            SessionFactory sessionFactory = HibernateUtil.getSessionFactory();
+            SessionFactory sessionFactory = getSessionFactory();
             session = sessionFactory.openSession();
             LOG.info("Reading Record...");
 
@@ -151,16 +151,20 @@ public class PatientDAO {
 
             queryList = aCriteria.list();
 
-            if (queryList != null && queryList.size() > 0) {
+            if (queryList != null && !queryList.isEmpty()) {
                 foundRecord = queryList.get(0);
             }
-        } catch (Exception e) {
-            LOG.error("Exception during read occured due to :" + e.getMessage(), e);
+        } catch (HibernateException | NullPointerException e) {
+            LOG.error("Exception during read occured due to : {}", e.getMessage(), e);
         } finally {
             // Flush and close session
             if (session != null) {
-                session.flush();
-                session.close();
+                try {
+                    session.flush();
+                    session.close();
+                } catch (HibernateException e) {
+                    LOG.error("Exception while closing the session after a read: {}", e.getMessage(), e);
+                }
             }
         }
         LOG.debug("PatientDAO.read() - End");
@@ -169,7 +173,7 @@ public class PatientDAO {
 
     /**
      * Update a single <code>Patient</code> record.
-     * 
+     *
      * @param patientRecord
      * @return boolean
      */
@@ -181,7 +185,7 @@ public class PatientDAO {
 
         if (patientRecord != null) {
             try {
-                SessionFactory sessionFactory = HibernateUtil.getSessionFactory();
+                SessionFactory sessionFactory = getSessionFactory();
                 session = sessionFactory.openSession();
                 tx = session.beginTransaction();
                 LOG.info("Updating Record...");
@@ -190,16 +194,20 @@ public class PatientDAO {
 
                 LOG.info("Patient Updated seccussfully...");
                 tx.commit();
-            } catch (Exception e) {
+            } catch (HibernateException | NullPointerException e) {
                 result = false;
                 if (tx != null) {
                     tx.rollback();
                 }
-                LOG.error("Exception during update caused by :" + e.getMessage(), e);
+                LOG.error("Exception during update caused by : {}", e.getMessage(), e);
             } finally {
                 // Actual Patient update will happen at this step
                 if (session != null) {
-                    session.close();
+                    try {
+                        session.close();
+                    } catch (HibernateException e) {
+                        LOG.error("Exception while closing the session after an update: {}", e.getMessage(), e);
+                    }
                 }
             }
         }
@@ -209,7 +217,7 @@ public class PatientDAO {
 
     /**
      * Delete a <code>Patient</code> record from the database
-     * 
+     *
      * @param patientRecord
      */
     public void delete(Patient patientRecord) {
@@ -217,19 +225,23 @@ public class PatientDAO {
 
         Session session = null;
         try {
-            SessionFactory sessionFactory = HibernateUtil.getSessionFactory();
+            SessionFactory sessionFactory = getSessionFactory();
             session = sessionFactory.openSession();
             LOG.info("Deleting Record...");
 
             // Delete the Patient record
             session.delete(patientRecord);
-        } catch (Exception e) {
-            LOG.error("Exception during delete occured due to :" + e.getMessage(), e);
+        } catch (HibernateException | NullPointerException e) {
+            LOG.error("Exception during delete occured due to : {}", e.getMessage(), e);
         } finally {
             // Flush and close session
             if (session != null) {
-                session.flush();
-                session.close();
+                try {
+                    session.flush();
+                    session.close();
+                } catch (HibernateException e) {
+                    LOG.error("Exception while closing the session after a delete: {}", e.getMessage(), e);
+                }
             }
         }
         LOG.debug("PatientDAO.delete() - End");
@@ -238,10 +250,9 @@ public class PatientDAO {
     // ===============================
     // Patient Lookup / Search Methods
     // ===============================
-
     /**
      * Fetch all the matching patients from all the community and all assigning authorities on a known id.
-     * 
+     *
      * @param Patient
      * @return Patient
      */
@@ -249,10 +260,10 @@ public class PatientDAO {
         LOG.debug("PatientDAO.findAllPatients() - Begin");
 
         Session session = null;
-        List<Patient> patientsList = new ArrayList<Patient>();
+        List<Patient> patientsList = new ArrayList<>();
 
         try {
-            SessionFactory sessionFactory = HibernateUtil.getSessionFactory();
+            SessionFactory sessionFactory = getSessionFactory();
             session = sessionFactory.openSession();
 
             LOG.info("Reading Records...");
@@ -269,16 +280,16 @@ public class PatientDAO {
             String suffix = patient.getPersonnames().get(0).getSuffix();
 
             Address address = new Address();
-            if (patient.getAddresses() != null && patient.getAddresses().size() > 0) {
+            if (patient.getAddresses() != null && !patient.getAddresses().isEmpty()) {
                 address = patient.getAddresses().get(0);
             }
             Phonenumber phonenumber = new Phonenumber();
-            if (patient.getPhonenumbers() != null && patient.getPhonenumbers().size() > 0) {
+            if (patient.getPhonenumbers() != null && !patient.getPhonenumbers().isEmpty()) {
                 phonenumber = patient.getPhonenumbers().get(0);
             }
 
             // Build the select with query criteria
-            StringBuffer sqlSelect = new StringBuffer(
+            StringBuilder sqlSelect = new StringBuilder(
                     "SELECT DISTINCT p.patientId, p.dateOfBirth, p.gender, p.ssn, i.id, i.organizationid");
             sqlSelect.append(" FROM patientdb.patient p");
             sqlSelect.append(" INNER JOIN patientdb.identifier i ON p.patientId = i.patientId");
@@ -290,7 +301,7 @@ public class PatientDAO {
                 sqlSelect.append(" INNER JOIN patientdb.phonenumber h ON p.patientId = h.patientId");
             }
 
-            StringBuffer criteriaString = new StringBuffer("");
+            StringBuilder criteriaString = new StringBuilder("");
             if (NullChecker.isNotNullish(gender)) {
                 if (criteriaString.length() > 0) {
                     criteriaString.append(" AND");
@@ -407,10 +418,11 @@ public class PatientDAO {
 
             sqlSelect.append(" ORDER BY i.id, i.organizationid");
 
-            SQLQuery sqlQuery = session.createSQLQuery(sqlSelect.toString()).addScalar("patientId", Hibernate.LONG)
-                    .addScalar("dateOfBirth", Hibernate.TIMESTAMP).addScalar("gender", Hibernate.STRING)
-                    .addScalar("ssn", Hibernate.STRING).addScalar("id", Hibernate.STRING)
-                    .addScalar("organizationid", Hibernate.STRING);
+            SQLQuery sqlQuery = session.createSQLQuery(sqlSelect.toString())
+                    .addScalar("patientId", StandardBasicTypes.LONG)
+                    .addScalar("dateOfBirth", StandardBasicTypes.TIMESTAMP)
+                    .addScalar("gender", StandardBasicTypes.STRING).addScalar("ssn", StandardBasicTypes.STRING)
+                    .addScalar("id", StandardBasicTypes.STRING).addScalar("organizationid", StandardBasicTypes.STRING);
 
             int iParam = 0;
             if (NullChecker.isNotNullish(gender)) {
@@ -474,7 +486,7 @@ public class PatientDAO {
 
             List<Object[]> result = sqlQuery.list();
 
-            if (result != null && result.size() > 0) {
+            if (result != null && !result.isEmpty()) {
                 Long[] patientIdArray = new Long[result.size()];
                 Timestamp[] dateOfBirthArray = new Timestamp[result.size()];
                 String[] genderArray = new String[result.size()];
@@ -510,53 +522,44 @@ public class PatientDAO {
                     // Populate demographic data
                     patientData
                             .setAddresses(AddressDAO.getAddressDAOInstance().findPatientAddresses(patientIdArray[i]));
-                    patientData.setPersonnames(PersonnameDAO.getPersonnameDAOInstance().findPatientPersonnames(
-                            patientIdArray[i]));
-                    patientData.setPhonenumbers(PhonenumberDAO.getPhonenumberDAOInstance().findPatientPhonenumbers(
-                            patientIdArray[i]));
+                    patientData.setPersonnames(
+                            PersonnameDAO.getPersonnameDAOInstance().findPatientPersonnames(patientIdArray[i]));
+                    patientData.setPhonenumbers(
+                            PhonenumberDAO.getPhonenumberDAOInstance().findPatientPhonenumbers(patientIdArray[i]));
 
                     patientsList.add(patientData);
                 }
             }
 
         } catch (Exception e) {
-            LOG.error("Exception during read occured due to : " + e.getMessage(), e);
+            LOG.error("Exception during read occured due to : {}", e.getMessage(), e);
         } finally {
             // Flush and close session
             if (session != null) {
-                session.flush();
-                session.close();
+                try {
+                    session.flush();
+                    session.close();
+                } catch (HibernateException e) {
+                    LOG.error("Exception while closing the session after looking for patients: {}", e.getMessage(), e);
+                }
             }
         }
         LOG.debug("PatientDAO.findPatients() - End");
         return patientsList;
     }
 
-    // ========================
-    // Utility / Helper Methods
-    // ========================
     /**
-     * Return gateway property key perf.monitor.expected.errors value
-     * 
-     * @return String gateway property value
+     * Returns the sessionFactory belonging to PatientDiscovery HibernateUtil
+     *
+     * @return
      */
-    private static boolean isAllowSSNQuery() {
-        boolean result = false;
-        try {
-            // Use CONNECT utility class to access gateway.properties
-            String allowString = PropertyAccessor.getInstance().getProperty(NhincConstants.GATEWAY_PROPERTY_FILE, ALLOW_SSN_QUERY);
-            if (allowString != null && allowString.equalsIgnoreCase("true")) {
-                result = true;
-            }
-        } catch (PropertyAccessException pae) {
-            LOG.error("Error: Failed to retrieve " + ALLOW_SSN_QUERY + " from property file: "
-                    + NhincConstants.GATEWAY_PROPERTY_FILE);
-            LOG.error(pae.getMessage());
-        } catch (NumberFormatException nfe) {
-            LOG.error("Error: Failed to convert " + ALLOW_SSN_QUERY + " from property file: "
-                    + NhincConstants.GATEWAY_PROPERTY_FILE);
-            LOG.error(nfe.getMessage());
+    protected SessionFactory getSessionFactory() {
+        SessionFactory fact = null;
+        HibernateUtil hibernateUtil = HibernateUtilFactory.getPatientDiscHibernateUtil();
+        if (hibernateUtil != null) {
+            fact = hibernateUtil.getSessionFactory();
         }
-        return result;
+        return fact;
     }
+
 }

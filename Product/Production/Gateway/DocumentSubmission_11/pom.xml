@@ -1,19 +1,66 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
     <parent>
         <groupId>org.connectopensource</groupId>
         <artifactId>Gateway</artifactId>
-        <version>4.4.1</version>
+        <version>4.7.0-HOTFIX-1</version>
     </parent>
-    <modelVersion>4.0.0</modelVersion>
+
     <artifactId>DocumentSubmission_11</artifactId>
-    <packaging>war</packaging>
     <name>CONNECT Gateway - ${project.artifactId}</name>
-    
+    <packaging>war</packaging>
+    <modelVersion>4.0.0</modelVersion>
+
     <dependencies>
+        <!-- Java EE APIs -->
+        <dependency>
+            <groupId>org.glassfish</groupId>
+            <artifactId>javax.servlet</artifactId>
+        </dependency>
+
+        <!-- CONNECT Modules / Web Services -->
+        <dependency>
+            <groupId>org.connectopensource</groupId>
+            <artifactId>CONNECTCoreLib</artifactId>
+        </dependency>
         <dependency>
             <groupId>org.connectopensource</groupId>
             <artifactId>DocumentSubmissionCore</artifactId>
             <version>${project.parent.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.connectopensource</groupId>
+            <artifactId>CONNECTCommonTypesLib</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.connectopensource</groupId>
+            <artifactId>DocumentSubmissionWebervices</artifactId>
+        </dependency>
+
+        <!-- Spring Framework -->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-beans</artifactId>
+        </dependency>
+
+        <!-- Logging -->
+        <dependency>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+        </dependency>
+
+        <!-- Testing -->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-all</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-test</artifactId>
         </dependency>
         <dependency>
             <groupId>org.connectopensource</groupId>
@@ -23,27 +70,27 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
+
     <build>
         <finalName>${project.artifactId}</finalName>
         <plugins>
             <plugin>
-                <!-- Used to pull gateway.properties file from the shared 
-                    resource JAR -->
+                <!-- Used to pull gateway.properties file from the shared resource JAR -->
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
                 <executions>
                     <execution>
                         <id>unpack-test-resources</id>
-                        <!-- Using the initialize phase because it is before 
-                            the generate sources phase -->
+                        <!-- Using the initialize phase because it is before the generate sources phase -->
                         <phase>initialize</phase>
                         <goals>
                             <goal>unpack</goal>
                         </goals>
                         <configuration>
+                            <skip>${skip.unpack}</skip>
                             <artifactItems>
                                 <artifactItem>
-                                    <!-- Artifact that Holds our custom templates -->
+                                    <!-- Artifact that holds our custom templates -->
                                     <groupId>org.connectopensource</groupId>
                                     <artifactId>Properties</artifactId>
                                     <version>${project.parent.version}</version>
@@ -60,8 +107,6 @@
                 <artifactId>maven-war-plugin</artifactId>
                 <configuration>
                     <packagingExcludes>WEB-INF/classes/xml-resources/**</packagingExcludes>
-                    <webResources>
-                    </webResources>
                 </configuration>
             </plugin>
         </plugins>

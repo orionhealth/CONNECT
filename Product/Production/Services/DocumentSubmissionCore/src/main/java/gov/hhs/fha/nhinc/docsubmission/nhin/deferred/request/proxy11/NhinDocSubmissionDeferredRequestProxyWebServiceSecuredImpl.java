@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -43,12 +43,12 @@ import gov.hhs.fha.nhinc.webserviceproxy.WebServiceProxyHelper;
 import gov.hhs.healthit.nhin.XDRAcknowledgementType;
 import ihe.iti.xdr._2007.XDRDeferredRequestPortType;
 import ihe.iti.xds_b._2007.ProvideAndRegisterDocumentSetRequestType;
-
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class NhinDocSubmissionDeferredRequestProxyWebServiceSecuredImpl implements
         NhinDocSubmissionDeferredRequestProxy {
-    private static final Logger LOG = Logger.getLogger(NhinDocSubmissionDeferredRequestProxyWebServiceSecuredImpl.class);
+    private static final Logger LOG = LoggerFactory.getLogger(NhinDocSubmissionDeferredRequestProxyWebServiceSecuredImpl.class);
     private WebServiceProxyHelper oProxyHelper = null;
 
     public NhinDocSubmissionDeferredRequestProxyWebServiceSecuredImpl() {
@@ -68,16 +68,15 @@ public class NhinDocSubmissionDeferredRequestProxyWebServiceSecuredImpl implemen
     }
 
     protected CONNECTClient<XDRDeferredRequestPortType> getCONNECTClientSecured(
-            ServicePortDescriptor<XDRDeferredRequestPortType> portDescriptor, String url, AssertionType assertion, 
+            ServicePortDescriptor<XDRDeferredRequestPortType> portDescriptor, String url, AssertionType assertion,
                        String target, String serviceName) {
-        CONNECTClient<XDRDeferredRequestPortType> client =  CONNECTClientFactory.getInstance().getCONNECTClientSecured(portDescriptor, assertion, url, target, 
+        return CONNECTClientFactory.getInstance().getCONNECTClientSecured(portDescriptor, assertion, url, target,
                 serviceName);
-        return client;
     }
 
     @Override
     @NwhinInvocationEvent(beforeBuilder = DocSubmissionBaseEventDescriptionBuilder.class,
-    afterReturningBuilder = DocSubmissionBaseEventDescriptionBuilder.class, 
+    afterReturningBuilder = DocSubmissionBaseEventDescriptionBuilder.class,
     serviceType = "Document Submission Deferred Request",
     version = "")
     public XDRAcknowledgementType provideAndRegisterDocumentSetBRequest11(
@@ -95,7 +94,7 @@ public class NhinDocSubmissionDeferredRequestProxyWebServiceSecuredImpl implemen
 
                 ServicePortDescriptor<XDRDeferredRequestPortType> portDescriptor = new NhinDocSubmissionDeferredRequestServicePortDescriptor();
                 CONNECTClient<XDRDeferredRequestPortType> client = getCONNECTClientSecured(portDescriptor, url,
-                        assertion, targetSystem.getHomeCommunity().getHomeCommunityId(), 
+                        assertion, targetSystem.getHomeCommunity().getHomeCommunityId(),
                         NhincConstants.NHINC_XDR_REQUEST_SERVICE_NAME );
                 client.enableMtom();
 

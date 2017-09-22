@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,14 +26,12 @@
  */
 package gov.hhs.fha.nhinc.docsubmission._11.nhin.deferred.request;
 
-import ihe.iti.xds_b._2007.ProvideAndRegisterDocumentSetRequestType;
-
-import javax.xml.ws.WebServiceContext;
-
 import gov.hhs.fha.nhinc.common.nhinccommon.AssertionType;
 import gov.hhs.fha.nhinc.docsubmission.inbound.deferred.request.InboundDocSubmissionDeferredRequest;
 import gov.hhs.fha.nhinc.messaging.server.BaseService;
 import gov.hhs.healthit.nhin.XDRAcknowledgementType;
+import ihe.iti.xds_b._2007.ProvideAndRegisterDocumentSetRequestType;
+import javax.xml.ws.WebServiceContext;
 
 /**
  *
@@ -46,7 +44,7 @@ public class NhinDocSubmissionDeferredRequestImpl extends BaseService {
     public NhinDocSubmissionDeferredRequestImpl(InboundDocSubmissionDeferredRequest inboundDocSubmissionRequest) {
         this.inboundDocSubmissionRequest = inboundDocSubmissionRequest;
     }
-    
+
     /**
      *
      * @param body
@@ -54,10 +52,11 @@ public class NhinDocSubmissionDeferredRequestImpl extends BaseService {
      * @return
      */
     public XDRAcknowledgementType provideAndRegisterDocumentSetBRequest(ProvideAndRegisterDocumentSetRequestType body,
-            WebServiceContext context) {
+        WebServiceContext context) {
 
         AssertionType assertion = getAssertion(context, null);
-        return inboundDocSubmissionRequest.provideAndRegisterDocumentSetBRequest(body, assertion);
+        return inboundDocSubmissionRequest.provideAndRegisterDocumentSetBRequest(body, assertion,
+            getWebContextProperties(context));
     }
 
 }

@@ -1,9 +1,9 @@
-/**
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services.
+/*
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
- * modification, are permittntefed provided that the following conditions are met:
+ * modification, are permitted provided that the following conditions are met:
  *     * Redistributions of source code must retain the above
  *       copyright notice, this list of conditions and the following disclaimer.
  *     * Redistributions in binary form must reproduce the above copyright
@@ -28,19 +28,17 @@ package gov.hhs.fha.nhinc.event;
 
 public abstract class BaseEvent implements Event {
 
-    
     private String description;
     private String messageID;
     private String transactionID;
     private String serviceType;
     private String initiatorHcid;
     private String respondingHcid;
-    
-    
+
     public BaseEvent() {
-        
+
     }
-    
+
     /*
      * (non-Javadoc)
      *
@@ -54,7 +52,7 @@ public abstract class BaseEvent implements Event {
     /**
      * @param description
      */
-     @Override
+    @Override
     public void setDescription(String description) {
         this.description = description;
     }
@@ -72,7 +70,7 @@ public abstract class BaseEvent implements Event {
     /**
      * @param messageID
      */
-     @Override
+    @Override
     public void setMessageID(String messageID) {
         this.messageID = messageID;
     }
@@ -90,13 +88,14 @@ public abstract class BaseEvent implements Event {
     /**
      * @param transactionID
      */
-     @Override
+    @Override
     public void setTransactionID(String transactionID) {
         this.transactionID = transactionID;
     }
 
+    @Override
     abstract public String getEventName();
-    
+
     @Override
     public String getServiceType() {
         return serviceType;

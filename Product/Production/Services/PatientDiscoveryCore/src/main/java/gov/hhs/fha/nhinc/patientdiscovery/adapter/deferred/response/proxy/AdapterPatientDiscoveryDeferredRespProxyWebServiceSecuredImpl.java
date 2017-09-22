@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -39,21 +39,18 @@ import gov.hhs.fha.nhinc.patientdiscovery.aspect.MCCIIN000002UV01EventDescriptio
 import gov.hhs.fha.nhinc.patientdiscovery.aspect.PRPAIN201306UV02EventDescriptionBuilder;
 import gov.hhs.fha.nhinc.transform.subdisc.HL7AckTransforms;
 import gov.hhs.fha.nhinc.webserviceproxy.WebServiceProxyHelper;
-
-import org.apache.log4j.Logger;
 import org.hl7.v3.MCCIIN000002UV01;
 import org.hl7.v3.PRPAIN201306UV02;
 import org.hl7.v3.RespondingGatewayPRPAIN201306UV02SecuredRequestType;
-//CheckStyle:OFF
-//CheckStyle:ON
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 /**
- * 
+ *
  * @author JHOPPESC
  */
 public class AdapterPatientDiscoveryDeferredRespProxyWebServiceSecuredImpl implements
         AdapterPatientDiscoveryDeferredRespProxy {
-    private static final Logger LOG = Logger.getLogger(AdapterPatientDiscoveryDeferredRespProxyWebServiceSecuredImpl.class);
+    private static final Logger LOG = LoggerFactory.getLogger(AdapterPatientDiscoveryDeferredRespProxyWebServiceSecuredImpl.class);
     private WebServiceProxyHelper oProxyHelper = null;
 
     public AdapterPatientDiscoveryDeferredRespProxyWebServiceSecuredImpl() {
@@ -65,9 +62,10 @@ public class AdapterPatientDiscoveryDeferredRespProxyWebServiceSecuredImpl imple
     }
 
     @AdapterDelegationEvent(beforeBuilder = PRPAIN201306UV02EventDescriptionBuilder.class,
-            afterReturningBuilder = MCCIIN000002UV01EventDescriptionBuilder.class, 
+            afterReturningBuilder = MCCIIN000002UV01EventDescriptionBuilder.class,
             serviceType = "Patient Discovery Deferred Response",
             version = "1.0")
+    @Override
     public MCCIIN000002UV01 processPatientDiscoveryAsyncResp(PRPAIN201306UV02 request, AssertionType assertion) {
         LOG.debug("Begin processPatientDiscoveryAsyncReqError");
         MCCIIN000002UV01 ack = null;
@@ -81,12 +79,12 @@ public class AdapterPatientDiscoveryDeferredRespProxyWebServiceSecuredImpl imple
                 if (request == null) {
                     LOG.error("Request was null");
                 } else {
-                    ServicePortDescriptor<AdapterPatientDiscoverySecuredAsyncRespPortType> portDescriptor = 
+                    ServicePortDescriptor<AdapterPatientDiscoverySecuredAsyncRespPortType> portDescriptor =
                             new AdapterPatientDiscoverySecuredAsyncRespServicePortDescriptor();
                     CONNECTClient<AdapterPatientDiscoverySecuredAsyncRespPortType> client = CONNECTClientFactory
                             .getInstance().getCONNECTClientSecured(portDescriptor, url, assertion);
 
-                    RespondingGatewayPRPAIN201306UV02SecuredRequestType securedRequest = 
+                    RespondingGatewayPRPAIN201306UV02SecuredRequestType securedRequest =
                             new RespondingGatewayPRPAIN201306UV02SecuredRequestType();
                     securedRequest.setPRPAIN201306UV02(request);
 

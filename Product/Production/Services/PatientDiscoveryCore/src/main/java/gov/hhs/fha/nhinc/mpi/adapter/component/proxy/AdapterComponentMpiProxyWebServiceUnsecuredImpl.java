@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,11 +26,6 @@
  */
 package gov.hhs.fha.nhinc.mpi.adapter.component.proxy;
 
-import org.apache.log4j.Logger;
-import org.hl7.v3.PRPAIN201305UV02;
-import org.hl7.v3.PRPAIN201306UV02;
-import org.hl7.v3.RespondingGatewayPRPAIN201305UV02RequestType;
-
 import gov.hhs.fha.nhinc.adaptercomponentmpi.AdapterComponentMpiPortType;
 import gov.hhs.fha.nhinc.common.nhinccommon.AssertionType;
 import gov.hhs.fha.nhinc.messaging.client.CONNECTCXFClientFactory;
@@ -40,6 +35,11 @@ import gov.hhs.fha.nhinc.mpi.adapter.component.proxy.service.AdapterComponentMpi
 import gov.hhs.fha.nhinc.nhinclib.NhincConstants;
 import gov.hhs.fha.nhinc.nhinclib.NullChecker;
 import gov.hhs.fha.nhinc.webserviceproxy.WebServiceProxyHelper;
+import org.hl7.v3.PRPAIN201305UV02;
+import org.hl7.v3.PRPAIN201306UV02;
+import org.hl7.v3.RespondingGatewayPRPAIN201305UV02RequestType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This is the proxy class for the unsecured AdapterComponentProxy interface.
@@ -47,7 +47,7 @@ import gov.hhs.fha.nhinc.webserviceproxy.WebServiceProxyHelper;
  */
 public class AdapterComponentMpiProxyWebServiceUnsecuredImpl implements AdapterComponentMpiProxy {
 
-    private static final Logger LOG = Logger.getLogger(AdapterComponentMpiProxyWebServiceUnsecuredImpl.class);
+    private static final Logger LOG = LoggerFactory.getLogger(AdapterComponentMpiProxyWebServiceUnsecuredImpl.class);
     private final WebServiceProxyHelper oProxyHelper = new WebServiceProxyHelper();
 
     /**
@@ -72,7 +72,7 @@ public class AdapterComponentMpiProxyWebServiceUnsecuredImpl implements AdapterC
      */
     @Override
     public PRPAIN201306UV02 findCandidates(PRPAIN201305UV02 request, AssertionType assertion) {
-        String url = null;
+        String url;
         PRPAIN201306UV02 response = new PRPAIN201306UV02();
         String sServiceName = NhincConstants.ADAPTER_COMPONENT_MPI_SERVICE_NAME;
 

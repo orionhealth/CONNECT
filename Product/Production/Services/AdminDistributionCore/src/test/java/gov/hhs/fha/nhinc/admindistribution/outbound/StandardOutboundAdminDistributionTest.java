@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services.
+/*
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,24 +26,21 @@
  */
 package gov.hhs.fha.nhinc.admindistribution.outbound;
 
+import gov.hhs.fha.nhinc.admindistribution.AdminDistributionAuditLogger;
+import gov.hhs.fha.nhinc.admindistribution.AdminDistributionPolicyChecker;
+import gov.hhs.fha.nhinc.admindistribution.entity.OutboundAdminDistributionDelegate;
+import gov.hhs.fha.nhinc.admindistribution.entity.OutboundAdminDistributionOrchestratable;
+import gov.hhs.fha.nhinc.common.nhinccommon.AssertionType;
+import gov.hhs.fha.nhinc.common.nhinccommon.NhinTargetCommunitiesType;
+import gov.hhs.fha.nhinc.common.nhinccommonentity.RespondingGatewaySendAlertMessageType;
+import gov.hhs.fha.nhinc.connectmgr.UrlInfo;
 import java.util.ArrayList;
 import java.util.List;
-
 import org.jmock.Expectations;
 import org.jmock.Mockery;
 import org.jmock.integration.junit4.JUnit4Mockery;
 import org.jmock.lib.legacy.ClassImposteriser;
 import org.junit.Test;
-
-import gov.hhs.fha.nhinc.admindistribution.AdminDistributionAuditLogger;
-import gov.hhs.fha.nhinc.admindistribution.AdminDistributionPolicyChecker;
-import gov.hhs.fha.nhinc.admindistribution.entity.OutboundAdminDistributionDelegate;
-import gov.hhs.fha.nhinc.admindistribution.entity.OutboundAdminDistributionOrchestratable;
-import gov.hhs.fha.nhinc.admindistribution.outbound.StandardOutboundAdminDistribution;
-import gov.hhs.fha.nhinc.common.nhinccommon.AssertionType;
-import gov.hhs.fha.nhinc.common.nhinccommon.NhinTargetCommunitiesType;
-import gov.hhs.fha.nhinc.common.nhinccommonentity.RespondingGatewaySendAlertMessageType;
-import gov.hhs.fha.nhinc.connectmgr.UrlInfo;
 
 /**
  * @author zmelnick
@@ -101,7 +98,7 @@ public class StandardOutboundAdminDistributionTest {
      * Expectations for successful sendAlertMessage().
      */
     private void expectationsInAlertMessage() {
-    	expectProcessOrchestratable();
+        expectProcessOrchestratable();
     }
 
     /**
@@ -114,9 +111,8 @@ public class StandardOutboundAdminDistributionTest {
     private void expectMockAudits(final int n) {
         context.checking(new Expectations() {
             {
-                exactly(n).of(mockAuditLog).auditEntityAdminDist(
-                        with(any(RespondingGatewaySendAlertMessageType.class)), with(any(AssertionType.class)),
-                        with(any(String.class)));
+                exactly(n).of(mockAuditLog).auditEntityAdminDist(with(any(RespondingGatewaySendAlertMessageType.class)),
+                        with(any(AssertionType.class)), with(any(String.class)));
             }
         });
     }
@@ -164,7 +160,7 @@ public class StandardOutboundAdminDistributionTest {
 
             @Override
             protected List<UrlInfo> getEndpoints(NhinTargetCommunitiesType targetCommunities) {
-                List<UrlInfo> endpoints = new ArrayList<UrlInfo>();
+                List<UrlInfo> endpoints = new ArrayList<>();
                 endpoints.add(new UrlInfo());
                 return endpoints;
             }

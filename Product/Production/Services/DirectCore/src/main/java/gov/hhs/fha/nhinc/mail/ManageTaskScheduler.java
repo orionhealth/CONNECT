@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,7 +27,9 @@
 package gov.hhs.fha.nhinc.mail;
 
 import gov.hhs.fha.nhinc.event.persistence.HibernateUtil;
-import org.apache.log4j.Logger;
+import gov.hhs.fha.nhinc.persistence.HibernateUtilFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 
 /**
@@ -37,7 +39,7 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
  */
 public class ManageTaskScheduler {
 
-    private static final Logger LOG = Logger.getLogger(ManageTaskScheduler.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ManageTaskScheduler.class);
     private ThreadPoolTaskScheduler scheduler;
 
     /**
@@ -56,11 +58,13 @@ public class ManageTaskScheduler {
      */
     public void init() throws Exception {
         LOG.info("Inside init method -->TaskScheduler Instance:" + scheduler);
-        //Initialize the HibernateUtil within the appserver context
-        if (HibernateUtil.getSessionFactory() != null) {
-            LOG.info("Inside init method --> HibernateUtil.getSessionFactory()..getClass().getName():" + HibernateUtil.getSessionFactory().getClass().getName());
+        // Initialize the HibernateUtil within the appserver context
+        HibernateUtil hibernateUtil = HibernateUtilFactory.getEventHibernateUtil();
+        if (hibernateUtil.getSessionFactory() != null) {
+            LOG.info("Inside init method --> HibernateUtil.getSessionFactory()..getClass().getName(): {}",
+                    hibernateUtil.getSessionFactory().getClass().getName());
         } else {
-            LOG.info("Inside init method --> HibernateUtil.getSessionFactory():" + HibernateUtil.getSessionFactory());
+            LOG.info("Inside init method --> HibernateUtil.getSessionFactory(): {}", hibernateUtil.getSessionFactory());
         }
     }
 
@@ -69,9 +73,8 @@ public class ManageTaskScheduler {
      *
      */
     public void clean() {
-        System.out.println("Inside clean method -->TaskScheduler Instance:" + scheduler);
         LOG.info("Inside clean method -->TaskScheduler Instance:" + scheduler);
-        //shutdown the scheduler thread if its running
+        // shutdown the scheduler thread if its running
         if (scheduler != null) {
             scheduler.shutdown();
         }

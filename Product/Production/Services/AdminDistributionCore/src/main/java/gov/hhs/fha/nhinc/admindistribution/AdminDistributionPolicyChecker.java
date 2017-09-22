@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,11 +26,6 @@
  */
 package gov.hhs.fha.nhinc.admindistribution;
 
-import oasis.names.tc.emergency.edxl.de._1.EDXLDistribution;
-import oasis.names.tc.xacml._2_0.context.schema.os.DecisionType;
-
-import org.apache.log4j.Logger;
-
 import gov.hhs.fha.nhinc.common.nhinccommon.AssertionType;
 import gov.hhs.fha.nhinc.common.nhinccommonadapter.CheckPolicyRequestType;
 import gov.hhs.fha.nhinc.common.nhinccommonadapter.CheckPolicyResponseType;
@@ -38,6 +33,10 @@ import gov.hhs.fha.nhinc.common.nhinccommonentity.RespondingGatewaySendAlertMess
 import gov.hhs.fha.nhinc.nhinclib.NullChecker;
 import gov.hhs.fha.nhinc.policyengine.adapter.proxy.PolicyEngineProxy;
 import gov.hhs.fha.nhinc.policyengine.adapter.proxy.PolicyEngineProxyObjectFactory;
+import oasis.names.tc.emergency.edxl.de._1.EDXLDistribution;
+import oasis.names.tc.xacml._2_0.context.schema.os.DecisionType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -45,7 +44,7 @@ import gov.hhs.fha.nhinc.policyengine.adapter.proxy.PolicyEngineProxyObjectFacto
  */
 public class AdminDistributionPolicyChecker {
 
-    private static final Logger LOG = Logger.getLogger(AdminDistributionPolicyChecker.class);
+    private static final Logger LOG = LoggerFactory.getLogger(AdminDistributionPolicyChecker.class);
 
     /**
      * @param request SendAlertMessage Request received.
@@ -64,7 +63,9 @@ public class AdminDistributionPolicyChecker {
         return invokePolicyEngine(checkPolicyRequest);
     }
 
-    /**This method checks the incoming policy and returns boolean.
+    /**
+     * This method checks the incoming policy and returns boolean.
+     * 
      * @param request Emergency Message Distribution Element transaction message request.
      * @param assertion Assertion received.
      * @return true or false.
@@ -81,12 +82,14 @@ public class AdminDistributionPolicyChecker {
         return invokePolicyEngine(checkPolicyRequest);
     }
 
-    /**This method returns boolean and true if policycheck is Permit; else denied.
+    /**
+     * This method returns boolean and true if policycheck is Permit; else denied.
+     * 
      * @param policyCheckReq CheckPolicyRequestType request received.
      * @return boolean true if Permit;else denied.
      */
     protected boolean invokePolicyEngine(CheckPolicyRequestType policyCheckReq) {
-        boolean policyIsValid = false;
+        boolean policyIsValid;
 
         LOG.debug("start invokePolicyEngine");
         /* invoke check policy */

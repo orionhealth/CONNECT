@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services.
+/*
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,14 +26,13 @@
  */
 package gov.hhs.fha.nhinc.admindistribution.aspect;
 
-import oasis.names.tc.emergency.edxl.de._1.EDXLDistribution;
-
 import com.google.common.collect.ImmutableList;
 import gov.hhs.fha.nhinc.event.TargetEventDescriptionBuilder;
+import oasis.names.tc.emergency.edxl.de._1.EDXLDistribution;
 
 /**
  * @author zmelnick
- * 
+ *
  */
 public class EDXLDistributionEventDescriptionBuilder extends TargetEventDescriptionBuilder {
 
@@ -43,7 +42,7 @@ public class EDXLDistributionEventDescriptionBuilder extends TargetEventDescript
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see gov.hhs.fha.nhinc.event.EventDescriptionBuilder#buildTimeStamp()
      */
     @Override
@@ -56,7 +55,7 @@ public class EDXLDistributionEventDescriptionBuilder extends TargetEventDescript
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see gov.hhs.fha.nhinc.event.EventDescriptionBuilder#buildStatuses()
      */
     @Override
@@ -69,7 +68,7 @@ public class EDXLDistributionEventDescriptionBuilder extends TargetEventDescript
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see gov.hhs.fha.nhinc.event.EventDescriptionBuilder#buildPayloadTypes()
      */
     @Override
@@ -79,7 +78,7 @@ public class EDXLDistributionEventDescriptionBuilder extends TargetEventDescript
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see gov.hhs.fha.nhinc.event.EventDescriptionBuilder#buildPayloadSize()
      */
     @Override
@@ -89,7 +88,7 @@ public class EDXLDistributionEventDescriptionBuilder extends TargetEventDescript
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see gov.hhs.fha.nhinc.event.EventDescriptionBuilder#buildErrorCodes()
      */
     @Override
@@ -99,7 +98,7 @@ public class EDXLDistributionEventDescriptionBuilder extends TargetEventDescript
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see gov.hhs.fha.nhinc.event.BaseEventDescriptionBuilder#setArguments(java.lang.Object[])
      */
     @Override
@@ -115,7 +114,7 @@ public class EDXLDistributionEventDescriptionBuilder extends TargetEventDescript
         }
         for (Object argument : arguments) {
             if (argument instanceof EDXLDistribution) {
-                this.alertMessage = (EDXLDistribution) argument;
+                alertMessage = (EDXLDistribution) argument;
                 break;
             }
         }
@@ -123,7 +122,7 @@ public class EDXLDistributionEventDescriptionBuilder extends TargetEventDescript
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see gov.hhs.fha.nhinc.event.BaseEventDescriptionBuilder#setReturnValue(java.lang.Object)
      */
     @Override

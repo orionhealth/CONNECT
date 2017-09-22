@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,15 +29,14 @@ package gov.hhs.fha.nhinc.docsubmission._20.nhin.deferred.response;
 import gov.hhs.fha.nhinc.aspect.InboundMessageEvent;
 import gov.hhs.fha.nhinc.docsubmission.aspect.RegistryResponseTypeHolderBuilder;
 import gov.hhs.fha.nhinc.docsubmission.inbound.deferred.response.InboundDocSubmissionDeferredResponse;
-
 import javax.annotation.Resource;
 import javax.xml.ws.BindingType;
 import javax.xml.ws.WebServiceContext;
 import javax.xml.ws.soap.Addressing;
-
+import javax.xml.ws.soap.SOAPBinding;
 import oasis.names.tc.ebxml_regrep.xsd.rs._3.RegistryResponseType;
 
-@BindingType(value = javax.xml.ws.soap.SOAPBinding.SOAP12HTTP_BINDING)
+@BindingType(value = SOAPBinding.SOAP12HTTP_BINDING)
 @Addressing(enabled = true)
 public class NhinXDRResponse20 implements ihe.iti.xdr._2007.XDRDeferredResponse20PortType {
 
@@ -46,11 +45,11 @@ public class NhinXDRResponse20 implements ihe.iti.xdr._2007.XDRDeferredResponse2
 
     @Override
     @InboundMessageEvent(beforeBuilder = RegistryResponseTypeHolderBuilder.class,
-            afterReturningBuilder = RegistryResponseTypeHolderBuilder.class,
-            serviceType = "Document Submission Deferred Response", version = "2.0")
+        afterReturningBuilder = RegistryResponseTypeHolderBuilder.class,
+        serviceType = "Document Submission Deferred Response", version = "2.0")
     public void provideAndRegisterDocumentSetBDeferredResponse(javax.xml.ws.Holder<RegistryResponseType> body) {
         body.value = new NhinDocSubmissionDeferredResponseImpl20(inboundDocSubmissionResponse)
-                .provideAndRegisterDocumentSetBResponse(body.value, context);
+            .provideAndRegisterDocumentSetBResponse(body.value, context);
     }
 
     public void setInboundDocSubmissionResponse(InboundDocSubmissionDeferredResponse inboundDocSubmissionResponse) {

@@ -1,28 +1,28 @@
 /*
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services. 
- * All rights reserved. 
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
+ * All rights reserved.
  *
- * Redistribution and use in source and binary forms, with or without 
- * modification, are permitted provided that the following conditions are met: 
- *     * Redistributions of source code must retain the above 
- *       copyright notice, this list of conditions and the following disclaimer. 
- *     * Redistributions in binary form must reproduce the above copyright 
- *       notice, this list of conditions and the following disclaimer in the documentation 
- *       and/or other materials provided with the distribution. 
- *     * Neither the name of the United States Government nor the 
- *       names of its contributors may be used to endorse or promote products 
- *       derived from this software without specific prior written permission. 
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *     * Redistributions of source code must retain the above
+ *       copyright notice, this list of conditions and the following disclaimer.
+ *     * Redistributions in binary form must reproduce the above copyright
+ *       notice, this list of conditions and the following disclaimer in the documentation
+ *       and/or other materials provided with the distribution.
+ *     * Neither the name of the United States Government nor the
+ *       names of its contributors may be used to endorse or promote products
+ *       derived from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
- * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED 
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE 
- * DISCLAIMED. IN NO EVENT SHALL THE UNITED STATES GOVERNMENT BE LIABLE FOR ANY 
- * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES 
- * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; 
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND 
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT 
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS 
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE UNITED STATES GOVERNMENT BE LIABLE FOR ANY
+ * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 package gov.hhs.fha.nhinc.adaptermpimanager.HL7Parsers;
 
@@ -31,14 +31,10 @@ import gov.hhs.fha.nhinc.mpilib.Identifiers;
 import gov.hhs.fha.nhinc.mpilib.Patient;
 import gov.hhs.fha.nhinc.mpilib.PersonName;
 import gov.hhs.fha.nhinc.util.HomeCommunityMap;
-
 import java.io.Serializable;
 import java.util.Iterator;
 import java.util.List;
-
 import javax.xml.bind.JAXBElement;
-
-import org.apache.log4j.Logger;
 import org.hl7.v3.CE;
 import org.hl7.v3.ENXPExplicit;
 import org.hl7.v3.EnExplicitFamily;
@@ -56,6 +52,8 @@ import org.hl7.v3.PRPAMT201301UV02OtherIDs;
 import org.hl7.v3.PRPAMT201301UV02Patient;
 import org.hl7.v3.PRPAMT201301UV02Person;
 import org.hl7.v3.TSExplicit;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -63,10 +61,10 @@ import org.hl7.v3.TSExplicit;
  */
 public class HL7Parser201301 {
 
-    private static final Logger LOG = Logger.getLogger(HL7Parser201301.class);
+    private static final Logger LOG = LoggerFactory.getLogger(HL7Parser201301.class);
 
     public static void PrintMessageIdFromMessage(org.hl7.v3.PRPAIN201301UV02 message) {
-        if (!(message == null)) {
+        if (message != null) {
             HL7Parser.PrintId(message.getId(), "message");
         }
     }
@@ -232,20 +230,18 @@ public class HL7Parser201301 {
 
     public static PRPAMT201301UV02Person ExtractHL7PatientPersonFromHL7Patient(PRPAMT201301UV02Patient patient) {
         JAXBElement<PRPAMT201301UV02Person> patientPersonElement = patient.getPatientPerson();
-        PRPAMT201301UV02Person patientPerson = patientPerson = patientPersonElement.getValue();
-        return patientPerson;
+        return patientPersonElement.getValue();
     }
 
     public static PRPAMT201301UV02Person ExtractHL7PatientPersonFrom201301Message(org.hl7.v3.PRPAIN201301UV02 message) {
         // assume one subject for now
         PRPAMT201301UV02Patient patient = ExtractHL7PatientFromMessage(message);
-        PRPAMT201301UV02Person patientPerson = ExtractHL7PatientPersonFromHL7Patient(patient);
-        return patientPerson;
+        return ExtractHL7PatientPersonFromHL7Patient(patient);
     }
 
     public static PRPAMT201301UV02Patient ExtractHL7PatientFromMessage(org.hl7.v3.PRPAIN201301UV02 message) {
         // assume one subject for now
-        PRPAMT201301UV02Patient patient = null;
+        PRPAMT201301UV02Patient patient;
         LOG.info("in ExtractPatient");
 
         if (message == null) {
@@ -260,7 +256,7 @@ public class HL7Parser201301 {
         HL7Parser.PrintId(controlActProcess.getId(), "controlActProcess");
 
         List<PRPAIN201301UV02MFMIMT700701UV01Subject1> subjects = controlActProcess.getSubject();
-        if ((subjects == null) || (subjects.size() == 0)) {
+        if ((subjects == null) || (subjects.isEmpty())) {
             LOG.info("subjects is blank/null - no patient");
             return null;
         }
@@ -296,8 +292,7 @@ public class HL7Parser201301 {
 
     public static Patient ExtractMpiPatientFromMessage(org.hl7.v3.PRPAIN201301UV02 message) {
         PRPAMT201301UV02Patient hl7patient = ExtractHL7PatientFromMessage(message);
-        Patient mpipatient = ExtractMpiPatientFromHL7Patient(hl7patient);
-        return mpipatient;
+        return ExtractMpiPatientFromHL7Patient(hl7patient);
     }
 
     public static Patient ExtractMpiPatientFromHL7Patient(PRPAMT201301UV02Patient patient) {
@@ -329,7 +324,7 @@ public class HL7Parser201301 {
         subjectA.setPatient(patient);
         PRPAMT201301UV02Person patientPerson = new PRPAMT201301UV02Person();
         javax.xml.namespace.QName xmlqname = new javax.xml.namespace.QName("urn:hl7-org:v3", "patientPerson");
-        JAXBElement<PRPAMT201301UV02Person> patientPersonElement = new JAXBElement<PRPAMT201301UV02Person>(xmlqname,
+        JAXBElement<PRPAMT201301UV02Person> patientPersonElement = new JAXBElement<>(xmlqname,
             PRPAMT201301UV02Person.class, patientPerson);
         patient.setPatientPerson(patientPersonElement);
         patientPersonElement.setValue(patientPerson);
@@ -339,7 +334,7 @@ public class HL7Parser201301 {
         subjects.add(subject);
         if (!(mpiPatient.getDateOfBirth() == null)) {
             TSExplicit birthtime = new TSExplicit();
-            birthtime.setValue(mpiPatient.getDateOfBirth().toString());
+            birthtime.setValue(mpiPatient.getDateOfBirth());
             patientPerson.setBirthTime(birthtime);
         }
 
@@ -352,7 +347,6 @@ public class HL7Parser201301 {
         //
         PNExplicit name = (PNExplicit) (factory.createPNExplicit());
         List namelist = name.getContent();
-
 
         PersonName mpiPatientName = null;
         if (mpiPatient.getNames().size() > 0) {

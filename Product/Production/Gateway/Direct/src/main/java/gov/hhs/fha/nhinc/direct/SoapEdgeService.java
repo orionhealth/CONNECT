@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,19 +32,16 @@ import gov.hhs.fha.nhinc.xdcommon.XDCommonResponseHelper;
 import ihe.iti.xds_b._2007.ProvideAndRegisterDocumentSetRequestType;
 import ihe.iti.xds_b._2007.RetrieveDocumentSetRequestType;
 import ihe.iti.xds_b._2007.RetrieveDocumentSetResponseType;
-
 import java.util.UUID;
-
 import javax.annotation.Resource;
 import javax.xml.ws.BindingType;
 import javax.xml.ws.WebServiceContext;
 import javax.xml.ws.soap.SOAPBinding;
-
 import oasis.names.tc.ebxml_regrep.xsd.rs._3.RegistryResponseType;
 
 /**
  * The Class XDR.
- * 
+ *
  * @author mweaver
  */
 @BindingType(SOAPBinding.SOAP12HTTP_BINDING)
@@ -71,14 +68,15 @@ public class SoapEdgeService implements ihe.iti.xds_b._2007.DocumentRepositoryPo
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.nhind.xdr.DocumentRepositoryAbstract#documentRepositoryProvideAndRegisterDocumentSetB(ihe.iti.xds_b._2007
      * .ProvideAndRegisterDocumentSetRequestType)
      */
+    @Override
     public RegistryResponseType documentRepositoryProvideAndRegisterDocumentSetB(
             ProvideAndRegisterDocumentSetRequestType body) {
-        RegistryResponseType resp = null;
+        RegistryResponseType resp;
         try {
             DirectXDRWebServiceImpl impl = new DirectXDRWebServiceImpl();
             resp = impl.provideAndRegisterDocumentSet(body, context);
@@ -98,10 +96,11 @@ public class SoapEdgeService implements ihe.iti.xds_b._2007.DocumentRepositoryPo
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @seeorg.nhind.xdr.DocumentRepositoryAbstract#documentRepositoryRetrieveDocumentSet(ihe.iti.xds_b._2007.
      * RetrieveDocumentSetRequestType)
      */
+    @Override
     public RetrieveDocumentSetResponseType documentRepositoryRetrieveDocumentSet(RetrieveDocumentSetRequestType body) {
         throw new UnsupportedOperationException("Not implemented for XDR");
     }

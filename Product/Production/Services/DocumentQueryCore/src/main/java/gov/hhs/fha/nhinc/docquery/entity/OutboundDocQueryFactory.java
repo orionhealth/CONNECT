@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -28,8 +28,8 @@ package gov.hhs.fha.nhinc.docquery.entity;
 
 import gov.hhs.fha.nhinc.nhinclib.NhincConstants;
 import gov.hhs.fha.nhinc.orchestration.OrchestrationContextBuilder;
-
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Returns the OrchestrationContextBuilder appropriate for the particular apiLevel.
@@ -38,7 +38,7 @@ import org.apache.log4j.Logger;
  */
 public final class OutboundDocQueryFactory {
 
-    private static final Logger LOG = Logger.getLogger(OutboundDocQueryFactory.class);
+    private static final Logger LOG = LoggerFactory.getLogger(OutboundDocQueryFactory.class);
 
     private static OutboundDocQueryFactory docQueryInstance = new OutboundDocQueryFactory();
 

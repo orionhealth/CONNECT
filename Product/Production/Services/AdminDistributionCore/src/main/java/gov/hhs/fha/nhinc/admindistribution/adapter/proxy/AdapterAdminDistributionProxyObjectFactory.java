@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,9 +26,9 @@
  */
 package gov.hhs.fha.nhinc.admindistribution.adapter.proxy;
 
-import org.apache.log4j.Logger;
-
 import gov.hhs.fha.nhinc.proxy.ComponentProxyObjectFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -36,8 +36,8 @@ import gov.hhs.fha.nhinc.proxy.ComponentProxyObjectFactory;
  */
 public class AdapterAdminDistributionProxyObjectFactory extends ComponentProxyObjectFactory {
 
-    private static final Logger LOG = Logger.getLogger(AdapterAdminDistributionProxyObjectFactory.class);
-	private static final String CONFIG_FILE_NAME = "AdminDistProxyConfig.xml";
+    private static final Logger LOG = LoggerFactory.getLogger(AdapterAdminDistributionProxyObjectFactory.class);
+    private static final String CONFIG_FILE_NAME = "AdminDistProxyConfig.xml";
     private static final String BEAN_NAME_ADAPTER_ADMIN_DIST = "adapteradmindist";
 
     @Override

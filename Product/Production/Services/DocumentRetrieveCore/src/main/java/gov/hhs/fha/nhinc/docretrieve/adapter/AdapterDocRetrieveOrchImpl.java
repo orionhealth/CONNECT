@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -34,37 +34,37 @@ import gov.hhs.fha.nhinc.redactionengine.adapter.proxy.AdapterRedactionEnginePro
 import gov.hhs.fha.nhinc.redactionengine.adapter.proxy.AdapterRedactionEngineProxyObjectFactory;
 import ihe.iti.xds_b._2007.RetrieveDocumentSetRequestType;
 import ihe.iti.xds_b._2007.RetrieveDocumentSetResponseType;
-
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
- * 
+ *
  * @author westberg
  */
 public class AdapterDocRetrieveOrchImpl {
 
-    private static final Logger LOG = Logger.getLogger(AdapterDocRetrieveOrchImpl.class);
+    private static final Logger LOG = LoggerFactory.getLogger(AdapterDocRetrieveOrchImpl.class);
 
     /**
-     * 
+     *
      * @param body
      * @param assertion
      * @return RetrieveDocumentSetResponseType
      */
     public RetrieveDocumentSetResponseType respondingGatewayCrossGatewayRetrieve(RetrieveDocumentSetRequestType body,
-            AssertionType assertion) {
+        AssertionType assertion) {
         LOG.trace("Enter AdapterDocRetrieveSecuredImpl.respondingGatewayCrossGatewayRetrieve()");
-        RetrieveDocumentSetResponseType response = null;
+        RetrieveDocumentSetResponseType response;
 
         try {
             AdapterComponentDocRepositoryProxy proxy = new AdapterComponentDocRepositoryProxyObjectFactory()
-                    .getAdapterDocumentRepositoryProxy();
+                .getAdapterDocumentRepositoryProxy();
 
             response = proxy.retrieveDocument(body, assertion);
             response = callRedactionEngine(body, response, assertion);
-        } catch (Throwable t) {
-            String errorMsg = "Error processing an adapter document retrieve message: " + t.getMessage();
-            LOG.error(errorMsg, t);
+        } catch (Exception e) {
+            String errorMsg = "Error processing an adapter document retrieve message: " + e.getMessage();
+            LOG.error(errorMsg, e);
             response = MessageGenerator.getInstance().createRegistryResponseError(errorMsg);
         }
         LOG.trace("Leaving AdapterDocRetrieveSecuredImpl.respondingGatewayCrossGatewayRetrieve()");
@@ -72,13 +72,13 @@ public class AdapterDocRetrieveOrchImpl {
     }
 
     protected RetrieveDocumentSetResponseType callRedactionEngine(RetrieveDocumentSetRequestType retrieveRequest,
-            RetrieveDocumentSetResponseType retrieveResponse, AssertionType assertion) {
+        RetrieveDocumentSetResponseType retrieveResponse, AssertionType assertion) {
         RetrieveDocumentSetResponseType response = null;
         if (retrieveResponse == null) {
             LOG.warn("Did not call redaction engine because the retrieve response was null.");
         } else {
             response = getRedactionEngineProxy().filterRetrieveDocumentSetResults(retrieveRequest, retrieveResponse,
-                    assertion);
+                assertion);
         }
         return response;
     }

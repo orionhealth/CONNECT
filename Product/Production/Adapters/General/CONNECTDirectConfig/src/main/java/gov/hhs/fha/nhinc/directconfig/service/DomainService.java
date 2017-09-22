@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2014, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -47,19 +47,17 @@ THE POSSIBILITY OF SUCH DAMAGE.
 
 package gov.hhs.fha.nhinc.directconfig.service;
 
-import java.util.Collection;
-
-import javax.jws.WebMethod;
-import javax.jws.WebParam;
-import javax.jws.WebService;
-
 import gov.hhs.fha.nhinc.directconfig.entity.Domain;
 import gov.hhs.fha.nhinc.directconfig.entity.helpers.EntityStatus;
 import gov.hhs.fha.nhinc.directconfig.service.jaxws.AddDomain;
 import gov.hhs.fha.nhinc.directconfig.service.jaxws.AddDomainResponse;
 import gov.hhs.fha.nhinc.directconfig.service.jaxws.UpdateDomain;
 import gov.hhs.fha.nhinc.directconfig.service.jaxws.UpdateDomainResponse;
+import java.util.Collection;
+import javax.jws.WebMethod;
+import javax.jws.WebParam;
 import javax.jws.WebResult;
+import javax.jws.WebService;
 import javax.jws.soap.SOAPBinding;
 
 /**
@@ -70,10 +68,10 @@ public interface DomainService {
 
     /**
      * Add a Domain
-     * 
+     *
      * @param addDomain
      * @return
-     * @throws ConfigurationServiceException 
+     * @throws ConfigurationServiceException
      */
     @SOAPBinding(parameterStyle = SOAPBinding.ParameterStyle.BARE)
     @WebResult(name = "addDomainResponse", targetNamespace = "http://nhind.org/config", partName = "parameters")
@@ -82,10 +80,10 @@ public interface DomainService {
 
     /**
      * Update a Domain.
-     * 
+     *
      * @param domain
      *            The Domain to update.
-     * @return 
+     * @return
      * @throws ConfigurationServiceException
      */
     @SOAPBinding(parameterStyle = SOAPBinding.ParameterStyle.BARE)
@@ -95,7 +93,7 @@ public interface DomainService {
 
     /**
      * Get a count of Domains.
-     * 
+     *
      * @return a count of Domains.
      * @throws ConfigurationServiceException
      */
@@ -104,7 +102,7 @@ public interface DomainService {
 
     /**
      * Get a collection of all Domains matching the parameters.
-     * 
+     *
      * @param domainNames
      *            A collection of domain names.
      * @param status
@@ -118,11 +116,11 @@ public interface DomainService {
 
     /**
      * Remove a Domain.
-     * 
+     *
      * @param domainName
      *            The name of the Domain to remove.
      * @throws ConfigurationServiceException
-     * 
+     *
      * @deprecated Use of removeDomain(Long domainId) is preferred.
      */
     @Deprecated
@@ -131,17 +129,17 @@ public interface DomainService {
 
     /**
      * Remove a Domain.
-     * 
+     *
      * @param domainId
      *            The id of the Domain to remove.
      * @throws ConfigurationServiceException
      */
     @WebMethod(operationName = "removeDomainById", action = "urn:RemoveDomainById")
     void removeDomainById(@WebParam(name = "id") Long domainId) throws ConfigurationServiceException;
-    
+
     /**
      * Return a list of Domains matching the parameters.
-     * 
+     *
      * @param lastDomainName
      *            The last domain name.
      * @param maxResults
@@ -155,7 +153,7 @@ public interface DomainService {
 
     /**
      * Return a collection of Domains matching the parameters.
-     * 
+     *
      * @param domain
      *            The Domain name.
      * @param status
@@ -168,7 +166,7 @@ public interface DomainService {
 
     /**
      * Return a Domain matching the given ID.
-     * 
+     *
      * @param id
      *            The ID of the Domain.
      * @return a Domain matching the given ID.

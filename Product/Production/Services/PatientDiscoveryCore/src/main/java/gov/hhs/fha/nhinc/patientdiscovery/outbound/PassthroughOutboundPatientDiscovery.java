@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,26 +26,23 @@
  */
 package gov.hhs.fha.nhinc.patientdiscovery.outbound;
 
+import com.google.common.base.Optional;
 import gov.hhs.fha.nhinc.common.nhinccommon.AssertionType;
 import gov.hhs.fha.nhinc.common.nhinccommon.NhinTargetSystemType;
 import gov.hhs.fha.nhinc.gateway.executorservice.ExecutorServiceHelper;
 import gov.hhs.fha.nhinc.nhinclib.NhincConstants;
 import gov.hhs.fha.nhinc.orchestration.OutboundResponseProcessor;
 import gov.hhs.fha.nhinc.patientdiscovery.MessageGeneratorUtils;
-import gov.hhs.fha.nhinc.patientdiscovery.PatientDiscoveryAuditLogger;
+import gov.hhs.fha.nhinc.patientdiscovery.audit.PatientDiscoveryAuditLogger;
 import gov.hhs.fha.nhinc.patientdiscovery.entity.OutboundPatientDiscoveryDelegate;
 import gov.hhs.fha.nhinc.patientdiscovery.entity.OutboundPatientDiscoveryOrchestratable;
 import gov.hhs.fha.nhinc.transform.subdisc.HL7PRPA201306Transforms;
-
 import java.util.concurrent.ExecutorService;
-
 import org.hl7.v3.CommunityPRPAIN201306UV02ResponseType;
 import org.hl7.v3.PRPAIN201305UV02;
 import org.hl7.v3.PRPAIN201306UV02;
 import org.hl7.v3.RespondingGatewayPRPAIN201305UV02RequestType;
 import org.hl7.v3.RespondingGatewayPRPAIN201306UV02ResponseType;
-
-import com.google.common.base.Optional;
 
 public class PassthroughOutboundPatientDiscovery implements OutboundPatientDiscovery {
 
@@ -63,23 +60,24 @@ public class PassthroughOutboundPatientDiscovery implements OutboundPatientDisco
 
     /**
      * Constructor.
-     * 
+     *
      * @param delegate
      * @param auditLogger
      */
     public PassthroughOutboundPatientDiscovery(OutboundPatientDiscoveryDelegate delegate,
-            PatientDiscoveryAuditLogger auditLogger) {
+        PatientDiscoveryAuditLogger auditLogger) {
         this.delegate = delegate;
         this.auditLogger = auditLogger;
     }
 
     @Override
     public RespondingGatewayPRPAIN201306UV02ResponseType respondingGatewayPRPAIN201305UV02(
-            RespondingGatewayPRPAIN201305UV02RequestType request, AssertionType assertion) {
-
-        RespondingGatewayPRPAIN201306UV02ResponseType response = sendToNhin(request.getPRPAIN201305UV02(), assertion,
+        RespondingGatewayPRPAIN201305UV02RequestType request, AssertionType assertion) {
+        auditRequest(request, assertion,
                 msgUtils.convertFirstToNhinTargetSystemType(request.getNhinTargetCommunities()));
-
+        RespondingGatewayPRPAIN201306UV02ResponseType response = sendToNhin(request.getPRPAIN201305UV02(),
+            MessageGeneratorUtils.getInstance().generateMessageId(assertion),
+            msgUtils.convertFirstToNhinTargetSystemType(request.getNhinTargetCommunities()));
         return response;
     }
 
@@ -89,18 +87,18 @@ public class PassthroughOutboundPatientDiscovery implements OutboundPatientDisco
     }
 
     private RespondingGatewayPRPAIN201306UV02ResponseType sendToNhin(PRPAIN201305UV02 request, AssertionType assertion,
-            NhinTargetSystemType target) {
+        NhinTargetSystemType target) {
         PRPAIN201306UV02 response;
 
         try {
             OutboundPatientDiscoveryOrchestratable inMessage = new OutboundPatientDiscoveryOrchestratable(delegate,
-                    Optional.<OutboundResponseProcessor> absent(), null, null, assertion,
-                    NhincConstants.PATIENT_DISCOVERY_SERVICE_NAME, target, request);
+                Optional.<OutboundResponseProcessor>absent(), null, assertion,
+                NhincConstants.PATIENT_DISCOVERY_SERVICE_NAME, target, request);
             OutboundPatientDiscoveryOrchestratable outMessage = delegate.process(inMessage);
             response = outMessage.getResponse();
         } catch (Exception ex) {
             String err = ExecutorServiceHelper.getFormattedExceptionInfo(ex, target,
-                    NhincConstants.PATIENT_DISCOVERY_SERVICE_NAME);
+                NhincConstants.PATIENT_DISCOVERY_SERVICE_NAME);
             response = generateErrorResponse(target, request, err);
         }
 
@@ -110,7 +108,7 @@ public class PassthroughOutboundPatientDiscovery implements OutboundPatientDisco
     private RespondingGatewayPRPAIN201306UV02ResponseType convert(PRPAIN201306UV02 response, NhinTargetSystemType target) {
         String hcid = getHCID(target);
         CommunityPRPAIN201306UV02ResponseType communityResponse = msgUtils
-                .createCommunityPRPAIN201306UV02ResponseType(hcid);
+            .createCommunityPRPAIN201306UV02ResponseType(hcid);
         communityResponse.setPRPAIN201306UV02(response);
 
         RespondingGatewayPRPAIN201306UV02ResponseType gatewayResponse = new RespondingGatewayPRPAIN201306UV02ResponseType();
@@ -135,4 +133,10 @@ public class PassthroughOutboundPatientDiscovery implements OutboundPatientDisco
         return (new HL7PRPA201306Transforms()).createPRPA201306ForErrors(request, errStr);
     }
 
+    private void auditRequest(RespondingGatewayPRPAIN201305UV02RequestType request, AssertionType assertion,
+        NhinTargetSystemType target) {
+        auditLogger.auditRequestMessage(request.getPRPAIN201305UV02(), assertion, target,
+            NhincConstants.AUDIT_LOG_OUTBOUND_DIRECTION, NhincConstants.AUDIT_LOG_NHIN_INTERFACE, Boolean.TRUE, null,
+            NhincConstants.PATIENT_DISCOVERY_SERVICE_NAME);
+    }
 }

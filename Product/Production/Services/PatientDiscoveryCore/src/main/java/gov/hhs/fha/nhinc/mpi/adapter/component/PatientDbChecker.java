@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,20 +26,19 @@
  */
 package gov.hhs.fha.nhinc.mpi.adapter.component;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-
-import org.apache.log4j.Logger;
-import org.hl7.v3.PRPAIN201305UV02;
-import org.hl7.v3.PRPAIN201306UV02;
-import org.hl7.v3.PRPAMT201306UV02ParameterList;
-
 import gov.hhs.fha.nhinc.mpi.adapter.component.hl7parsers.HL7DbParser201305;
 import gov.hhs.fha.nhinc.mpi.adapter.component.hl7parsers.HL7DbParser201306;
 import gov.hhs.fha.nhinc.nhinclib.NullChecker;
 import gov.hhs.fha.nhinc.patientdb.model.Patient;
 import gov.hhs.fha.nhinc.patientdb.service.PatientService;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import org.hl7.v3.PRPAIN201305UV02;
+import org.hl7.v3.PRPAIN201306UV02;
+import org.hl7.v3.PRPAMT201306UV02ParameterList;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -47,15 +46,15 @@ import gov.hhs.fha.nhinc.patientdb.service.PatientService;
  */
 public class PatientDbChecker implements AdapterComponentMpiChecker {
 
-    private static final Logger LOG = Logger.getLogger(PatientDbChecker.class);
+    private static final Logger LOG = LoggerFactory.getLogger(PatientDbChecker.class);
 
     @Override
     public PRPAIN201306UV02 findPatient(PRPAIN201305UV02 query) {
         LOG.trace("Entering PatientDbChecker.FindPatient method...");
-        PRPAIN201306UV02 result = null;
+        PRPAIN201306UV02 result;
 
         PRPAMT201306UV02ParameterList queryParams = HL7DbParser201305.extractHL7QueryParamsFromMessage(query);
-        List<Patient> filteredPatients = new ArrayList<Patient>();
+        List<Patient> filteredPatients = new ArrayList<>();
 
         if (queryParams == null) {
             LOG.error("no query parameters were supplied");
@@ -68,7 +67,7 @@ public class PatientDbChecker implements AdapterComponentMpiChecker {
 
             if (patientList != null && patientList.size() > 0) {
 
-                List<String> dupOrgIds = new ArrayList<String>();
+                List<String> dupOrgIds = new ArrayList<>();
                 for (Patient patient : patientList) {
                     if ((patient.getIdentifiers() != null) && (patient.getIdentifiers().size() > 0)
                             && (patient.getIdentifiers().get(0).getOrganizationId() != null)) {
@@ -84,8 +83,8 @@ public class PatientDbChecker implements AdapterComponentMpiChecker {
                 }
 
                 if ((dupOrgIds != null) && (dupOrgIds.size() > 0)) {
-                    HashSet<String> hashSet = new HashSet<String>(dupOrgIds);
-                    dupOrgIds = new ArrayList<String>(hashSet);
+                    HashSet<String> hashSet = new HashSet<>(dupOrgIds);
+                    dupOrgIds = new ArrayList<>(hashSet);
                     LOG.debug("More than one matching patient found in some organizations. dupOrgIds.size(): "
                             + dupOrgIds.size());
                 }

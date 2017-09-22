@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2013, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -28,20 +28,19 @@ package gov.hhs.fha.nhinc.direct.event;
 
 import gov.hhs.fha.nhinc.event.EventManager;
 import gov.hhs.fha.nhinc.event.EventRecorder;
-
 import javax.mail.internet.MimeMessage;
 
 /**
  * Implements event logging for direct.
  */
 public class DirectEventLogger {
-    
-    private final EventRecorder eventRecorder;    
-    
+
+    private final EventRecorder eventRecorder;
+
     /**
      * Singleton holder for {@link DirectEventLogger}.
      */
-    private static class SingletonHolder { 
+    private static class SingletonHolder {
         public static final DirectEventLogger INSTANCE = new DirectEventLogger();
     }
 
@@ -66,7 +65,7 @@ public class DirectEventLogger {
      */
     public void log(DirectEventType type, MimeMessage message) {
         log(type, message, null);
-    }   
+    }
 
     /**
      * Log a failed event due to exception.
@@ -81,7 +80,7 @@ public class DirectEventLogger {
             log(type, message, exception.getLocalizedMessage());
         }
     }
-    
+
     /**
      * Log a success or failed direct event using event logger.
      * @param type direct event type.
@@ -89,7 +88,7 @@ public class DirectEventLogger {
      * @param errorMsg optional error message - if not null status = error.
      */
     public void log(DirectEventType type, MimeMessage message, String errorMsg) {
-        eventRecorder.recordEvent(new DirectEvent.Builder().mimeMessage(message).errorMsg(errorMsg).build(type)); 
+        eventRecorder.recordEvent(new DirectEvent.Builder().mimeMessage(message).errorMsg(errorMsg).build(type));
     }
 
     /**
@@ -98,7 +97,7 @@ public class DirectEventLogger {
      * @param errorMsg optional error message - if not null status = error.
      */
     public void log(DirectEventType type, String errorMsg) {
-        eventRecorder.recordEvent(new DirectEvent.Builder().errorMsg(errorMsg).build(type)); 
+        eventRecorder.recordEvent(new DirectEvent.Builder().errorMsg(errorMsg).build(type));
     }
 
 }

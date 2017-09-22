@@ -1,21 +1,34 @@
+/*
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *     * Redistributions of source code must retain the above
+ *       copyright notice, this list of conditions and the following disclaimer.
+ *     * Redistributions in binary form must reproduce the above copyright
+ *       notice, this list of conditions and the following disclaimer in the documentation
+ *       and/or other materials provided with the distribution.
+ *     * Neither the name of the United States Government nor the
+ *       names of its contributors may be used to endorse or promote products
+ *       derived from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE UNITED STATES GOVERNMENT BE LIABLE FOR ANY
+ * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
 package gov.hhs.fha.nhinc.patientcorrelation.nhinc.parsers.PRPAIN201301UV;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
-
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.hamcrest.CoreMatchers.is;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.xml.bind.JAXBElement;
-
-import org.apache.log4j.Appender;
-import org.apache.log4j.Logger;
-import org.apache.log4j.spi.LoggingEvent;
 import org.hl7.v3.CD;
 import org.hl7.v3.CE;
 import org.hl7.v3.COCTMT090003UV01AssignedEntity;
@@ -31,38 +44,30 @@ import org.hl7.v3.PRPAIN201301UV02MFMIMT700701UV01Subject1;
 import org.hl7.v3.PRPAIN201301UV02MFMIMT700701UV01Subject2;
 import org.hl7.v3.PRPAMT201301UV02Patient;
 import org.hl7.v3.PRPAMT201301UV02Person;
-import org.junit.Before;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import org.junit.Test;
-import org.mockito.ArgumentCaptor;
 
 /**
  * @author achidambaram
- * 
+ *
  */
 public class TestPRPAIN201301UVParser {
-
-    private Appender appenderMock;
-
-    @Before
-    public void setupAppender() {
-        appenderMock = mock(Appender.class);
-        Logger.getRootLogger().addAppender(appenderMock);
-    }
 
     @Test
     public void testParseSubjectFromMessage() {
         PRPAIN201301UVParser parser = new PRPAIN201301UVParser();
-        PRPAIN201301UV02MFMIMT700701UV01Subject1 returnedSubject = new PRPAIN201301UV02MFMIMT700701UV01Subject1();
-        returnedSubject = parser.parseSubjectFromMessage(createPRPAIN201301UV02());
+        PRPAIN201301UV02MFMIMT700701UV01Subject1 returnedSubject
+            = parser.parseSubjectFromMessage(createPRPAIN201301UV02());
         assertEquals(returnedSubject.getRegistrationEvent().getCustodian().getAssignedEntity().getAssignedDevice()
-                .getValue().getDeterminerCode(), "INSTANCE");
+            .getValue().getDeterminerCode(), "INSTANCE");
     }
 
     @Test
     public void ParseSubjectFromMessageWhenMessageNull() {
         PRPAIN201301UVParser parser = new PRPAIN201301UVParser();
         PRPAIN201301UV02 message = null;
-        PRPAIN201301UV02MFMIMT700701UV01Subject1 subject1= parser.parseSubjectFromMessage(message);
+        PRPAIN201301UV02MFMIMT700701UV01Subject1 subject1 = parser.parseSubjectFromMessage(message);
         assertNull(subject1);
     }
 
@@ -70,7 +75,7 @@ public class TestPRPAIN201301UVParser {
     public void ParseSubjectFromMessageWhenControlActProcessNull() {
         PRPAIN201301UVParser parser = new PRPAIN201301UVParser();
         PRPAIN201301UV02 message = new PRPAIN201301UV02();
-        PRPAIN201301UV02MFMIMT700701UV01Subject1 subject1= parser.parseSubjectFromMessage(message);
+        PRPAIN201301UV02MFMIMT700701UV01Subject1 subject1 = parser.parseSubjectFromMessage(message);
         assertNull(subject1);
     }
 
@@ -81,7 +86,7 @@ public class TestPRPAIN201301UVParser {
         PRPAIN201301UV02MFMIMT700701UV01ControlActProcess controlActProcess = new PRPAIN201301UV02MFMIMT700701UV01ControlActProcess();
         controlActProcess.setTypeId(createTypeId());
         message.setControlActProcess(controlActProcess);
-        PRPAIN201301UV02MFMIMT700701UV01Subject1 subject1= parser.parseSubjectFromMessage(message);
+        PRPAIN201301UV02MFMIMT700701UV01Subject1 subject1 = parser.parseSubjectFromMessage(message);
         assertNull(subject1);
     }
 
@@ -137,7 +142,7 @@ public class TestPRPAIN201301UVParser {
         PRPAIN201301UV02MFMIMT700701UV01Subject2 subject1 = new PRPAIN201301UV02MFMIMT700701UV01Subject2();
         subject1.setTypeId(createTypeId());
         registrationevent.setSubject1(subject1);
-        List<PRPAIN201301UV02MFMIMT700701UV01Subject1> subjects = new ArrayList<PRPAIN201301UV02MFMIMT700701UV01Subject1>();
+        List<PRPAIN201301UV02MFMIMT700701UV01Subject1> subjects = new ArrayList<>();
 
         PRPAIN201301UV02MFMIMT700701UV01Subject1 subject = new PRPAIN201301UV02MFMIMT700701UV01Subject1();
         subject.setTypeId(createTypeId());
@@ -154,7 +159,7 @@ public class TestPRPAIN201301UVParser {
     private PRPAIN201301UV02 createMessageWhereSubject1Null() {
         PRPAIN201301UV02 message = new PRPAIN201301UV02();
         PRPAIN201301UV02MFMIMT700701UV01RegistrationEvent registrationevent = new PRPAIN201301UV02MFMIMT700701UV01RegistrationEvent();
-        List<PRPAIN201301UV02MFMIMT700701UV01Subject1> subjects = new ArrayList<PRPAIN201301UV02MFMIMT700701UV01Subject1>();
+        List<PRPAIN201301UV02MFMIMT700701UV01Subject1> subjects = new ArrayList<>();
         registrationevent.setTypeId(createTypeId());
         PRPAIN201301UV02MFMIMT700701UV01Subject1 subject = new PRPAIN201301UV02MFMIMT700701UV01Subject1();
         subject.setTypeId(createTypeId());
@@ -170,7 +175,7 @@ public class TestPRPAIN201301UVParser {
 
     private PRPAIN201301UV02 createHL7MessageWhereregistrationEventNull() {
         PRPAIN201301UV02 message = new PRPAIN201301UV02();
-        List<PRPAIN201301UV02MFMIMT700701UV01Subject1> subjects = new ArrayList<PRPAIN201301UV02MFMIMT700701UV01Subject1>();
+        List<PRPAIN201301UV02MFMIMT700701UV01Subject1> subjects = new ArrayList<>();
         PRPAIN201301UV02MFMIMT700701UV01Subject1 subject = new PRPAIN201301UV02MFMIMT700701UV01Subject1();
         subject.setTypeId(createTypeId());
         subjects.add(subject);
@@ -210,7 +215,7 @@ public class TestPRPAIN201301UVParser {
     }
 
     private List<PRPAIN201301UV02MFMIMT700701UV01Subject1> createPRPAIN201301UV02MFMIMT700701UV01Subject1() {
-        List<PRPAIN201301UV02MFMIMT700701UV01Subject1> subjects = new ArrayList<PRPAIN201301UV02MFMIMT700701UV01Subject1>();
+        List<PRPAIN201301UV02MFMIMT700701UV01Subject1> subjects = new ArrayList<>();
         PRPAIN201301UV02MFMIMT700701UV01Subject1 subject = new PRPAIN201301UV02MFMIMT700701UV01Subject1();
         subject.setTypeId(createTypeId());
         subject.setRegistrationEvent(createPRPAIN201301UV02MFMIMT700701UV01RegistrationEvent());
@@ -229,8 +234,8 @@ public class TestPRPAIN201301UVParser {
         org.hl7.v3.PRPAMT201301UV02Patient patient = new PRPAMT201301UV02Patient();
         PRPAMT201301UV02Person patientPerson = new PRPAMT201301UV02Person();
         javax.xml.namespace.QName xmlqname = new javax.xml.namespace.QName("urn:hl7-org:v3", "patientPerson");
-        JAXBElement<PRPAMT201301UV02Person> patientPersonElement = new JAXBElement<PRPAMT201301UV02Person>(xmlqname,
-                PRPAMT201301UV02Person.class, patientPerson);
+        JAXBElement<PRPAMT201301UV02Person> patientPersonElement = new JAXBElement<>(xmlqname,
+            PRPAMT201301UV02Person.class, patientPerson);
         patient.setPatientPerson(patientPersonElement);
         patientPerson.getClassCode().add("ClassCode");
 
@@ -273,9 +278,7 @@ public class TestPRPAIN201301UVParser {
         device.setDeterminerCode("INSTANCE");
         device.setTypeId(createTypeId());
         javax.xml.namespace.QName xmlqname = new javax.xml.namespace.QName("urn:hl7-org:v3", "device");
-        JAXBElement<COCTMT090003UV01Device> assignedDevice = new JAXBElement<COCTMT090003UV01Device>(xmlqname,
-                COCTMT090003UV01Device.class, device);
-        return assignedDevice;
+        return new JAXBElement<>(xmlqname, COCTMT090003UV01Device.class, device);
     }
 
     private CE createCE() {

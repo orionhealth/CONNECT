@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services.
+/*
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,14 +26,14 @@
  */
 package gov.hhs.fha.nhinc.docsubmission.entity.deferred.response;
 
-import org.apache.log4j.Logger;
-
 import gov.hhs.fha.nhinc.docsubmission.orchestration.OrchestrationContextFactory;
 import gov.hhs.fha.nhinc.nhinclib.NhincConstants;
 import gov.hhs.fha.nhinc.orchestration.Orchestratable;
 import gov.hhs.fha.nhinc.orchestration.OrchestrationContextBuilder;
 import gov.hhs.fha.nhinc.orchestration.OutboundDelegate;
 import gov.hhs.fha.nhinc.orchestration.OutboundOrchestratable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -41,8 +41,9 @@ import gov.hhs.fha.nhinc.orchestration.OutboundOrchestratable;
  */
 public class OutboundDocSubmissionDeferredResponseDelegate implements OutboundDelegate {
 
-    private static final Logger LOG = Logger.getLogger(OutboundDocSubmissionDeferredResponseDelegate.class);
+    private static final Logger LOG = LoggerFactory.getLogger(OutboundDocSubmissionDeferredResponseDelegate.class);
 
+    @Override
     public Orchestratable process(Orchestratable message) {
         if (message instanceof OutboundOrchestratable) {
             return process((OutboundOrchestratable) message);
@@ -58,7 +59,7 @@ public class OutboundDocSubmissionDeferredResponseDelegate implements OutboundDe
             OutboundDocSubmissionDeferredResponseOrchestratable dsMessage = (OutboundDocSubmissionDeferredResponseOrchestratable) message;
 
             OrchestrationContextBuilder contextBuilder = getOrchestrationContextFactory().getBuilder(
-                    dsMessage.getTarget().getHomeCommunity(), NhincConstants.NHIN_SERVICE_NAMES.DOCUMENT_SUBMISSION_DEFERRED_RESPONSE);
+                    dsMessage.getTarget(), NhincConstants.NHIN_SERVICE_NAMES.DOCUMENT_SUBMISSION_DEFERRED_RESPONSE);
 
             if (contextBuilder instanceof OutboundDocSubmissionDeferredResponseOrchestrationContextBuilder_g0) {
                 ((OutboundDocSubmissionDeferredResponseOrchestrationContextBuilder_g0) contextBuilder).init(message);

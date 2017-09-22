@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,14 +26,13 @@
  */
 package gov.hhs.fha.nhinc.orchestration;
 
-import static org.junit.Assert.assertEquals;
 import gov.hhs.fha.nhinc.orchestration.PolicyTransformer.Direction;
 import gov.hhs.fha.nhinc.properties.IPropertyAcessor;
 import gov.hhs.fha.nhinc.properties.PropertyAccessException;
-
 import org.jmock.Expectations;
 import org.jmock.Mockery;
 import org.jmock.integration.junit4.JUnit4Mockery;
+import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 
 /**
@@ -42,33 +41,12 @@ import org.junit.Test;
  */
 public class CONNECTOrchestrationBaseTest {
 
-	 Mockery context = new JUnit4Mockery();
-     OutboundOrchestratable outboundMessage = context.mock(OutboundOrchestratable.class);
-     IPropertyAcessor propertyAcessor = context.mock(IPropertyAcessor.class);
-     OutboundDelegate outboundDelegate = context.mock(OutboundDelegate.class);
+    Mockery context = new JUnit4Mockery();
+    OutboundOrchestratable outboundMessage = context.mock(OutboundOrchestratable.class);
+    IPropertyAcessor propertyAcessor = context.mock(IPropertyAcessor.class);
+    OutboundDelegate outboundDelegate = context.mock(OutboundDelegate.class);
 
     public CONNECTOrchestrationBaseTest() {
-    }
-
-    /**
-     * Test of audit method, of class CONNECTOrchestrationBase.
-     */
-    @Test
-    public void testAuditRequest() {
-        Orchestratable message = null;
-        CONNECTOrchestrationBase instance = new DenyCONNECTOrchestrationBaseImpl();
-        instance.auditRequest(message);
-        // there was no error, so success
-        // TODO: make a better test
-    }
-
-    @Test
-    public void testAuditResponse() {
-        Orchestratable message = null;
-        CONNECTOrchestrationBase instance = new DenyCONNECTOrchestrationBaseImpl();
-        instance.auditResponse(message);
-        // there was no error, so success
-        // TODO: make a better test
     }
 
     /**
@@ -84,26 +62,23 @@ public class CONNECTOrchestrationBaseTest {
         assertEquals(expResult, result);
     }
 
-
-
     @Test
     public void testOutboundPolicyFailed() throws PropertyAccessException {
 
-    	context.checking(new Expectations() {{
-    		allowing(outboundMessage).getServiceName();
+        context.checking(new Expectations() {
+            {
+                allowing(outboundMessage).getServiceName();
 
-    		allowing(outboundMessage).getDelegate();
-    		will(returnValue(outboundDelegate));
+                allowing(outboundMessage).getDelegate();
+                will(returnValue(outboundDelegate));
 
-    		oneOf(outboundDelegate).createErrorResponse(with(same(outboundMessage)), with(any(String.class)));
-        }});
+                oneOf(outboundDelegate).createErrorResponse(with(same(outboundMessage)), with(any(String.class)));
+            }
+        });
 
-
-    	DenyCONNECTOrchestrationBaseImpl instance = new DenyCONNECTOrchestrationBaseImpl();
-    	instance.processOutboundIfPolicyIsOk(outboundMessage);
+        DenyCONNECTOrchestrationBaseImpl instance = new DenyCONNECTOrchestrationBaseImpl();
+        instance.processOutboundIfPolicyIsOk(outboundMessage);
     }
-
-
 
     public class DenyCONNECTOrchestrationBaseImpl extends CONNECTOrchestrationBase {
 

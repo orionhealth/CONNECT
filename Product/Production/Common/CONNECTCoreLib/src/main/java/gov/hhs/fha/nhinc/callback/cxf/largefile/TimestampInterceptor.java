@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,7 +27,6 @@
 package gov.hhs.fha.nhinc.callback.cxf.largefile;
 
 import java.util.Date;
-
 import org.apache.cxf.message.Message;
 import org.apache.cxf.phase.AbstractPhaseInterceptor;
 import org.apache.cxf.phase.Phase;
@@ -38,15 +37,17 @@ import org.apache.cxf.phase.Phase;
  */
 public class TimestampInterceptor extends AbstractPhaseInterceptor<Message> {
     public static final String INVOCATION_TIME_KEY = "invocationTime";
-    
+
     public TimestampInterceptor() {
         super(Phase.RECEIVE);
     }
 
+    @Override
     public void handleMessage(Message message) {
         message.put(INVOCATION_TIME_KEY, new Date());
     }
 
+    @Override
     public void handleFault(Message messageParam) {
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,7 +27,7 @@
 package gov.hhs.fha.nhinc.patientdiscovery.inbound.deferred.response;
 
 import gov.hhs.fha.nhinc.common.nhinccommon.AssertionType;
-
+import java.util.Properties;
 import org.hl7.v3.MCCIIN000002UV01;
 import org.hl7.v3.PRPAIN201306UV02;
 
@@ -35,10 +35,18 @@ import org.hl7.v3.PRPAIN201306UV02;
  * @author akong
  *
  */
-public class TestInboundPatientDiscoveryDeferredResponse implements InboundPatientDiscoveryDeferredResponse{
+public class TestInboundPatientDiscoveryDeferredResponse implements InboundPatientDiscoveryDeferredResponse {
 
+    /**
+     *
+     * @param body
+     * @param assertion
+     * @param webContextProperties
+     * @return
+     */
     @Override
-    public MCCIIN000002UV01 respondingGatewayDeferredPRPAIN201306UV02(PRPAIN201306UV02 body, AssertionType assertion) {
+    public MCCIIN000002UV01 respondingGatewayDeferredPRPAIN201306UV02(PRPAIN201306UV02 body, AssertionType assertion,
+        Properties webContextProperties) {
         return new MCCIIN000002UV01();
     }
 

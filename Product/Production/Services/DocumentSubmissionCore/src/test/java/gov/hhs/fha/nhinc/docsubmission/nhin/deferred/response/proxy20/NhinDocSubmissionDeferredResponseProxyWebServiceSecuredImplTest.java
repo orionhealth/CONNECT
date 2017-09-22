@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,10 +26,6 @@
  */
 package gov.hhs.fha.nhinc.docsubmission.nhin.deferred.response.proxy20;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 import gov.hhs.fha.nhinc.aspect.NwhinInvocationEvent;
 import gov.hhs.fha.nhinc.common.nhinccommon.AssertionType;
 import gov.hhs.fha.nhinc.common.nhinccommon.HomeCommunityType;
@@ -39,16 +35,17 @@ import gov.hhs.fha.nhinc.docsubmission.aspect.DeferredResponseDescriptionBuilder
 import gov.hhs.fha.nhinc.messaging.client.CONNECTClient;
 import gov.hhs.fha.nhinc.messaging.service.port.ServicePortDescriptor;
 import ihe.iti.xdr._2007.XDRDeferredResponse20PortType;
-
 import java.lang.reflect.Method;
-
 import oasis.names.tc.ebxml_regrep.xsd.rs._3.RegistryResponseType;
-
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import org.junit.Test;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 /**
  * @author achidamb
- * 
+ *
  */
 public class NhinDocSubmissionDeferredResponseProxyWebServiceSecuredImplTest {
 
@@ -97,7 +94,7 @@ public class NhinDocSubmissionDeferredResponseProxyWebServiceSecuredImplTest {
 
             /*
              * (non-Javadoc)
-             * 
+             *
              * @see #getCONNECTClientSecured(gov.hhs.fha.nhinc.messaging.service.port.ServicePortDescriptor,
              * java.lang.String, gov.hhs.fha.nhinc.common.nhinccommon.AssertionType, java.lang.String, java.lang.String)
              */
@@ -110,7 +107,7 @@ public class NhinDocSubmissionDeferredResponseProxyWebServiceSecuredImplTest {
 
             /*
              * (non-Javadoc)
-             * 
+             *
              * @see gov.hhs.fha.nhinc.docsubmission.nhin.deferred.response.proxy11.
              * NhinDocSubmissionDeferredResponseProxyWebServiceSecuredImpl
              * #getUrl(gov.hhs.fha.nhinc.common.nhinccommon.NhinTargetSystemType)

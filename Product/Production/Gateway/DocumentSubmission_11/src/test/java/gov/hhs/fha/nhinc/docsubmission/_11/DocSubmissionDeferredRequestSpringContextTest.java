@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,8 +26,6 @@
  */
 package gov.hhs.fha.nhinc.docsubmission._11;
 
-import static org.junit.Assert.assertNotNull;
-import ihe.iti.xds_b._2007.ProvideAndRegisterDocumentSetRequestType;
 import gov.hhs.fha.nhinc.common.nhinccommonentity.RespondingGatewayProvideAndRegisterDocumentSetRequestType;
 import gov.hhs.fha.nhinc.common.nhinccommonentity.RespondingGatewayProvideAndRegisterDocumentSetSecuredRequestType;
 import gov.hhs.fha.nhinc.docsubmission._11.entity.deferred.request.EntityDocSubmissionDeferredRequestSecured;
@@ -38,7 +36,8 @@ import gov.hhs.fha.nhinc.docsubmission.inbound.deferred.request.StandardInboundD
 import gov.hhs.fha.nhinc.docsubmission.outbound.deferred.request.PassthroughOutboundDocSubmissionDeferredRequest;
 import gov.hhs.fha.nhinc.docsubmission.outbound.deferred.request.StandardOutboundDocSubmissionDeferredRequest;
 import gov.hhs.healthit.nhin.XDRAcknowledgementType;
-
+import ihe.iti.xds_b._2007.ProvideAndRegisterDocumentSetRequestType;
+import static org.junit.Assert.assertNotNull;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,7 +46,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 /**
  * @author akong
- * 
+ *
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = { "/docsubmission/_11/applicationContext.xml" })
@@ -61,19 +60,19 @@ public class DocSubmissionDeferredRequestSpringContextTest {
 
     @Autowired
     EntityDocSubmissionDeferredRequestSecured outboundDocSubmissionRequestSecuredEndpoint;
-    
+
     @Autowired
     StandardOutboundDocSubmissionDeferredRequest stdOutboundDocSubmissionDeferredRequest;
-    
+
     @Autowired
     PassthroughOutboundDocSubmissionDeferredRequest ptOutboundDocSubmissionDeferredRequest;
-    
+
     @Autowired
     StandardInboundDocSubmissionDeferredRequest stdInboundDocSubmissionDeferredRequest;
-    
+
     @Autowired
     PassthroughInboundDocSubmissionDeferredRequest ptInbounDocSubmissionDeferredRequest;
-    
+
 
     @Test
     public void inbound() {

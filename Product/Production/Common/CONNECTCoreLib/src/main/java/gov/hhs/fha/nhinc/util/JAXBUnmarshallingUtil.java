@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2013, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,7 +27,6 @@
 package gov.hhs.fha.nhinc.util;
 
 import java.io.InputStream;
-
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
@@ -38,14 +37,14 @@ import javax.xml.stream.XMLStreamReader;
  * @author msw
  */
 public class JAXBUnmarshallingUtil {
-    
+
     /**
      * Instantiates a new jAXB unmarshalling util.
      */
     public JAXBUnmarshallingUtil() {
-        
+
     }
-    
+
     /**
      * Gets the safe stream reader from input stream.
      *
@@ -57,9 +56,8 @@ public class JAXBUnmarshallingUtil {
         XMLInputFactory xif = XMLInputFactory.newInstance();
         xif.setProperty(XMLInputFactory.IS_SUPPORTING_EXTERNAL_ENTITIES, false);
         xif.setProperty(XMLInputFactory.SUPPORT_DTD, false);
-        XMLStreamReader xsr = xif.createXMLStreamReader(stream);
-        
-        return xsr; 
+
+        return xif.createXMLStreamReader(stream);
     }
 
 }

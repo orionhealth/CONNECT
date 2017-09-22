@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2014, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -47,15 +47,13 @@ THE POSSIBILITY OF SUCH DAMAGE.
 
 package gov.hhs.fha.nhinc.directconfig.service;
 
+import gov.hhs.fha.nhinc.directconfig.entity.Certificate;
+import gov.hhs.fha.nhinc.directconfig.entity.helpers.EntityStatus;
+import gov.hhs.fha.nhinc.directconfig.service.helpers.CertificateGetOptions;
 import java.util.Collection;
-
 import javax.jws.WebMethod;
 import javax.jws.WebParam;
 import javax.jws.WebService;
-
-import gov.hhs.fha.nhinc.directconfig.service.helpers.CertificateGetOptions;
-import gov.hhs.fha.nhinc.directconfig.entity.Certificate;
-import gov.hhs.fha.nhinc.directconfig.entity.helpers.EntityStatus;
 
 /**
  * Service class for methods related to a Certificate object.
@@ -67,7 +65,7 @@ public interface CertificateService {
 
     /**
      * Add a Certificate.
-     * 
+     *
      * @param certs
      *            The Certificate.
      * @throws ConfigurationServiceException
@@ -77,7 +75,7 @@ public interface CertificateService {
 
     /**
      * Get a Certificate.
-     * 
+     *
      * @param owner
      *            The Certificate owner.
      * @param thumbprint
@@ -94,7 +92,7 @@ public interface CertificateService {
 
     /**
      * Get a collection of Certificates.
-     * 
+     *
      * @param certificateIds
      *            A collection of Certificate IDs.
      * @param options
@@ -108,7 +106,7 @@ public interface CertificateService {
 
     /**
      * Get a collection of Certificates for an owner.
-     * 
+     *
      * @param owner
      *            The Certificate owner.
      * @param options
@@ -122,7 +120,7 @@ public interface CertificateService {
 
     /**
      * Set a Certificate status.
-     * 
+     *
      * @param certificateIds
      *            A collection of Certificates.
      * @param status
@@ -135,7 +133,7 @@ public interface CertificateService {
 
     /**
      * Set the Certificate status for an owner.
-     * 
+     *
      * @param owner
      *            The Certificate owner.
      * @param status
@@ -148,7 +146,7 @@ public interface CertificateService {
 
     /**
      * Remove a Certificate.
-     * 
+     *
      * @param certificateIds
      *            A collection of Certificate IDs.
      * @throws ConfigurationServiceException
@@ -159,7 +157,7 @@ public interface CertificateService {
 
     /**
      * Remove the Certificates for an owner.
-     * 
+     *
      * @param owner
      *            The Certificate owner.
      * @throws ConfigurationServiceException
@@ -169,7 +167,7 @@ public interface CertificateService {
 
     /**
      * Get a collection of Certificates.
-     * 
+     *
      * @param lastCertificateId
      *            The last Certificate ID.
      * @param maxResults
@@ -188,7 +186,7 @@ public interface CertificateService {
      * Determines if a certificate exists in the certificate store. Although not
      * specific in the interface definition, certificate thumbprinting is
      * recommended for certificate searching.
-     * 
+     *
      * @param cert
      *            The certificate to search for.
      * @return True if the certificate exist in the store. False otherwise.

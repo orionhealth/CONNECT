@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,13 +30,11 @@ import gov.hhs.fha.nhinc.common.nhinccommon.AssertionType;
 import gov.hhs.fha.nhinc.docsubmission.inbound.deferred.request.InboundDocSubmissionDeferredRequest;
 import gov.hhs.fha.nhinc.messaging.server.BaseService;
 import ihe.iti.xds_b._2007.ProvideAndRegisterDocumentSetRequestType;
-
 import javax.xml.ws.WebServiceContext;
-
 import oasis.names.tc.ebxml_regrep.xsd.rs._3.RegistryResponseType;
 
 /**
- * 
+ *
  * @author patlollav
  */
 public class NhinDocSubmissionDeferredRequestImpl20 extends BaseService {
@@ -48,16 +46,17 @@ public class NhinDocSubmissionDeferredRequestImpl20 extends BaseService {
     }
 
     /**
-     * 
+     *
      * @param body
      * @param context
      * @return
      */
     public RegistryResponseType provideAndRegisterDocumentSetBRequest(ProvideAndRegisterDocumentSetRequestType body,
-            WebServiceContext context) {
+        WebServiceContext context) {
         AssertionType assertion = getAssertion(context, null);
 
-        return inboundDocSubmissionRequest.provideAndRegisterDocumentSetBRequest(body, assertion).getMessage();
+        return inboundDocSubmissionRequest.provideAndRegisterDocumentSetBRequest(body, assertion,
+            getWebContextProperties(context)).getMessage();
     }
 
 }

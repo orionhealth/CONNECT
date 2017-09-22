@@ -1,7 +1,5 @@
-/**
- * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
- *
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services.
+/*
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -101,7 +99,7 @@ public class BeanPropertyArgumentTransformerTest {
 
     @Test
     public void handlesNullArray() {
-        Object[] transformedArguments = builder.transformArguments((Object[]) null);
+        Object[] transformedArguments = builder.transformArguments(null);
         assertEquals(0, transformedArguments.length);
     }
 }

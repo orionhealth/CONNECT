@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2013, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -36,13 +36,9 @@ import gov.hhs.fha.nhinc.direct.xdr.audit.SoapEdgeAuditor;
 import gov.hhs.fha.nhinc.direct.xdr.audit.SoapEdgeAuditorFactory;
 import gov.hhs.fha.nhinc.xdcommon.XDCommonResponseHelper;
 import ihe.iti.xds_b._2007.ProvideAndRegisterDocumentSetRequestType;
-
 import java.util.Set;
-
 import javax.mail.Address;
-
 import oasis.names.tc.ebxml_regrep.xsd.rs._3.RegistryResponseType;
-
 import org.apache.commons.collections.CollectionUtils;
 import org.nhindirect.xd.common.DirectDocuments;
 import org.nhindirect.xd.transform.XdsDirectDocumentsTransformer;
@@ -65,9 +61,9 @@ public class SoapDirectEdgeOrchestration {
         this.adapterFactory = new DirectAdapterFactory();
         this.docTransformer = new DefaultXdsDirectDocumentsTransformer();
     }
-    
+
     public SoapDirectEdgeOrchestration(SoapEdgeAuditorFactory auditorFactory,
-            ToAddressParserFactory toParserFactory, 
+            ToAddressParserFactory toParserFactory,
             FromAddressParserFactory fromParserFactory,
             DirectAdapterFactory adapterFactory,
             XdsDirectDocumentsTransformer docTransformer){
@@ -77,10 +73,10 @@ public class SoapDirectEdgeOrchestration {
         this.adapterFactory = adapterFactory;
         this.docTransformer = docTransformer;
     }
-    
+
     /**
      * Handle an incoming ProvideAndRegisterDocumentSetRequestType object and transform to XDM.
-     * 
+     *
      * @param prdst
      *            The incoming ProvideAndRegisterDocumentSetRequestType object
      * @param context
@@ -90,7 +86,7 @@ public class SoapDirectEdgeOrchestration {
      */
     public RegistryResponseType orchestrate(ProvideAndRegisterDocumentSetRequestType prdst, SoapEdgeContext context)
             throws Exception {
-        RegistryResponseType resp = null;
+        RegistryResponseType resp;
 
         SoapEdgeAuditor auditor = auditorFactory.getAuditor();
         auditor.audit(SoapEdgeAuditor.PRINCIPAL, SoapEdgeAuditor.REQUESTRECIEVED_CATEGORY,
@@ -115,7 +111,7 @@ public class SoapDirectEdgeOrchestration {
         DirectDocuments documents = docTransformer.transform(prdst);
 
         ToAddressParser toParser = toParserFactory.getToParser();
-        
+
         Set<Address> addressTo = toParser.parse(context.getDirectTo(), documents);
         if (CollectionUtils.isEmpty(addressTo)) {
             throw new TransformationException("No 'To' addresses in soap context.", null);

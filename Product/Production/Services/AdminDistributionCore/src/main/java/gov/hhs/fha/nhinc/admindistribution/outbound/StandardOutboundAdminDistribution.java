@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -43,64 +43,54 @@ import gov.hhs.fha.nhinc.common.nhinccommonentity.RespondingGatewaySendAlertMess
 import gov.hhs.fha.nhinc.connectmgr.ConnectionManagerCache;
 import gov.hhs.fha.nhinc.connectmgr.ConnectionManagerException;
 import gov.hhs.fha.nhinc.connectmgr.UrlInfo;
-import gov.hhs.fha.nhinc.event.DefaultEventDescriptionBuilder;
 import gov.hhs.fha.nhinc.nhinclib.NhincConstants;
-
 import java.util.List;
-
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
- * 
+ *
  * @author dunnek
  */
 public class StandardOutboundAdminDistribution implements OutboundAdminDistribution {
 
-    private static final Logger LOG = Logger.getLogger(StandardOutboundAdminDistribution.class);
+    private static final Logger LOG = LoggerFactory.getLogger(StandardOutboundAdminDistribution.class);
     private final AdminDistributionAuditLogger auditLogger = null;
     private final MessageGeneratorUtils msgUtils = MessageGeneratorUtils.getInstance();
 
     /**
      * This method sends AlertMessage to the target.
-     * 
-     * @param message
-     *            SendAlertMessage received.
-     * @param assertion
-     *            Assertion received.
-     * @param target
-     *            NhinTargetCommunity received.
+     *
+     * @param message SendAlertMessage received.
+     * @param assertion Assertion received.
+     * @param target NhinTargetCommunity received.
      */
     @Override
-    @OutboundProcessingEvent(beforeBuilder = ADRequestTransformingBuilder.class,
-            afterReturningBuilder = ADRequestTransformingBuilder.class, serviceType = "Admin Distribution",
-            version = "")
+    @OutboundProcessingEvent(beforeBuilder = ADRequestTransformingBuilder.class, afterReturningBuilder = ADRequestTransformingBuilder.class, serviceType = "Admin Distribution", version = "")
     public void sendAlertMessage(RespondingGatewaySendAlertMessageSecuredType message, AssertionType assertion,
             NhinTargetCommunitiesType target) {
-        RespondingGatewaySendAlertMessageType unsecured = msgUtils.convertToUnsecured(message, assertion, target);
+        RespondingGatewaySendAlertMessageType unsecured = msgUtils.convertToUnsecured(message,
+                MessageGeneratorUtils.getInstance().generateMessageId(assertion), target);
 
         this.sendAlertMessage(unsecured, assertion, target);
 
     }
 
     /**
-     * @param message
-     *            SendAlerMessage Received.
-     * @param assertion
-     *            Assertion received.
-     * @param target
-     *            NhinTargetCommunity received.
+     * @param message SendAlerMessage Received.
+     * @param assertion Assertion received.
+     * @param target NhinTargetCommunity received.
      */
     @Override
-    @OutboundProcessingEvent(beforeBuilder = ADRequestTransformingBuilder.class,
-            afterReturningBuilder = ADRequestTransformingBuilder.class, serviceType = "Admin Distribution",
-            version = "")
+    @OutboundProcessingEvent(beforeBuilder = ADRequestTransformingBuilder.class, afterReturningBuilder = ADRequestTransformingBuilder.class, serviceType = "Admin Distribution", version = "")
     public void sendAlertMessage(RespondingGatewaySendAlertMessageType message, AssertionType assertion,
             NhinTargetCommunitiesType target) {
-        auditMessage(message, assertion, NhincConstants.AUDIT_LOG_INBOUND_DIRECTION);
+        auditMessage(message, MessageGeneratorUtils.getInstance().generateMessageId(assertion),
+                NhincConstants.AUDIT_LOG_INBOUND_DIRECTION);
 
         List<UrlInfo> urlInfoList = getEndpoints(target);
 
-        if ((urlInfoList == null) || (urlInfoList.isEmpty())) {
+        if (urlInfoList == null || urlInfoList.isEmpty()) {
             LOG.warn("No targets were found for the Admin Distribution Request");
         } else {
             for (UrlInfo urlInfo : urlInfoList) {
@@ -121,15 +111,13 @@ public class StandardOutboundAdminDistribution implements OutboundAdminDistribut
 
     /**
      * This method audits the AdminDist Entity Message.
-     * 
-     * @param message
-     *            SendAlertMessage received.
-     * @param assertion
-     *            Assertion received.
-     * @param direction
-     *            The direction can be either outbound or inbound.
+     *
+     * @param message SendAlertMessage received.
+     * @param assertion Assertion received.
+     * @param direction The direction can be either outbound or inbound.
      */
-    protected void auditMessage(RespondingGatewaySendAlertMessageType message, AssertionType assertion, String direction) {
+    protected void auditMessage(RespondingGatewaySendAlertMessageType message, AssertionType assertion,
+            String direction) {
         AcknowledgementType ack = getAuditLogger().auditEntityAdminDist(message, assertion, direction);
         if (ack != null) {
             LOG.debug("ack: " + ack.getMessage());
@@ -140,7 +128,7 @@ public class StandardOutboundAdminDistribution implements OutboundAdminDistribut
      * @return auditLogger to audit.
      */
     protected AdminDistributionAuditLogger getAuditLogger() {
-        return (auditLogger != null) ? auditLogger : new AdminDistributionAuditLogger();
+        return auditLogger != null ? auditLogger : new AdminDistributionAuditLogger();
     }
 
     private NhinTargetSystemType buildTargetSystem(UrlInfo urlInfo) {
@@ -157,9 +145,8 @@ public class StandardOutboundAdminDistribution implements OutboundAdminDistribut
 
     /**
      * This method returns the list of url's of targetCommunities.
-     * 
-     * @param targetCommunities
-     *            NhinTargetCommunities received.
+     *
+     * @param targetCommunities NhinTargetCommunities received.
      * @return list of urlInfo for target Communities.
      */
     protected List<UrlInfo> getEndpoints(NhinTargetCommunitiesType targetCommunities) {
@@ -177,13 +164,10 @@ public class StandardOutboundAdminDistribution implements OutboundAdminDistribut
 
     /**
      * This method returns boolean for the policyCheck for a specific HCID.
-     * 
-     * @param request
-     *            SendAlertMessage received.
-     * @param assertion
-     *            Assertion received.
-     * @param hcid
-     *            homeCommunityId to check policy.
+     *
+     * @param request SendAlertMessage received.
+     * @param assertion Assertion received.
+     * @param hcid homeCommunityId to check policy.
      * @return true if checkpolicy is permit; else false.
      */
     protected boolean checkPolicy(RespondingGatewaySendAlertMessageType request, AssertionType assertion, String hcid) {
@@ -195,19 +179,17 @@ public class StandardOutboundAdminDistribution implements OutboundAdminDistribut
 
     /**
      * This method send message to Nhin Proxy.
-     * 
-     * @param newRequest
-     *            SendAlertMessage received.
-     * @param assertion
-     *            Assertion received.
-     * @param target
-     *            NhinTargetSystem received.
+     *
+     * @param newRequest SendAlertMessage received.
+     * @param assertion Assertion received.
+     * @param target NhinTargetSystem received.
      */
     protected void sendToNhinProxy(RespondingGatewaySendAlertMessageType newRequest, AssertionType assertion,
             NhinTargetSystemType target) {
         LOG.debug("begin sendToNhinProxy");
         OutboundAdminDistributionDelegate adDelegate = getNewOutboundAdminDistributionDelegate();
-        OutboundAdminDistributionOrchestratable orchestratable = new OutboundAdminDistributionOrchestratable(adDelegate);
+        OutboundAdminDistributionOrchestratable orchestratable = new OutboundAdminDistributionOrchestratable(
+                adDelegate);
         orchestratable.setRequest(newRequest);
         orchestratable.setAssertion(assertion);
         orchestratable.setTarget(target);

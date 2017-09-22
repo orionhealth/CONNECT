@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-13, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -28,24 +28,22 @@ package gov.hhs.fha.nhinc.messaging.service.port;
 
 import gov.hhs.fha.nhinc.messaging.service.BaseServiceEndpoint;
 import gov.hhs.fha.nhinc.messaging.service.ServiceEndpoint;
-
 import java.util.HashMap;
 import java.util.Map;
-
 import org.apache.cxf.jaxws.JaxWsProxyFactoryBean;
 import org.apache.cxf.ws.addressing.WSAddressingFeature;
 
 /**
  * @author msweaver
- * 
+ *
  */
 public class CachingCXFWSAServicePortBuilder<T> extends CachingCXFServicePortBuilder<T> {
 
-    private static Map<Class<?>, Object> CACHED_PORTS = new HashMap<Class<?>, Object>();
+    private static Map<Class<?>, Object> CACHED_PORTS = new HashMap<>();
 
     /**
      * Constructor.
-     * 
+     *
      * @param portDescriptor
      */
     public CachingCXFWSAServicePortBuilder(ServicePortDescriptor<T> portDescriptor) {
@@ -54,7 +52,7 @@ public class CachingCXFWSAServicePortBuilder<T> extends CachingCXFServicePortBui
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see gov.hhs.fha.nhinc.messaging.service.port.CachingCXFServicePortBuilder#getCache()
      */
     @Override
@@ -64,14 +62,14 @@ public class CachingCXFWSAServicePortBuilder<T> extends CachingCXFServicePortBui
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see gov.hhs.fha.nhinc.messaging.service.port.CachingCXFServicePortBuilder#configurePort(java.lang.Object)
      */
     @Override
     protected void configurePort(T port) {
         super.configurePort(port);
 
-        ServiceEndpoint<T> serviceEndpoint = new BaseServiceEndpoint<T>(port);
+        ServiceEndpoint<T> serviceEndpoint = new BaseServiceEndpoint<>(port);
         serviceEndpoint.configure();
     }
 

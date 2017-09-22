@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,37 +26,34 @@
  */
 package gov.hhs.fha.nhinc.callback.cxf.wss;
 
+import com.google.common.base.Optional;
 import gov.hhs.fha.nhinc.callback.SamlConstants;
 import gov.hhs.fha.nhinc.largefile.LargeFileUtils;
 import gov.hhs.fha.nhinc.util.Base64Coder;
-
 import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
-
 import javax.activation.DataHandler;
-
 import org.apache.cxf.binding.soap.SoapMessage;
 import org.apache.cxf.message.Attachment;
-import org.apache.log4j.Logger;
 import org.apache.ws.security.WSDocInfo;
 import org.apache.ws.security.WSSecurityEngineResult;
 import org.apache.ws.security.WSSecurityException;
 import org.apache.ws.security.handler.RequestData;
 import org.apache.ws.security.processor.SignatureProcessor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
-
-import com.google.common.base.Optional;
 
 /**
  * This class will process the signature element of the Security header. It inherits from the default SignatureProcessor
  * but will inline all digest and signature values in the Security header if they are attached as a reference.
- * 
+ *
  */
 public class CONNECTSignatureProcessor extends SignatureProcessor {
 
-    private static final Logger LOG = Logger.getLogger(CONNECTSignatureProcessor.class);
+    private static final Logger LOG = LoggerFactory.getLogger(CONNECTSignatureProcessor.class);
     private static final LargeFileUtils FILE_UTILS = LargeFileUtils.getInstance();
     private static final String CONTENT_ID_PREFIX = "cid:";
     private static final String HREF_ATTRIBUTE = "href";
@@ -75,7 +72,7 @@ public class CONNECTSignatureProcessor extends SignatureProcessor {
     /**
      * This method will inline all digest and signature values in the Security header if they are attached as a
      * reference. Be warned that this call will directly modify the passed in signature element.
-     * 
+     *
      * @param soapMsg
      * @param signatureElem
      * @throws WSSecurityException

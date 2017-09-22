@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,18 +26,17 @@
  */
 package gov.hhs.fha.nhinc.event;
 
-import java.util.List;
-
-import org.apache.log4j.Logger;
-
 import gov.hhs.fha.nhinc.proxy.ComponentProxyFactory;
+import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This class is responsible for bootstrapping event loggers.
  */
 public class EventLoggerFactory {
 
-    private static final Logger LOG = Logger.getLogger(EventLoggerFactory.class);
+    private static final Logger LOG = LoggerFactory.getLogger(EventLoggerFactory.class);
 
     private static final String CONFIG_FILE_NAME = "EventLoggerFactoryConfig.xml";
     private static final String BEAN_NAME = "eventLoggerFactory";
@@ -54,6 +53,7 @@ public class EventLoggerFactory {
 
     /**
      * Constructor.
+     * 
      * @param eventManager Event Manager used to create and register loggers.
      */
     public EventLoggerFactory(final EventManager eventManager) {

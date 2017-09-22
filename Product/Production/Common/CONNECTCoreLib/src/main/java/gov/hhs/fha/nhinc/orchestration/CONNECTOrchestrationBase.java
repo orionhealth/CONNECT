@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,23 +26,16 @@
  */
 package gov.hhs.fha.nhinc.orchestration;
 
-import oasis.names.tc.xacml._2_0.context.schema.os.DecisionType;
-import oasis.names.tc.xacml._2_0.context.schema.os.ResultType;
-
-import org.apache.log4j.Logger;
-
-import gov.hhs.fha.nhinc.auditrepository.nhinc.proxy.AuditRepositoryProxy;
-import gov.hhs.fha.nhinc.auditrepository.nhinc.proxy.AuditRepositoryProxyObjectFactory;
-import gov.hhs.fha.nhinc.common.auditlog.LogEventRequestType;
-import gov.hhs.fha.nhinc.common.nhinccommon.AcknowledgementType;
-import gov.hhs.fha.nhinc.common.nhinccommon.AssertionType;
 import gov.hhs.fha.nhinc.common.nhinccommonadapter.CheckPolicyRequestType;
 import gov.hhs.fha.nhinc.common.nhinccommonadapter.CheckPolicyResponseType;
-import gov.hhs.fha.nhinc.nhinclib.NhincConstants;
 import gov.hhs.fha.nhinc.policyengine.adapter.proxy.PolicyEngineProxy;
 import gov.hhs.fha.nhinc.policyengine.adapter.proxy.PolicyEngineProxyObjectFactory;
 import gov.hhs.fha.nhinc.properties.IPropertyAcessor;
 import gov.hhs.fha.nhinc.properties.PropertyAccessor;
+import oasis.names.tc.xacml._2_0.context.schema.os.DecisionType;
+import oasis.names.tc.xacml._2_0.context.schema.os.ResultType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -50,22 +43,23 @@ import gov.hhs.fha.nhinc.properties.PropertyAccessor;
  */
 public abstract class CONNECTOrchestrationBase implements CONNECTOrchestrator {
 
-    private static final Logger LOG = Logger.getLogger(CONNECTOrchestrationBase.class);
+    private static final Logger LOG = LoggerFactory.getLogger(CONNECTOrchestrationBase.class);
 
-    private final IPropertyAcessor propertyAcessor;
+    private final IPropertyAcessor propertyAccessor;
 
     /**
-	 *
-	 */
+     *
+     */
     public CONNECTOrchestrationBase() {
-        propertyAcessor = PropertyAccessor.getInstance(NhincConstants.GATEWAY_PROPERTY_FILE);
+        propertyAccessor = PropertyAccessor.getInstance();
     }
 
     /**
-		 *
-		 */
-    public CONNECTOrchestrationBase(IPropertyAcessor propertyAccesor) {
-        propertyAcessor = propertyAccesor;
+     *
+     * @param propertyAccessor
+     */
+    public CONNECTOrchestrationBase(IPropertyAcessor propertyAccessor) {
+        this.propertyAccessor = propertyAccessor;
     }
 
     @Override
@@ -80,15 +74,8 @@ public abstract class CONNECTOrchestrationBase implements CONNECTOrchestrator {
     }
 
     public Orchestratable processNotNullMessage(Orchestratable message) {
-        Orchestratable resp = null;
-        // audit
-        LOG.debug("Calling audit for " + message.getServiceName());
-        auditRequest(message);
+        Orchestratable resp = processEnabledMessage(message);
 
-        resp = processEnabledMessage(message);
-        // audit again
-        LOG.debug("Calling audit response for " + message.getServiceName());
-        auditResponse(message);
         LOG.debug("Returning from CONNECTNhinOrchestrator for " + message.getServiceName());
         return resp;
     }
@@ -165,51 +152,6 @@ public abstract class CONNECTOrchestrationBase implements CONNECTOrchestrator {
     /*
      * End Delegate Methods
      */
-
-    /*
-     * Begin Audit Methods
-     */
-    protected AcknowledgementType auditRequest(Orchestratable message) {
-        AcknowledgementType resp = null;
-
-        if (message != null && message.getAuditTransformer() != null) {
-            AuditTransformer transformer = message.getAuditTransformer();
-            LogEventRequestType auditLogMsg = transformer.transformRequest(message);
-            resp = audit(auditLogMsg, message.getAssertion());
-        }
-        return resp;
-    }
-
-    protected AcknowledgementType auditResponse(Orchestratable message) {
-        AcknowledgementType resp = null;
-
-        if (message != null && message.getAuditTransformer() != null) {
-            AuditTransformer transformer = message.getAuditTransformer();
-            LogEventRequestType auditLogMsg = transformer.transformResponse(message);
-            resp = audit(auditLogMsg, message.getAssertion());
-        }
-        return resp;
-    }
-
-    private AcknowledgementType audit(LogEventRequestType message, AssertionType assertion) {
-        LOG.debug("Entering CONNECTNhinOrchestrator.audit(...)");
-        AcknowledgementType ack = null;
-        try {
-            AuditRepositoryProxyObjectFactory auditRepoFactory = new AuditRepositoryProxyObjectFactory();
-            AuditRepositoryProxy proxy = auditRepoFactory.getAuditRepositoryProxy();
-
-            ack = proxy.auditLog(message, assertion);
-        } catch (Exception exc) {
-            LOG.error("Error: Failed to Audit message.", exc);
-        }
-        LOG.debug("Exiting AuditRCONNECTNhinOrchestratorepositoryLogger.audit(...)");
-        return ack;
-    }
-
-    /*
-     * End Audit Methods
-     */
-
     /*
      * Begin Policy Methods
      */
@@ -253,7 +195,7 @@ public abstract class CONNECTOrchestrationBase implements CONNECTOrchestrator {
      * Begin Delegate Methods
      */
     protected Orchestratable delegate(Orchestratable message) {
-        Orchestratable resp = null;
+        Orchestratable resp;
         LOG.debug("Entering CONNECTNhinOrchestrator.delegateToNhin(...)");
         Delegate p = message.getDelegate();
         resp = p.process(message);

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,23 +26,22 @@
  */
 package gov.hhs.fha.nhinc.mpilib;
 
+import gov.hhs.fha.nhinc.properties.PropertyAccessor;
 import java.beans.XMLDecoder;
 import java.beans.XMLEncoder;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-
-import org.apache.log4j.Logger;
-
-import gov.hhs.fha.nhinc.properties.PropertyAccessor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
  *
  */
 public class MpiDataSaver {
-    private static final Logger LOG = Logger.getLogger(MpiDataSaver.class);
+    private static final Logger LOG = LoggerFactory.getLogger(MpiDataSaver.class);
     private String defaultMpiFilename = null;
 
     /**

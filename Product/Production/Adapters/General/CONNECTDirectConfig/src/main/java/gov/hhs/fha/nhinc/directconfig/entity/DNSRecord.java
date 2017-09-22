@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2014, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -48,16 +48,14 @@
 package gov.hhs.fha.nhinc.directconfig.entity;
 
 import gov.hhs.fha.nhinc.directconfig.entity.helpers.DNSRecordUtils;
-
 import java.io.IOException;
 import java.util.Calendar;
-
 import org.bouncycastle.util.Arrays;
 
 /**
  * The JPA Domain class representing a DNS record. This is a generic DNS record that can represent (in theory) any DNS
  * record type.
- * 
+ *
  * @author Greg Meyer
  * @since 1.1
  */
@@ -78,7 +76,7 @@ public class DNSRecord {
 
     /**
      * Gets the internal id of the record. The record id is the primary key of the record JPA store.
-     * 
+     *
      * @return The internal id of the record.
      */
     public Long getId() {
@@ -87,7 +85,7 @@ public class DNSRecord {
 
     /**
      * Sets the internal id of the record.
-     * 
+     *
      * @param id The internal id of the record.
      */
     public void setId(Long id) {
@@ -96,7 +94,7 @@ public class DNSRecord {
 
     /**
      * Gets the name associated with this DNS entry. The is generally the name that is used for lookup purposes.
-     * 
+     *
      * @return The name associated with this DNS entry.
      */
     public String getName() {
@@ -105,7 +103,7 @@ public class DNSRecord {
 
     /**
      * Sets the name associated with this DNS entry.
-     * 
+     *
      * @param name The name associated with this DNS entry.
      */
     public void setName(String name) {
@@ -114,7 +112,7 @@ public class DNSRecord {
 
     /**
      * Gets the type of the DNS record such as A, SRV, CERT, MX, and SOA.
-     * 
+     *
      * @return The type of the DNS record.
      */
     public int getType() {
@@ -123,7 +121,7 @@ public class DNSRecord {
 
     /**
      * Gets the type of the DNS record such as A, SRV, CERT, MX, and SOA.
-     * 
+     *
      * @param type The type of the DNS record.
      */
     public void setType(int type) {
@@ -132,7 +130,7 @@ public class DNSRecord {
 
     /**
      * Gets the DNS record class such as IN, HS, and CH.
-     * 
+     *
      * @return The DNS record class.
      */
     public int getDclass() {
@@ -141,7 +139,7 @@ public class DNSRecord {
 
     /**
      * Sets the DNS record class.
-     * 
+     *
      * @param dclass The DNS record class.
      */
     public void setDclass(int dclass) {
@@ -151,7 +149,7 @@ public class DNSRecord {
     /**
      * Gets the record time to live in seconds. The ttl represents how long a record can cached before it is considered
      * stale.
-     * 
+     *
      * @return The record time to live in seconds.
      */
     public long getTtl() {
@@ -160,7 +158,7 @@ public class DNSRecord {
 
     /**
      * Sets the record time to live in seconds.
-     * 
+     *
      * @param ttl The record time to live in seconds.
      */
     public void setTtl(long ttl) {
@@ -169,7 +167,7 @@ public class DNSRecord {
 
     /**
      * Gets the date/time the record was created.
-     * 
+     *
      * @return Gets the date/time the record was created.
      */
     public Calendar getCreateTime() {
@@ -182,7 +180,7 @@ public class DNSRecord {
 
     /**
      * Sets the date/time the record was created.
-     * 
+     *
      * @param timestamp The date/time the record was created.
      */
     public void setCreateTime(Calendar timestamp) {
@@ -192,7 +190,7 @@ public class DNSRecord {
     /**
      * Get the rdata of the record. Rdata is generally the value of a DNS lookup such an IP address for an A lookup or
      * an X509 certificate for a CERT lookup.
-     * 
+     *
      * @return The Rdata of the record.
      */
     public byte[] getData() {
@@ -201,7 +199,7 @@ public class DNSRecord {
 
     /**
      * Sets the rdata of the record.
-     * 
+     *
      * @param data The rdata of the record.
      */
     public void setData(byte[] data) {
@@ -210,7 +208,7 @@ public class DNSRecord {
 
     /**
      * Converts a raw wire transfer format of a record to a DNS record.
-     * 
+     *
      * @param data The raw byte stream of a record in wire transfer format.
      * @return A DNSRecord converted from the wire format.
      * @throws IOException
@@ -221,7 +219,7 @@ public class DNSRecord {
 
     /**
      * Converts a DNS record to a raw wire transfer format.
-     * 
+     *
      * @param rec The DNSRecord to convert.
      * @return A byte array representation of the DNSRecord in raw wire transfer format.
      * @throws IOException
@@ -232,7 +230,8 @@ public class DNSRecord {
 
     /**
      * {@inheritDoc}
-     * 
+     *
+     * @param ob
      * @return
      */
     @Override
@@ -245,5 +244,15 @@ public class DNSRecord {
 
         return (rec.dclass == dclass && rec.type == type && rec.name.equals(name) && Arrays.areEqual(rec.getData(),
                 data));
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 61 * hash + (this.name != null ? this.name.hashCode() : 0);
+        hash = 61 * hash + this.type;
+        hash = 61 * hash + this.dclass;
+        hash = 61 * hash + java.util.Arrays.hashCode(this.data);
+        return hash;
     }
 }

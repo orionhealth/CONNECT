@@ -1,7 +1,5 @@
-/**
- * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
- *
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services.
+/*
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -28,17 +26,16 @@
  */
 package gov.hhs.fha.nhinc.event;
 
+import com.google.common.base.Optional;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
-
-import com.google.common.base.Optional;
 
 /**
  * Argument Transformer that transforms based upon bean properties of the argument list passed in.
@@ -47,7 +44,7 @@ import com.google.common.base.Optional;
  */
 public abstract class BeanPropertyArgumentTransformer extends ArgTransformerEventDescriptionBuilder {
 
-    private static final Logger LOG = Logger.getLogger(BeanPropertyArgumentTransformer.class);
+    private static final Logger LOG = LoggerFactory.getLogger(BeanPropertyArgumentTransformer.class);
 
     /**
      * Transforms the input argument list into the result by taking every argument, introspecting the bean properties,
@@ -58,9 +55,9 @@ public abstract class BeanPropertyArgumentTransformer extends ArgTransformerEven
         if (arguments == null) {
             return new Object[] {};
         }
-        List<Object> resultList = new ArrayList<Object>();
-        for (int curArg = 0; curArg < arguments.length; ++curArg) {
-            resultList.addAll(transformSingleArgument(arguments[curArg]));
+        List<Object> resultList = new ArrayList<>();
+        for (Object argument : arguments) {
+            resultList.addAll(transformSingleArgument(argument));
         }
         return resultList.toArray();
     }
@@ -69,10 +66,10 @@ public abstract class BeanPropertyArgumentTransformer extends ArgTransformerEven
         if (argument == null) {
             return Collections.emptyList();
         }
-        List<Object> result = new ArrayList<Object>();
+        List<Object> result = new ArrayList<>();
         PropertyDescriptor[] propertyDescriptors = BeanUtils.getPropertyDescriptors(argument.getClass());
-        for (int i = 0; i < propertyDescriptors.length; ++i) {
-            Method readMethod = propertyDescriptors[i].getReadMethod();
+        for (PropertyDescriptor propertyDescriptor : propertyDescriptors) {
+            Method readMethod = propertyDescriptor.getReadMethod();
             if (readMethod == null) {
                 continue;
             }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,21 +27,18 @@
 package gov.hhs.fha.nhinc.async;
 
 import gov.hhs.fha.nhinc.nhinclib.NhincConstants;
-
+import gov.hhs.fha.nhinc.wsa.WSAHeaderHelper;
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.xml.ws.WebServiceContext;
 import javax.xml.ws.handler.MessageContext;
-
 import org.apache.commons.lang.StringUtils;
-import org.apache.cxf.binding.soap.SoapHeader;
 import org.apache.cxf.headers.Header;
 import org.springframework.util.CollectionUtils;
 import org.w3c.dom.Element;
 
 /**
- * 
+ *
  * @author JHOPPESC
  */
 public class AsyncMessageIdExtractor {
@@ -67,32 +64,44 @@ public class AsyncMessageIdExtractor {
         }
         for (Header header : headers) {
             if (header.getName().getLocalPart().equalsIgnoreCase(headerName)) {
-                return (Element) ((SoapHeader) header).getObject();
+                return (Element) header.getObject();
             }
         }
         return null;
     }
 
+    /**
+     * @param context
+     * @return
+     */
     public String getMessageId(WebServiceContext context) {
-        String messageId = null;
 
         Element element = getSoapHeaderElement(context, NhincConstants.HEADER_MESSAGEID);
-        messageId = getFirstChildNodeValue(element);
-
-        return messageId;
+        return getFirstChildNodeValue(element);
     }
 
+    /**
+     * @param context
+     * @return
+     */
     public String getOrCreateAsyncMessageId(WebServiceContext context) {
         String messageId = getMessageId(context);
+        WSAHeaderHelper wsaHelper = new WSAHeaderHelper();
 
         if (StringUtils.isBlank(messageId)) {
             messageId = AddressingHeaderCreator.generateMessageId();
+        } else {
+            messageId = wsaHelper.fixMessageIDPrefix(messageId);
         }
         return messageId;
     }
 
+    /**
+     * @param context
+     * @return
+     */
     public List<String> getAsyncRelatesTo(WebServiceContext context) {
-        List<String> relatesToId = new ArrayList<String>();
+        List<String> relatesToId = new ArrayList<>();
 
         Element element = getSoapHeaderElement(context, NhincConstants.HEADER_RELATESTO);
         relatesToId.add(getFirstChildNodeValue(element));
@@ -100,15 +109,15 @@ public class AsyncMessageIdExtractor {
         return relatesToId;
     }
 
+    /**
+     * @param context
+     * @return
+     */
     public String getAction(WebServiceContext context) {
-        String action = null;
-
         Element element = getSoapHeaderElement(context, NhincConstants.WS_SOAP_HEADER_ACTION);
-        action = getFirstChildNodeValue(element);
-
-        return action;
+        return getFirstChildNodeValue(element);
     }
-    
+
     protected String getFirstChildNodeValue(Element element) {
         String value = null;
         if (element != null && element.getFirstChild() != null) {

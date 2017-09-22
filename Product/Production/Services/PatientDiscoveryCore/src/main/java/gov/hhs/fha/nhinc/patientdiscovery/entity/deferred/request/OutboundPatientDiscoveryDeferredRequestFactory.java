@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -28,8 +28,8 @@ package gov.hhs.fha.nhinc.patientdiscovery.entity.deferred.request;
 
 import gov.hhs.fha.nhinc.nhinclib.NhincConstants;
 import gov.hhs.fha.nhinc.orchestration.OrchestrationContextBuilder;
-
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author akong
@@ -37,7 +37,7 @@ import org.apache.log4j.Logger;
  */
 public class OutboundPatientDiscoveryDeferredRequestFactory {
 
-    private static final Logger LOG = Logger.getLogger(OutboundPatientDiscoveryDeferredRequestFactory.class);
+    private static final Logger LOG = LoggerFactory.getLogger(OutboundPatientDiscoveryDeferredRequestFactory.class);
 
     private static OutboundPatientDiscoveryDeferredRequestFactory instance = new OutboundPatientDiscoveryDeferredRequestFactory();
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,6 +27,7 @@
 package gov.hhs.fha.nhinc.admindistribution._10;
 
 import static org.junit.Assert.assertNotNull;
+
 import gov.hhs.fha.nhinc.admindistribution._10.entity.EntityAdministrativeDistribution;
 import gov.hhs.fha.nhinc.admindistribution._10.entity.EntityAdministrativeDistributionSecured;
 import gov.hhs.fha.nhinc.admindistribution._10.nhin.NhinAdministrativeDistribution;
@@ -37,7 +38,6 @@ import gov.hhs.fha.nhinc.admindistribution.outbound.StandardOutboundAdminDistrib
 import gov.hhs.fha.nhinc.common.nhinccommonentity.RespondingGatewaySendAlertMessageSecuredType;
 import gov.hhs.fha.nhinc.common.nhinccommonentity.RespondingGatewaySendAlertMessageType;
 import oasis.names.tc.emergency.edxl.de._1.EDXLDistribution;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,49 +52,49 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 @ContextConfiguration(locations = { "/admindistribution/_10/applicationContext.xml" })
 public class AdminDistributionSpringContextTest {
 
-	@Autowired
+    @Autowired
     StandardOutboundAdminDistribution standardOutboundOrchImpl;
-    
+
     @Autowired
     StandardInboundAdminDistribution standardInboundOrchImpl;
-    
+
     @Autowired
     PassthroughInboundAdminDistribution passthroughInboundOrchImpl;
-    
+
     @Autowired
     PassthroughOutboundAdminDistribution passthroughOutboundOrchImpl;
 
     @Autowired
     NhinAdministrativeDistribution inboundAdminDistEndpoint;
-    
+
     @Autowired
     EntityAdministrativeDistribution outboundAdminDistUnsecuredEndpoint;
-    
+
     @Autowired
     EntityAdministrativeDistributionSecured outboundAdminDistSecuredEndpoint;
-    
+
     @Test
     public void inbound() {
         assertNotNull(inboundAdminDistEndpoint);
-        
+
         EDXLDistribution request = new EDXLDistribution();
         inboundAdminDistEndpoint.sendAlertMessage(request);
     }
-    
+
     @Test
     public void outboundUnsecured() {
         assertNotNull(outboundAdminDistUnsecuredEndpoint);
-        
+
         RespondingGatewaySendAlertMessageType request = new RespondingGatewaySendAlertMessageType();
         outboundAdminDistUnsecuredEndpoint.sendAlertMessage(request);
     }
-    
+
     @Test
     public void outboundSecured() {
         assertNotNull(outboundAdminDistSecuredEndpoint);
-        
+
         RespondingGatewaySendAlertMessageSecuredType request = new RespondingGatewaySendAlertMessageSecuredType();
         outboundAdminDistSecuredEndpoint.sendAlertMessage(request);
     }
-    
+
 }

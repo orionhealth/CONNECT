@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,43 +27,45 @@
 package gov.hhs.fha.nhinc.docquery.inbound;
 
 import gov.hhs.fha.nhinc.common.nhinccommon.AssertionType;
-import gov.hhs.fha.nhinc.docquery.DocQueryAuditLog;
 import gov.hhs.fha.nhinc.docquery.adapter.proxy.AdapterDocQueryProxy;
 import gov.hhs.fha.nhinc.docquery.adapter.proxy.AdapterDocQueryProxyObjectFactory;
+import gov.hhs.fha.nhinc.docquery.audit.DocQueryAuditLogger;
+import java.util.Properties;
 import oasis.names.tc.ebxml_regrep.xsd.query._3.AdhocQueryRequest;
 import oasis.names.tc.ebxml_regrep.xsd.query._3.AdhocQueryResponse;
 
 /**
  * @author akong
- * 
+ *
  */
 public class PassthroughInboundDocQuery extends AbstractInboundDocQuery {
 
     private AdapterDocQueryProxyObjectFactory adapterFactory = new AdapterDocQueryProxyObjectFactory();
-    
+
     public PassthroughInboundDocQuery() {
         super();
     }
-    
-    public PassthroughInboundDocQuery(AdapterDocQueryProxyObjectFactory adapterFactory, DocQueryAuditLog auditLogger) {
+
+    public PassthroughInboundDocQuery(AdapterDocQueryProxyObjectFactory adapterFactory,
+        DocQueryAuditLogger auditLogger) {
         this.adapterFactory = adapterFactory;
         this.auditLogger = auditLogger;
     }
-    
+
     /**
      * Forwards the AdhocQueryRequest to an agency's adapter doc query service
-     * 
+     *
      * @param adhocQueryRequestMsg
      * @param communityID
      * @return
      */
     @Override
-    AdhocQueryResponse processDocQuery(AdhocQueryRequest msg, AssertionType assertion, String communityID) {
+    AdhocQueryResponse processDocQuery(AdhocQueryRequest msg, AssertionType assertion, String communityID,
+        Properties webContextProperties) {
 
         AdapterDocQueryProxy adapterProxy = adapterFactory.getAdapterDocQueryProxy();
-        AdhocQueryResponse resp = adapterProxy.respondingGatewayCrossGatewayQuery(msg, assertion);
 
-        return resp;
+        return adapterProxy.respondingGatewayCrossGatewayQuery(msg, assertion);
     }
-    
+
 }

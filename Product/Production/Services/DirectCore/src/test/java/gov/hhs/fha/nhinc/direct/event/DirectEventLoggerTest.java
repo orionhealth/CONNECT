@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,7 +27,6 @@
 package gov.hhs.fha.nhinc.direct.event;
 
 import gov.hhs.fha.nhinc.direct.DirectException;
-
 import org.junit.Test;
 
 /**
@@ -36,9 +35,9 @@ import org.junit.Test;
 public class DirectEventLoggerTest extends DirectEventTest {
 
     private static final String ERROR_MESSAGE = "I've got blisters on me fingers...";
-    
+
     private final DirectEventLogger testLogger = DirectEventLogger.getInstance();
-    
+
     /**
      * {@link DirectEventLogger#log(DirectEventType, javax.mail.internet.MimeMessage)}.
      */

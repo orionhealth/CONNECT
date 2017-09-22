@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-13, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,11 +29,12 @@ package gov.hhs.fha.nhinc.docquery.outbound;
 import gov.hhs.fha.nhinc.aspect.OutboundProcessingEvent;
 import gov.hhs.fha.nhinc.common.nhinccommon.AssertionType;
 import gov.hhs.fha.nhinc.common.nhinccommon.NhinTargetCommunitiesType;
-import gov.hhs.fha.nhinc.docquery.DocQueryAuditLog;
+import gov.hhs.fha.nhinc.common.nhinccommon.NhinTargetSystemType;
 import gov.hhs.fha.nhinc.docquery.DocQueryPolicyChecker;
 import gov.hhs.fha.nhinc.docquery.MessageGeneratorUtils;
 import gov.hhs.fha.nhinc.docquery.aspect.AdhocQueryRequestDescriptionBuilder;
 import gov.hhs.fha.nhinc.docquery.aspect.AdhocQueryResponseDescriptionBuilder;
+import gov.hhs.fha.nhinc.docquery.audit.DocQueryAuditLogger;
 import gov.hhs.fha.nhinc.docquery.entity.AggregationService;
 import gov.hhs.fha.nhinc.docquery.entity.AggregationStrategy;
 import gov.hhs.fha.nhinc.docquery.entity.OutboundDocQueryAggregate;
@@ -43,21 +44,19 @@ import gov.hhs.fha.nhinc.document.DocumentConstants;
 import gov.hhs.fha.nhinc.nhinclib.NhincConstants;
 import gov.hhs.fha.nhinc.orchestration.OutboundOrchestratable;
 import gov.hhs.fha.nhinc.util.HomeCommunityMap;
-
 import java.util.ArrayList;
 import java.util.List;
-
 import oasis.names.tc.ebxml_regrep.xsd.query._3.AdhocQueryRequest;
 import oasis.names.tc.ebxml_regrep.xsd.query._3.AdhocQueryResponse;
-
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class StandardOutboundDocQuery implements OutboundDocQuery {
 
-    private static final Logger LOG = Logger.getLogger(StandardOutboundDocQuery.class);
+    private static final Logger LOG = LoggerFactory.getLogger(StandardOutboundDocQuery.class);
     private AggregationStrategy strategy;
     private AggregationService fanoutService;
-    private DocQueryAuditLog auditLog = null;
+    private DocQueryAuditLogger auditLogger = null;
     private DocQueryPolicyChecker policyChecker;
 
     /**
@@ -72,7 +71,7 @@ public class StandardOutboundDocQuery implements OutboundDocQuery {
      * @param strategy
      */
     StandardOutboundDocQuery(AggregationStrategy strategy, AggregationService fanoutService,
-            DocQueryPolicyChecker policyChecker) {
+        DocQueryPolicyChecker policyChecker) {
         super();
         this.strategy = strategy;
         this.fanoutService = fanoutService;
@@ -80,7 +79,7 @@ public class StandardOutboundDocQuery implements OutboundDocQuery {
     }
 
     /**
-     * 
+     *
      * @param adhocQueryRequest The AdhocQueryRequest message received.
      * @param assertion Assertion received.
      * @param targets Target to send request.
@@ -89,34 +88,34 @@ public class StandardOutboundDocQuery implements OutboundDocQuery {
     @Override
     @OutboundProcessingEvent(beforeBuilder = AdhocQueryRequestDescriptionBuilder.class, afterReturningBuilder = AdhocQueryResponseDescriptionBuilder.class, serviceType = "Document Query", version = "")
     public AdhocQueryResponse respondingGatewayCrossGatewayQuery(AdhocQueryRequest adhocQueryRequest,
-            AssertionType assertion, NhinTargetCommunitiesType targets) {
+        AssertionType assertion, NhinTargetCommunitiesType targets) {
         LOG.trace("EntityDocQueryOrchImpl.respondingGatewayCrossGatewayQuery...");
-        AdhocQueryResponse response = null;
-
-        String sendingHCID = HomeCommunityMap.getLocalHomeCommunityId();
-        auditRequestFromAdapter(adhocQueryRequest, assertion, sendingHCID);
+        AdhocQueryResponse response;
 
         OutboundDocQueryAggregate aggregate = new OutboundDocQueryAggregate();
 
         List<OutboundOrchestratable> aggregateRequests = fanoutService.createChildRequests(adhocQueryRequest,
-                assertion, targets);
+            MessageGeneratorUtils.getInstance().generateMessageId(assertion), targets);
 
         if (aggregateRequests.isEmpty()) {
             LOG.info("no patient correlation found.");
             response = createErrorResponse("XDSUnknownPatientId", "No patient correlations found.");
         } else {
             OutboundDocQueryOrchestratable request = new OutboundDocQueryOrchestratable(
-                    new OutboundDocQueryAggregator(), assertion, NhincConstants.DOC_QUERY_SERVICE_NAME,
-                    adhocQueryRequest);
+                new OutboundDocQueryAggregator(), assertion, NhincConstants.DOC_QUERY_SERVICE_NAME,
+                adhocQueryRequest);
 
             aggregate.setRequest(request);
 
             // Policy check
-            List<OutboundOrchestratable> permittedPerPolicy = new ArrayList<OutboundOrchestratable>();
+            List<OutboundOrchestratable> permittedPerPolicy = new ArrayList<>();
             for (OutboundOrchestratable o : aggregateRequests) {
                 if (o instanceof OutboundDocQueryOrchestratable) {
+                    AdhocQueryRequest docQueryRequest = ((OutboundDocQueryOrchestratable) o).getRequest();
+                    NhinTargetSystemType target = ((OutboundDocQueryOrchestratable) o).getTarget();
                     if (policyCheck(((OutboundDocQueryOrchestratable) o).getRequest(), o.getAssertion())) {
                         permittedPerPolicy.add(o);
+                        auditRequest(docQueryRequest, o.getAssertion(), target);
                     }
                 }
             }
@@ -133,8 +132,6 @@ public class StandardOutboundDocQuery implements OutboundDocQuery {
             }
         }
 
-        auditResponseToAdapter(response, assertion, sendingHCID);
-
         return response;
 
     }
@@ -143,33 +140,33 @@ public class StandardOutboundDocQuery implements OutboundDocQuery {
         return policyChecker.checkOutgoingPolicy(message, assertion);
     }
 
-    protected DocQueryAuditLog getAuditLogger() {
-        if (auditLog == null) {
-            auditLog = new DocQueryAuditLog();
+    protected DocQueryAuditLogger getAuditLogger() {
+        if (auditLogger == null) {
+            auditLogger = new DocQueryAuditLogger();
         }
-        return auditLog;
+        return auditLogger;
     }
 
     /**
      * This method returns Response with RegistryErrorList if there is any failure.
-     * 
+     *
      * @param errorCode The ErrorCode that needs to be set to the AdhocQueryResponse (Errorcodes are defined in spec).
      * @param codeContext The codecontext defines the reason of failure of AdhocQueryRequest.
      * @return AdhocQueryResponse.
      */
     private AdhocQueryResponse createErrorResponse(String errorCode, String codeContext) {
         return MessageGeneratorUtils.getInstance().createAdhocQueryErrorResponse(codeContext, errorCode,
-                DocumentConstants.XDS_QUERY_RESPONSE_STATUS_FAILURE);
+            DocumentConstants.XDS_QUERY_RESPONSE_STATUS_FAILURE);
     }
 
-    private void auditRequestFromAdapter(AdhocQueryRequest request, AssertionType assertion, String sendingHCID) {
-        getAuditLogger().auditDQRequest(request, assertion, NhincConstants.AUDIT_LOG_INBOUND_DIRECTION,
-                NhincConstants.AUDIT_LOG_ENTITY_INTERFACE, sendingHCID);
+    private void auditRequest(AdhocQueryRequest request, AssertionType assertion, NhinTargetSystemType target) {
+        getAuditLogger().auditRequestMessage(request, assertion, target,
+            NhincConstants.AUDIT_LOG_OUTBOUND_DIRECTION, NhincConstants.AUDIT_LOG_NHIN_INTERFACE,
+            Boolean.TRUE, null, NhincConstants.DOC_QUERY_SERVICE_NAME);
+
     }
 
-    private void auditResponseToAdapter(AdhocQueryResponse response, AssertionType assertion, String sendingHCID) {
-        getAuditLogger().auditDQResponse(response, assertion, NhincConstants.AUDIT_LOG_OUTBOUND_DIRECTION,
-                NhincConstants.AUDIT_LOG_ENTITY_INTERFACE, sendingHCID);
+    protected String getSenderHcid() {
+        return HomeCommunityMap.getLocalHomeCommunityId();
     }
-
 }

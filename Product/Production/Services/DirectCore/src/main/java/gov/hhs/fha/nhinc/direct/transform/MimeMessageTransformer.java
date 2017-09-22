@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -28,37 +28,36 @@ package gov.hhs.fha.nhinc.direct.transform;
 
 import gov.hhs.fha.nhinc.direct.DirectException;
 import ihe.iti.xds_b._2007.ProvideAndRegisterDocumentSetRequestType;
-
 import javax.mail.internet.MimeMessage;
-
-import org.apache.log4j.Logger;
 import org.nhindirect.xd.transform.MimeXdsTransformer;
 import org.nhindirect.xd.transform.exception.TransformationException;
 import org.nhindirect.xd.transform.impl.DefaultMimeXdsTransformer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author mweaver
  *
  */
 public class MimeMessageTransformer {
-    
-    private static final Logger LOG = Logger.getLogger(MimeMessageTransformer.class);
+
+    private static final Logger LOG = LoggerFactory.getLogger(MimeMessageTransformer.class);
     private static final String ERROR_MESSAGE = "Error transforming message to XDR";
     private final MimeXdsTransformer transformer;
-    
+
     /**
      * Constructor.
      */
     public MimeMessageTransformer() {
         transformer = getMimeXdsTransformer();
     }
-    
+
     /**
      * @param message to be transformed
      * @return ProvideAndRegisterDocumentSetRequestType representation of the message.
      */
     public ProvideAndRegisterDocumentSetRequestType transform(MimeMessage message) {
-        ProvideAndRegisterDocumentSetRequestType request = null;
+        ProvideAndRegisterDocumentSetRequestType request;
         try {
             request = transformer.transform(message);
         } catch (TransformationException e) {
@@ -67,7 +66,7 @@ public class MimeMessageTransformer {
         }
         return request;
     }
-    
+
     private MimeXdsTransformer getMimeXdsTransformer() {
         return new DefaultMimeXdsTransformer();
     }

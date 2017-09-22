@@ -1,28 +1,28 @@
 /*
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services. 
- * All rights reserved. 
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
+ * All rights reserved.
  *
- * Redistribution and use in source and binary forms, with or without 
- * modification, are permitted provided that the following conditions are met: 
- *     * Redistributions of source code must retain the above 
- *       copyright notice, this list of conditions and the following disclaimer. 
- *     * Redistributions in binary form must reproduce the above copyright 
- *       notice, this list of conditions and the following disclaimer in the documentation 
- *       and/or other materials provided with the distribution. 
- *     * Neither the name of the United States Government nor the 
- *       names of its contributors may be used to endorse or promote products 
- *       derived from this software without specific prior written permission. 
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *     * Redistributions of source code must retain the above
+ *       copyright notice, this list of conditions and the following disclaimer.
+ *     * Redistributions in binary form must reproduce the above copyright
+ *       notice, this list of conditions and the following disclaimer in the documentation
+ *       and/or other materials provided with the distribution.
+ *     * Neither the name of the United States Government nor the
+ *       names of its contributors may be used to endorse or promote products
+ *       derived from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
- * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED 
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE 
- * DISCLAIMED. IN NO EVENT SHALL THE UNITED STATES GOVERNMENT BE LIABLE FOR ANY 
- * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES 
- * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; 
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND 
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT 
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS 
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE UNITED STATES GOVERNMENT BE LIABLE FOR ANY
+ * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 package gov.hhs.fha.nhinc.transform.subdisc;
 
@@ -33,8 +33,30 @@ import java.io.Serializable;
 import java.util.Iterator;
 import java.util.List;
 import javax.xml.bind.JAXBElement;
-import org.apache.log4j.Logger;
-import org.hl7.v3.*;
+import org.hl7.v3.ENExplicit;
+import org.hl7.v3.EnExplicitFamily;
+import org.hl7.v3.EnExplicitGiven;
+import org.hl7.v3.PNExplicit;
+import org.hl7.v3.PRPAIN201301UV02MFMIMT700701UV01ControlActProcess;
+import org.hl7.v3.PRPAIN201301UV02MFMIMT700701UV01RegistrationEvent;
+import org.hl7.v3.PRPAIN201301UV02MFMIMT700701UV01Subject1;
+import org.hl7.v3.PRPAIN201301UV02MFMIMT700701UV01Subject2;
+import org.hl7.v3.PRPAIN201302UV02MFMIMT700701UV01ControlActProcess;
+import org.hl7.v3.PRPAIN201302UV02MFMIMT700701UV01RegistrationEvent;
+import org.hl7.v3.PRPAIN201302UV02MFMIMT700701UV01Subject1;
+import org.hl7.v3.PRPAIN201302UV02MFMIMT700701UV01Subject2;
+import org.hl7.v3.PRPAIN201310UV02MFMIMT700711UV01ControlActProcess;
+import org.hl7.v3.PRPAIN201310UV02MFMIMT700711UV01RegistrationEvent;
+import org.hl7.v3.PRPAIN201310UV02MFMIMT700711UV01Subject1;
+import org.hl7.v3.PRPAIN201310UV02MFMIMT700711UV01Subject2;
+import org.hl7.v3.PRPAMT201301UV02Patient;
+import org.hl7.v3.PRPAMT201301UV02Person;
+import org.hl7.v3.PRPAMT201302UV02Patient;
+import org.hl7.v3.PRPAMT201302UV02PatientPatientPerson;
+import org.hl7.v3.PRPAMT201302UV02Person;
+import org.hl7.v3.PRPAMT201304UV02Patient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -42,9 +64,10 @@ import org.hl7.v3.*;
  */
 public class HL7Extractors {
 
-    private static final Logger LOG = Logger.getLogger(HL7Extractors.class);
+    private static final Logger LOG = LoggerFactory.getLogger(HL7Extractors.class);
 
-    public static PRPAIN201301UV02MFMIMT700701UV01Subject1 ExtractSubjectFromMessage(org.hl7.v3.PRPAIN201301UV02 message) {
+    public static PRPAIN201301UV02MFMIMT700701UV01Subject1 ExtractSubjectFromMessage(
+            org.hl7.v3.PRPAIN201301UV02 message) {
         // assume one subject for now
 
         if (message == null) {
@@ -58,19 +81,19 @@ public class HL7Extractors {
         }
 
         List<PRPAIN201301UV02MFMIMT700701UV01Subject1> subjects = controlActProcess.getSubject();
-        if ((subjects == null) || (subjects.size() == 0)) {
+        if (subjects == null || subjects.isEmpty()) {
             LOG.info("subjects is blank/null - no patient");
             return null;
         }
 
         // for now, assume we only need one subject, this will need to be modified later
-        PRPAIN201301UV02MFMIMT700701UV01Subject1 subject = subjects.get(0);
         // HL7Parser.PrintId(subject.getTypeId(), "subject");
 
-        return subject;
+        return subjects.get(0);
     }
 
-    public static PRPAIN201302UV02MFMIMT700701UV01Subject1 ExtractSubjectFromMessage(org.hl7.v3.PRPAIN201302UV02 message) {
+    public static PRPAIN201302UV02MFMIMT700701UV01Subject1 ExtractSubjectFromMessage(
+            org.hl7.v3.PRPAIN201302UV02 message) {
         // assume one subject for now
 
         if (message == null) {
@@ -85,19 +108,19 @@ public class HL7Extractors {
         // HL7Parser.PrintId(controlActProcess.getId(), "controlActProcess");
 
         List<PRPAIN201302UV02MFMIMT700701UV01Subject1> subjects = controlActProcess.getSubject();
-        if ((subjects == null) || (subjects.size() == 0)) {
+        if (subjects == null || subjects.isEmpty()) {
             LOG.info("subjects is blank/null - no patient");
             return null;
         }
 
         // for now, assume we only need one subject, this will need to be modified later
-        PRPAIN201302UV02MFMIMT700701UV01Subject1 subject = subjects.get(0);
         // HL7Parser.PrintId(subject.getTypeId(), "subject");
 
-        return subject;
+        return subjects.get(0);
     }
 
-    public static PRPAIN201310UV02MFMIMT700711UV01Subject1 ExtractSubjectFromMessage(org.hl7.v3.PRPAIN201310UV02 message) {
+    public static PRPAIN201310UV02MFMIMT700711UV01Subject1 ExtractSubjectFromMessage(
+            org.hl7.v3.PRPAIN201310UV02 message) {
         // assume one subject for now
 
         if (message == null) {
@@ -113,20 +136,19 @@ public class HL7Extractors {
         // HL7Parser.PrintId(controlActProcess.getId(), "controlActProcess");
 
         List<PRPAIN201310UV02MFMIMT700711UV01Subject1> subjects = controlActProcess.getSubject();
-        if ((subjects == null) || (subjects.size() == 0)) {
+        if (subjects == null || subjects.isEmpty()) {
             LOG.info("subjects is blank/null - no patient");
             return null;
         }
 
         // for now, assume we only need one subject, this will need to be modified later
-        PRPAIN201310UV02MFMIMT700711UV01Subject1 subject = subjects.get(0);
         // HL7Parser.PrintId(subject.getTypeId(), "subject");
 
-        return subject;
+        return subjects.get(0);
     }
 
     public static PRPAMT201301UV02Patient ExtractHL7PatientFromMessage(org.hl7.v3.PRPAIN201301UV02 message) {
-        PRPAMT201301UV02Patient patient = null;
+        PRPAMT201301UV02Patient patient;
         LOG.info("in ExtractPatient");
 
         PRPAIN201301UV02MFMIMT700701UV01Subject1 subject = ExtractSubjectFromMessage(message);
@@ -159,7 +181,7 @@ public class HL7Extractors {
     }
 
     public static PRPAMT201302UV02Patient ExtractHL7PatientFromMessage(org.hl7.v3.PRPAIN201302UV02 message) {
-        PRPAMT201302UV02Patient patient = null;
+        PRPAMT201302UV02Patient patient;
         LOG.info("in ExtractPatient");
 
         PRPAIN201302UV02MFMIMT700701UV01Subject1 subject = ExtractSubjectFromMessage(message);
@@ -192,7 +214,7 @@ public class HL7Extractors {
     }
 
     public static PRPAMT201304UV02Patient ExtractHL7PatientFromMessage(org.hl7.v3.PRPAIN201310UV02 message) {
-        PRPAMT201304UV02Patient patient = null;
+        PRPAMT201304UV02Patient patient;
         LOG.info("in ExtractPatient");
 
         PRPAIN201310UV02MFMIMT700711UV01Subject1 subject = ExtractSubjectFromMessage(message);
@@ -240,7 +262,7 @@ public class HL7Extractors {
             personName.setNameType(nameType);
         }
         // Name parts
-        if (names.size() > 0 && (!names.get(0).getContent().isEmpty())) {
+        if (names.size() > 0 && !names.get(0).getContent().isEmpty()) {
             List<Serializable> choice = names.get(0).getContent();
             Iterator<Serializable> iterSerialObjects = choice.iterator();
 
@@ -254,7 +276,7 @@ public class HL7Extractors {
 
                 if (contentItem instanceof String) {
                     String strValue = (String) contentItem;
-                    if (!nameString.equals("")) {
+                    if (!nameString.isEmpty()) {
                         nameString += strValue;
                     } else {
                         nameString = strValue;
@@ -325,7 +347,7 @@ public class HL7Extractors {
 
                 if (contentItem instanceof String) {
                     String strValue = (String) contentItem;
-                    if (!nameString.equals("")) {
+                    if (!nameString.isEmpty()) {
                         nameString += strValue;
                     } else {
                         nameString = strValue;
@@ -345,7 +367,7 @@ public class HL7Extractors {
             }
             // If text string in HomeCommunity.representativeOrg, then set in familyName
             // else set in element.
-            if (!nameString.equals("")) {
+            if (!nameString.isEmpty()) {
                 LOG.debug("set org name text ");
                 personName.setFamilyName(nameString);
             } else {
@@ -368,51 +390,46 @@ public class HL7Extractors {
 
     public static PRPAMT201301UV02Person ExtractHL7PatientPersonFromHL7Patient(PRPAMT201301UV02Patient patient) {
         JAXBElement<PRPAMT201301UV02Person> patientPersonElement = patient.getPatientPerson();
-        PRPAMT201301UV02Person patientPerson = patientPersonElement.getValue();
-        return patientPerson;
+        return patientPersonElement.getValue();
     }
 
     public static PRPAMT201302UV02Person ExtractHL7PatientPersonFromHL7Patient(PRPAMT201302UV02Patient patient) {
         JAXBElement<PRPAMT201302UV02PatientPatientPerson> patientPersonElement = patient.getPatientPerson();
-        PRPAMT201302UV02Person patientPerson = patientPersonElement.getValue();
-        return patientPerson;
+        return patientPersonElement.getValue();
     }
 
     public static PRPAMT201301UV02Person ExtractHL7PatientPersonFrom201301Message(org.hl7.v3.PRPAIN201301UV02 message) {
         // assume one subject for now
         PRPAMT201301UV02Patient patient = ExtractHL7PatientFromMessage(message);
-        PRPAMT201301UV02Person patientPerson = ExtractHL7PatientPersonFromHL7Patient(patient);
-        return patientPerson;
+        return ExtractHL7PatientPersonFromHL7Patient(patient);
     }
 
     public static PRPAMT201302UV02Person ExtractHL7PatientPersonFrom201302Message(org.hl7.v3.PRPAIN201302UV02 message) {
         // assume one subject for now
         PRPAMT201302UV02Patient patient = ExtractHL7PatientFromMessage(message);
-        PRPAMT201302UV02Person patientPerson = ExtractHL7PatientPersonFromHL7Patient(patient);
-        return patientPerson;
+        return ExtractHL7PatientPersonFromHL7Patient(patient);
     }
 
     public static String ExtractHL7ReceiverOID(org.hl7.v3.PRPAIN201305UV02 oPRPAIN201305UV) {
         String sReceiverOID = null;
 
-        if (oPRPAIN201305UV != null
-            && NullChecker.isNotNullish(oPRPAIN201305UV.getReceiver())
-            && oPRPAIN201305UV.getReceiver().get(0) != null
-            && oPRPAIN201305UV.getReceiver().get(0).getDevice() != null
-            && oPRPAIN201305UV.getReceiver().get(0).getDevice().getAsAgent() != null
-            && oPRPAIN201305UV.getReceiver().get(0).getDevice().getAsAgent().getValue() != null
-            && oPRPAIN201305UV.getReceiver().get(0).getDevice().getAsAgent().getValue()
-            .getRepresentedOrganization() != null
-            && oPRPAIN201305UV.getReceiver().get(0).getDevice().getAsAgent().getValue()
-            .getRepresentedOrganization().getValue() != null
-            && NullChecker.isNotNullish(oPRPAIN201305UV.getReceiver().get(0).getDevice().getAsAgent().getValue()
-            .getRepresentedOrganization().getValue().getId())
-            && oPRPAIN201305UV.getReceiver().get(0).getDevice().getAsAgent().getValue()
-            .getRepresentedOrganization().getValue().getId().get(0) != null
-            && NullChecker.isNotNullish(oPRPAIN201305UV.getReceiver().get(0).getDevice().getAsAgent().getValue()
-            .getRepresentedOrganization().getValue().getId().get(0).getRoot())) {
+        if (oPRPAIN201305UV != null && NullChecker.isNotNullish(oPRPAIN201305UV.getReceiver())
+                && oPRPAIN201305UV.getReceiver().get(0) != null
+                && oPRPAIN201305UV.getReceiver().get(0).getDevice() != null
+                && oPRPAIN201305UV.getReceiver().get(0).getDevice().getAsAgent() != null
+                && oPRPAIN201305UV.getReceiver().get(0).getDevice().getAsAgent().getValue() != null
+                && oPRPAIN201305UV.getReceiver().get(0).getDevice().getAsAgent().getValue()
+                        .getRepresentedOrganization() != null
+                && oPRPAIN201305UV.getReceiver().get(0).getDevice().getAsAgent().getValue().getRepresentedOrganization()
+                        .getValue() != null
+                && NullChecker.isNotNullish(oPRPAIN201305UV.getReceiver().get(0).getDevice().getAsAgent().getValue()
+                        .getRepresentedOrganization().getValue().getId())
+                && oPRPAIN201305UV.getReceiver().get(0).getDevice().getAsAgent().getValue().getRepresentedOrganization()
+                        .getValue().getId().get(0) != null
+                && NullChecker.isNotNullish(oPRPAIN201305UV.getReceiver().get(0).getDevice().getAsAgent().getValue()
+                        .getRepresentedOrganization().getValue().getId().get(0).getRoot())) {
             sReceiverOID = oPRPAIN201305UV.getReceiver().get(0).getDevice().getAsAgent().getValue()
-                .getRepresentedOrganization().getValue().getId().get(0).getRoot();
+                    .getRepresentedOrganization().getValue().getId().get(0).getRoot();
         }
 
         return sReceiverOID;
@@ -421,21 +438,20 @@ public class HL7Extractors {
     public static String ExtractHL7SenderOID(org.hl7.v3.PRPAIN201305UV02 oPRPAIN201305UV) {
         String sSenderOID = null;
 
-        if (oPRPAIN201305UV != null
-            && oPRPAIN201305UV.getSender().getDevice() != null
-            && oPRPAIN201305UV.getSender().getDevice().getAsAgent() != null
-            && oPRPAIN201305UV.getSender().getDevice().getAsAgent().getValue() != null
-            && oPRPAIN201305UV.getSender().getDevice().getAsAgent().getValue().getRepresentedOrganization() != null
-            && oPRPAIN201305UV.getSender().getDevice().getAsAgent().getValue().getRepresentedOrganization()
-            .getValue() != null
-            && NullChecker.isNotNullish(oPRPAIN201305UV.getSender().getDevice().getAsAgent().getValue()
-            .getRepresentedOrganization().getValue().getId())
-            && oPRPAIN201305UV.getSender().getDevice().getAsAgent().getValue().getRepresentedOrganization()
-            .getValue().getId().get(0) != null
-            && NullChecker.isNotNullish(oPRPAIN201305UV.getSender().getDevice().getAsAgent().getValue()
-            .getRepresentedOrganization().getValue().getId().get(0).getRoot())) {
+        if (oPRPAIN201305UV != null && oPRPAIN201305UV.getSender().getDevice() != null
+                && oPRPAIN201305UV.getSender().getDevice().getAsAgent() != null
+                && oPRPAIN201305UV.getSender().getDevice().getAsAgent().getValue() != null
+                && oPRPAIN201305UV.getSender().getDevice().getAsAgent().getValue().getRepresentedOrganization() != null
+                && oPRPAIN201305UV.getSender().getDevice().getAsAgent().getValue().getRepresentedOrganization()
+                        .getValue() != null
+                && NullChecker.isNotNullish(oPRPAIN201305UV.getSender().getDevice().getAsAgent().getValue()
+                        .getRepresentedOrganization().getValue().getId())
+                && oPRPAIN201305UV.getSender().getDevice().getAsAgent().getValue().getRepresentedOrganization()
+                        .getValue().getId().get(0) != null
+                && NullChecker.isNotNullish(oPRPAIN201305UV.getSender().getDevice().getAsAgent().getValue()
+                        .getRepresentedOrganization().getValue().getId().get(0).getRoot())) {
             sSenderOID = oPRPAIN201305UV.getSender().getDevice().getAsAgent().getValue().getRepresentedOrganization()
-                .getValue().getId().get(0).getRoot();
+                    .getValue().getId().get(0).getRoot();
         }
 
         return sSenderOID;

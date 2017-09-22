@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2014, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -47,14 +47,12 @@ THE POSSIBILITY OF SUCH DAMAGE.
 
 package gov.hhs.fha.nhinc.directconfig.service;
 
+import gov.hhs.fha.nhinc.directconfig.entity.Address;
+import gov.hhs.fha.nhinc.directconfig.entity.helpers.EntityStatus;
 import java.util.Collection;
-
 import javax.jws.WebMethod;
 import javax.jws.WebParam;
 import javax.jws.WebService;
-
-import gov.hhs.fha.nhinc.directconfig.entity.Address;
-import gov.hhs.fha.nhinc.directconfig.entity.helpers.EntityStatus;
 
 /**
  * Service class for methods related to an Address object.
@@ -64,7 +62,7 @@ public interface AddressService {
 
     /**
      * Add an Address.
-     * 
+     *
      * @param address
      *            The Address to add.
      * @throws ConfigurationServiceException
@@ -74,7 +72,7 @@ public interface AddressService {
 
     /**
      * Update an Address.
-     * 
+     *
      * @param address
      *            The Address to update.
      * @throws ConfigurationServiceException
@@ -84,7 +82,7 @@ public interface AddressService {
 
     /**
      * Get a count of Addresses.
-     * 
+     *
      * @return a count of Addresses.
      * @throws ConfigurationServiceException
      */
@@ -93,7 +91,7 @@ public interface AddressService {
 
     /**
      * Get a collection of all Addresses matching the parameters.
-     * 
+     *
      * @param addressNames
      *            A collection of address names.
      * @param status
@@ -107,7 +105,7 @@ public interface AddressService {
 
     /**
      * Remove an Address.
-     * 
+     *
      * @param addressName
      *            The address name.
      * @throws ConfigurationServiceException
@@ -117,7 +115,7 @@ public interface AddressService {
 
     /**
      * Return a list of Addresses matching the parameters.
-     * 
+     *
      * @param lastAddressName
      *            The last address name.
      * @param maxResults

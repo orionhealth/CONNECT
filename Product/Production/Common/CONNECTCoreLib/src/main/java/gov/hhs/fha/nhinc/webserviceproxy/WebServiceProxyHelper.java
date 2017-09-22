@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -36,14 +36,13 @@ import gov.hhs.fha.nhinc.nhinclib.NhincConstants.ADAPTER_API_LEVEL;
 import gov.hhs.fha.nhinc.nhinclib.NhincConstants.GATEWAY_API_LEVEL;
 import gov.hhs.fha.nhinc.properties.IPropertyAcessor;
 import gov.hhs.fha.nhinc.util.HomeCommunityMap;
-
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.StringTokenizer;
-
 import javax.xml.ws.BindingProvider;
-
-import org.apache.log4j.Logger;
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This class is used as a helper in each of the Web Service Proxies. Since the bulk of the work being done in each web
@@ -56,8 +55,9 @@ public class WebServiceProxyHelper {
     public static final String KEY_CONNECT_TIMEOUT = "com.sun.xml.ws.connect.timeout";
     public static final String KEY_REQUEST_TIMEOUT = "com.sun.xml.ws.request.timeout";
     public static final String KEY_URL = javax.xml.ws.BindingProvider.ENDPOINT_ADDRESS_PROPERTY;
-    private static final Logger LOG = Logger.getLogger(WebServiceProxyHelper.class);
+    private static final Logger LOG = LoggerFactory.getLogger(WebServiceProxyHelper.class);
     private final WebServiceProxyHelperProperties properties;
+
     public WebServiceProxyHelper() {
         properties = WebServiceProxyHelperProperties.getInstance();
 
@@ -72,8 +72,6 @@ public class WebServiceProxyHelper {
         properties = new WebServiceProxyHelperProperties(propertyAccessor);
     }
 
-    
-
     /**
      * This method returns the URL endpoint of the passed in service name from the given target
      *
@@ -85,8 +83,7 @@ public class WebServiceProxyHelper {
     private String getEndPointFromConnectionManagerByGatewayAPILevel(NhinTargetSystemType oTargetSystem,
             String sServiceName, GATEWAY_API_LEVEL level) throws ConnectionManagerException {
 
-        String url = ConnectionManagerCache.getInstance().getEndpointURLFromNhinTarget(oTargetSystem, sServiceName);
-        return url;
+        return ConnectionManagerCache.getInstance().getEndpointURLFromNhinTarget(oTargetSystem, sServiceName);
     }
 
     /**
@@ -95,12 +92,12 @@ public class WebServiceProxyHelper {
      * @param sServiceName The name of the service to locate.
      * @param level The adapter api level.
      * @return The endpoint URL.
-     * @throws Exception An exception if one occurs.
+     * @throws gov.hhs.fha.nhinc.connectmgr.ConnectionManagerException
      */
     public String getEndPointFromConnectionManagerByAdapterAPILevel(String sServiceName, ADAPTER_API_LEVEL level)
             throws ConnectionManagerException {
-        String url = ConnectionManagerCache.getInstance().getAdapterEndpointURL(sServiceName, level);
-        return url;
+
+        return ConnectionManagerCache.getInstance().getAdapterEndpointURL(sServiceName, level);
     }
 
     /**
@@ -108,7 +105,7 @@ public class WebServiceProxyHelper {
      *
      * @param sServiceName The name of the service to locate.
      * @return The endpoint URL.
-     * @throws Exception An exception if one occurs.
+     * @throws gov.hhs.fha.nhinc.connectmgr.ConnectionManagerException
      */
     public String getAdapterEndPointFromConnectionManager(String sServiceName) throws ConnectionManagerException {
         AdapterEndpointManager adapterEndpointManager = new AdapterEndpointManager();
@@ -120,17 +117,18 @@ public class WebServiceProxyHelper {
     /**
      * This method returns the URL endpoint of the passed in adapter service name
      *
+     * @param sHomeCommunityId
      * @param sServiceName The name of the service to locate.
      * @return The endpoint URL.
-     * @throws Exception An exception if one occurs.
+     * @throws gov.hhs.fha.nhinc.connectmgr.ConnectionManagerException
      */
     public String getAdapterEndPointFromConnectionManager(String sHomeCommunityId, String sServiceName)
             throws ConnectionManagerException {
+
         AdapterEndpointManager adapterEndpointManager = new AdapterEndpointManager();
         ADAPTER_API_LEVEL level = adapterEndpointManager.getApiVersion(sServiceName);
 
-        String url = ConnectionManagerCache.getInstance().getAdapterEndpointURL(sHomeCommunityId, sServiceName, level);
-        return url;
+        return ConnectionManagerCache.getInstance().getAdapterEndpointURL(sHomeCommunityId, sServiceName, level);
     }
 
     /**
@@ -141,8 +139,7 @@ public class WebServiceProxyHelper {
      * @throws Exception An exception if one occurs.
      */
     private String getLocalEndPointFromConnectionManager(String sServiceName) throws ConnectionManagerException {
-        String url = ConnectionManagerCache.getInstance().getInternalEndpointURLByServiceName(sServiceName);
-        return url;
+        return ConnectionManagerCache.getInstance().getInternalEndpointURLByServiceName(sServiceName);
     }
 
     /**
@@ -150,26 +147,27 @@ public class WebServiceProxyHelper {
      *
      * @param oTargetSystem The target system containing the information needed to retrieve the endpoint URL.
      * @param sServiceName The name of the service for which the endpoint URL is desired.
+     * @param level
      * @return The URL retrieved from the connection manager.
+     * @throws gov.hhs.fha.nhinc.connectmgr.ConnectionManagerException
      */
     public String getUrlFromTargetSystemByGatewayAPILevel(NhinTargetSystemType oTargetSystem, String sServiceName,
             GATEWAY_API_LEVEL level) throws IllegalArgumentException, ConnectionManagerException, Exception {
-        String sURL = "";
+
+        String sURL;
 
         if (oTargetSystem != null) {
             try {
                 if (oTargetSystem.getHomeCommunity() != null) {
                     HomeCommunityType oHomeCommunity = oTargetSystem.getHomeCommunity();
-                    LOG.info("Target Sys properties Home Comm ID: " + oHomeCommunity.getHomeCommunityId());
-                    LOG.info("Target Sys properties Home Comm Description: " + oHomeCommunity.getDescription());
-                    LOG.info("Target Sys properties Home Comm Name: " + oHomeCommunity.getName());
+                    LOG.info("Target Sys properties Home Comm ID: {}", oHomeCommunity.getHomeCommunityId());
+                    LOG.info("Target Sys properties Home Comm Description: {}", oHomeCommunity.getDescription());
+                    LOG.info("Target Sys properties Home Comm Name: {}", oHomeCommunity.getName());
                 }
                 sURL = getEndPointFromConnectionManagerByGatewayAPILevel(oTargetSystem, sServiceName, level);
             } catch (ConnectionManagerException e) {
-                LOG.error(
-                        "Error: Failed to retrieve url for service: " + sServiceName + ".  Exception: "
-                                + e.getMessage(), e);
-                throw (e);
+                LOG.error("Error: Failed to retrieve url for service {}: {}", sServiceName, e.getLocalizedMessage(), e);
+                throw e;
             }
         } else {
             String sErrorMessage = "Target system passed into the proxy is null";
@@ -183,20 +181,20 @@ public class WebServiceProxyHelper {
     /**
      * This method retrieves the URl from the ConnectionMananager for the given home community ID.
      *
-     * @param sHomeCommunity The home community id needed to retrieve the endpoint URL.
      * @param sServiceName The name of the service for which the endpoint URL is desired.
      * @return The URL retrieved from the connection manager.
+     * @throws gov.hhs.fha.nhinc.connectmgr.ConnectionManagerException
      */
-    public String getUrlLocalHomeCommunity(String sServiceName) throws IllegalArgumentException,
-            ConnectionManagerException, Exception {
-        String sURL = "";
+    public String getUrlLocalHomeCommunity(String sServiceName)
+            throws IllegalArgumentException, ConnectionManagerException, Exception {
+
+        String sURL;
 
         try {
             sURL = getLocalEndPointFromConnectionManager(sServiceName);
         } catch (ConnectionManagerException e) {
-            LOG.error("Error: Failed to retrieve url for service: " + sServiceName + ".  Exception: " + e.getMessage(),
-                    e);
-            throw (e);
+            LOG.error("Failed to retrieve url for service {}: {}", sServiceName, e.getLocalizedMessage(), e);
+            throw e;
         }
 
         return sURL;
@@ -252,7 +250,7 @@ public class WebServiceProxyHelper {
             if (oMethod.getName().equals(methodName)) {
                 oReturnMethod = oMethod;
             }
-        } // for (Method oMethod : oaMethod)
+        }
 
         return oReturnMethod;
     }
@@ -268,7 +266,7 @@ public class WebServiceProxyHelper {
      * @throws IllegalAccessException Exceptions thrown by invoke - passed on.
      * @throws InvocationTargetException Exceptions thrown by invoke - passed on.
      */
-    private Object invokeTheMethod(Method oMethod, Object portObject, Object ... operationInput)
+    private Object invokeTheMethod(Method oMethod, Object portObject, Object... operationInput)
             throws IllegalAccessException, InvocationTargetException {
         return oMethod.invoke(portObject, operationInput);
     }
@@ -280,7 +278,7 @@ public class WebServiceProxyHelper {
      * @return An array listing the parameters.
      */
     private String listParameters(Class<?>[] parameterTypes) {
-        StringBuffer sbParams = new StringBuffer();
+        StringBuilder sbParams = new StringBuilder();
 
         for (Class<?> oClass : parameterTypes) {
             if (sbParams.length() > 0) {
@@ -305,7 +303,7 @@ public class WebServiceProxyHelper {
      * @return Web service response - may be null if one way operation (Assumption).
      * @throws Exception generic exception
      */
-    public Object invokePort(Object portObject, Class<?> portClass, String methodName, Object ... operationInput)
+    public Object invokePort(Object portObject, Class<?> portClass, String methodName, Object... operationInput)
             throws Exception {
         LOG.debug("Begin invokePort");
 
@@ -323,12 +321,10 @@ public class WebServiceProxyHelper {
             throw new IllegalArgumentException(methodName + " not found for class " + portClass.getCanonicalName());
         }
 
-        if ((iRetryCount > 0) && (iRetryDelay > 0) && (sExceptionText != null) && (sExceptionText.length() > 0)) {
+        if (iRetryCount > 0 && iRetryDelay > 0 && StringUtils.isNotEmpty(sExceptionText)) {
             oResponse = invokePortWithRetry(portObject, portClass, iRetryCount, iRetryDelay, oMethod, operationInput);
-        } // if ((iRetryCount > 0) && (iRetryDelay > 0))
-        else {
-            LOG.debug("Invoking " + portClass.getCanonicalName() + "." + oMethod.getName()
-                    + ": Retry is not being used");
+        } else {
+            LOG.debug("Invoking {}.{}: Retry is not being used", portClass.getCanonicalName(), oMethod.getName());
 
             oResponse = invokePort(portObject, portClass, oResponse, oMethod, operationInput);
         }
@@ -346,18 +342,18 @@ public class WebServiceProxyHelper {
      * @return
      * @throws Exception
      */
-    private Object invokePort(Object portObject, Class<?> portClass, Object oResponse,
-            Method oMethod, Object ... operationInput) throws Exception {
-        try {
+    private Object invokePort(Object portObject, Class<?> portClass, Object oResponse, Method oMethod,
+            Object... operationInput) throws Exception {
 
-            LOG.debug("with parameters:" + listParameters(oMethod.getParameterTypes()));
+        try {
+            LOG.debug("with parameters: {}", listParameters(oMethod.getParameterTypes()));
 
             oResponse = invokeTheMethod(oMethod, portObject, operationInput);
         } catch (IllegalArgumentException e) {
-            String sErrorMessage = "The method was called with incorrect arguments. "
-                    + "This assumes that the method should have exactly one "
-                    + "argument and it must be of the correct type for this method. " + "Exception: " + e.getMessage();
-            LOG.error(sErrorMessage, e);
+            LOG.error(
+                    "The method was called with incorrect arguments. This assumes that the method should have "
+                            + "exactly one argument and it must be of the correct type for this method: {}",
+                    e.getLocalizedMessage(), e);
             throw e;
         } catch (InvocationTargetException e) {
             Exception cause = e;
@@ -366,13 +362,12 @@ public class WebServiceProxyHelper {
                 cause = (Exception) throwable;
             }
 
-            String sErrorMessage = "An unexpected exception occurred of type: " + cause.getClass().getCanonicalName()
-                    + ". Exception: " + cause.getMessage();
-            LOG.error(sErrorMessage, cause);
+            LOG.error("An unexpected exception occurred of type {}: {}", cause.getClass().getCanonicalName(),
+                    cause.getLocalizedMessage(), cause);
             throw cause;
         } catch (IllegalAccessException e) {
             // just log exception and throw it back out
-            LOG.error("WebServiceProxyHelper::invokePort Exception: ", e);
+            LOG.error("WebServiceProxyHelper::invokePort Exception: {}", e.getLocalizedMessage(), e);
             throw e;
         }
         return oResponse;
@@ -388,12 +383,14 @@ public class WebServiceProxyHelper {
      * @return Web service response - may be null if one way operation (Assumption).
      * @throws Exception
      */
-    public Object invokePortWithRetry(Object portObject, Class<?> portClass, int iRetryCount,
-            int iRetryDelay, Method oMethod, Object ... operationInput) throws Exception {
+    public Object invokePortWithRetry(Object portObject, Class<?> portClass, int iRetryCount, int iRetryDelay,
+            Method oMethod, Object... operationInput) throws Exception {
+
         Object oResponse = null;
         int i = 1;
         Exception eCatchExp = new Exception();
         String sExceptionText = getExceptionText();
+
         while (i <= iRetryCount) {
             try {
                 LOG.debug("Invoking " + portClass.getCanonicalName() + "." + oMethod.getName() + ": Try #" + i);
@@ -402,52 +399,41 @@ public class WebServiceProxyHelper {
                 oResponse = invokePort(portObject, portClass, oResponse, oMethod, operationInput);
                 break;
             } catch (InvocationTargetException e) {
+                LOG.error("Failed to invoke service, attempt #{}: ", e.getLocalizedMessage(), e);
                 Throwable throwable = e.getCause();
                 if (throwable != null && throwable instanceof Exception) {
                     eCatchExp = (Exception) throwable;
                 }
 
-                // If we have tried our maximum number of times, then let's get
-                // out of here
-                // there is no need to sleep again if we are done.
-                // -------------------------------------------------------------------------
+                // If we have tried our maximum number of times, there is no need to sleep again
                 if (i++ < iRetryCount) {
                     handleInvokePortRetryFailure(portClass, iRetryDelay, i, sExceptionText,
                             (InvocationTargetException) eCatchExp);
                     retryDelay(portClass, iRetryDelay);
 
                     iRetryDelay = increaseRetryDelay(iRetryDelay);
+                } else {
+                    LOG.error("Failed to call {}.{} web service after {} attempts, stop processing of this call: {}",
+                            portClass.getCanonicalName(), oMethod.getName(), iRetryCount,
+                            eCatchExp.getLocalizedMessage(), eCatchExp);
 
+                    throw eCatchExp;
                 }
             }
 
-        } // while (i <= iRetryCount)
-
-        // We have tried our max times - so we need to get out of here.
-        // --------------------------------------------------------------
-        if (i >= iRetryCount) {
-            LOG.error(
-                    "Failed to call " + portClass.getCanonicalName() + "." + oMethod.getName() + " Webservice "
-                            + iRetryCount + " times.  " + "Stopping processing of this call.  Exception: "
-                            + eCatchExp.getMessage(), eCatchExp);
-            throw eCatchExp;
         }
+
         return oResponse;
     }
 
     /**
+     * Customer requested graceful degradation want to slow it down more each timeout.
+     *
      * @param iRetryDelay
      * @return
      */
     private int increaseRetryDelay(int iRetryDelay) {
-        iRetryDelay = iRetryDelay + iRetryDelay; // Customer
-                                                 // requested
-                                                 // graceful
-                                                 // degradation -
-                                                 // want to slow
-                                                 // it down more
-                                                 // each timeout.
-        return iRetryDelay;
+        return iRetryDelay * 2;
     }
 
     /**
@@ -457,12 +443,9 @@ public class WebServiceProxyHelper {
     private void retryDelay(Class<?> portClass, int iRetryDelay) {
         try {
             Thread.sleep(iRetryDelay);
-        } catch (InterruptedException iEx) {
-            LOG.error("Thread Got Interrupted while waiting on call: " + portClass.getCanonicalName() + ".  "
-                    + "Exception: " + iEx.getMessage(), iEx);
-        } catch (IllegalArgumentException iaEx) {
-            LOG.error("Thread Got Interrupted while waiting on call: " + portClass.getCanonicalName() + ".  "
-                    + "Exception: " + iaEx.getMessage(), iaEx);
+        } catch (InterruptedException | IllegalArgumentException iEx) {
+            LOG.error("Thread Got Interrupted while waiting on call {}: {}", portClass.getCanonicalName(),
+                    iEx.getLocalizedMessage(), iEx);
         }
     }
 
@@ -477,6 +460,7 @@ public class WebServiceProxyHelper {
      */
     private void handleInvokePortRetryFailure(Class<?> portClass, int iRetryDelay, int i, String sExceptionText,
             InvocationTargetException eCatchExp) throws InvocationTargetException {
+
         boolean bFlag = false;
         StringTokenizer st = new StringTokenizer(sExceptionText, ",");
         while (st.hasMoreTokens()) {
@@ -485,30 +469,30 @@ public class WebServiceProxyHelper {
             }
         }
         if (bFlag) {
-            LOG.warn("Exception calling ... web service: " + eCatchExp.getMessage());
-            LOG.info("Retrying attempt [ " + i + " ] the connection after [ " + iRetryDelay + " ] seconds");
+            LOG.warn("Exception calling ... web service: {}", eCatchExp.getMessage());
+            LOG.info("Retrying attempt [ {} ] the connection after [ {} ] seconds", i, iRetryDelay);
 
         } else {
-            LOG.error(
-                    "Unable to call " + portClass.getCanonicalName() + " Webservice due to  : "
-                            + eCatchExp.getMessage(), eCatchExp);
+            LOG.error("Unable to call {} web service: {}", portClass.getCanonicalName(),
+                    eCatchExp.getLocalizedMessage(), eCatchExp);
             throw eCatchExp;
         }
-
     }
 
     /**
      * Add a target home community to the port object.
+     *
      * @param port The port to add the property to
      * @param targetSystem The targetSystem of the request
      */
     public void addTargetCommunity(BindingProvider port, NhinTargetSystemType targetSystem) {
         port.getRequestContext().put(NhincConstants.WS_SOAP_TARGET_HOME_COMMUNITY_ID,
-            HomeCommunityMap.getCommunityIdFromTargetSystem(targetSystem));
+                HomeCommunityMap.getCommunityIdFromTargetSystem(targetSystem));
     }
 
     /**
      * Add a target api level to the port object.
+     *
      * @param port The port to add the property to
      * @param apiLevel the target api level to add.
      */
@@ -518,12 +502,11 @@ public class WebServiceProxyHelper {
 
     /**
      * Add service name to the port object.
+     *
      * @param port The port to add the property to
-     * @param apiLevel the target api level to add.
+     * @param serviceName
      */
     public void addServiceName(BindingProvider port, String serviceName) {
         port.getRequestContext().put(NhincConstants.SERVICE_NAME, serviceName);
     }
-    
-    
 }

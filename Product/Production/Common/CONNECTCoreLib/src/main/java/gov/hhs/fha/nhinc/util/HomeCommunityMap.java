@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -39,7 +39,8 @@ import ihe.iti.xds_b._2007.RetrieveDocumentSetRequestType;
 import ihe.iti.xds_b._2007.RetrieveDocumentSetResponseType;
 import oasis.names.tc.ebxml_regrep.xsd.query._3.AdhocQueryResponse;
 import oasis.names.tc.ebxml_regrep.xsd.rim._3.AdhocQueryType;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.uddi.api_v3.BusinessEntity;
 
 /**
@@ -53,10 +54,9 @@ import org.uddi.api_v3.BusinessEntity;
  */
 public class HomeCommunityMap {
 
-    private static final Logger LOG = Logger.getLogger(HomeCommunityMap.class);
+    private static final Logger LOG = LoggerFactory.getLogger(HomeCommunityMap.class);
     private static ConnectionManagerCache connection = ConnectionManagerCache.getInstance();
     private static PropertyAccessor propertyAccessor = PropertyAccessor.getInstance();
-
 
     /**
      * This method retrieves the name of the home community baased on the home community Id.
@@ -70,12 +70,12 @@ public class HomeCommunityMap {
         try {
 
             BusinessEntity oEntity = connection.getBusinessEntity(sHomeCommunityId);
-            if ((oEntity != null) && (oEntity.getName() != null) && (oEntity.getName().size() > 0)
-                    && (oEntity.getName().get(0) != null) && (oEntity.getName().get(0).getValue().length() > 0)) {
+            if (oEntity != null && oEntity.getName() != null && oEntity.getName().size() > 0
+                    && oEntity.getName().get(0) != null && oEntity.getName().get(0).getValue().length() > 0) {
                 sHomeCommunityName = oEntity.getName().get(0).getValue();
             }
         } catch (Exception e) {
-            LOG.warn("Failed to retrieve textual name for home community ID ", e);
+            LOG.warn("Failed to retrieve textual name for home community ID: {}", e.getLocalizedMessage(), e);
         }
 
         return sHomeCommunityName;
@@ -148,12 +148,12 @@ public class HomeCommunityMap {
      */
     public static String getHomeCommunityIdFromAssertion(AssertionType assertion) {
         String homeCommunity = null;
-        try {
-            if (NullChecker.isNotNullish(assertion.getHomeCommunity().getHomeCommunityId()))
-                homeCommunity = assertion.getHomeCommunity().getHomeCommunityId();
-        } catch (NullPointerException ex) {
-            LOG.warn("Could not obtain HCID from HomeCommunity in assertion.", ex);
+
+        if (assertion != null && assertion.getHomeCommunity() != null
+                && NullChecker.isNotNullish(assertion.getHomeCommunity().getHomeCommunityId())) {
+            homeCommunity = assertion.getHomeCommunity().getHomeCommunityId();
         }
+
         return homeCommunity;
     }
 
@@ -239,9 +239,7 @@ public class HomeCommunityMap {
      * @return
      */
     public static String getLocalHomeCommunityId() {
-        String sHomeCommunity = null;
-        sHomeCommunity = getHomeCommunityFromPropFile();
-        return sHomeCommunity;
+        return getHomeCommunityFromPropFile();
     }
 
     /**
@@ -253,7 +251,7 @@ public class HomeCommunityMap {
             sHomeCommunity = propertyAccessor.getProperty(NhincConstants.GATEWAY_PROPERTY_FILE,
                     NhincConstants.HOME_COMMUNITY_ID_PROPERTY);
         } catch (PropertyAccessException ex) {
-            LOG.error(ex.getMessage());
+            LOG.error("Could not get HCID from prop file: {}", ex.getLocalizedMessage(), ex);
         }
         return sHomeCommunity;
     }
@@ -266,9 +264,9 @@ public class HomeCommunityMap {
      */
     public static String getHomeCommunityIdWithPrefix(String communityId) {
         if (communityId != null) {
-            if (!communityId.startsWith("urn:oid:")) {
+            if (!communityId.startsWith(NhincConstants.HCID_PREFIX)) {
                 LOG.trace("Prefixing communityId with urn:oid");
-                communityId = "urn:oid:" + communityId;
+                communityId = NhincConstants.HCID_PREFIX + communityId;
             }
         }
         return communityId;
@@ -282,4 +280,12 @@ public class HomeCommunityMap {
         connection = connectionManager;
     }
 
+    public static String getHomeCommunityWithoutPrefix(String hcid) {
+        if (NullChecker.isNotNullish(hcid)) {
+            if (hcid.startsWith(NhincConstants.HCID_PREFIX)) {
+                return hcid.substring(NhincConstants.HCID_PREFIX.length());
+            }
+        }
+        return hcid;
+    }
 }

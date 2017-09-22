@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,11 +27,8 @@
 package gov.hhs.fha.nhinc.callback.cxf.largefile;
 
 import gov.hhs.fha.nhinc.largefile.LargeFileUtils;
-
 import java.util.Collection;
-
 import javax.activation.DataSource;
-
 import org.apache.cxf.attachment.AttachmentDataSource;
 import org.apache.cxf.message.Attachment;
 import org.apache.cxf.message.Message;
@@ -41,9 +38,9 @@ import org.apache.cxf.phase.Phase;
 /**
  * This fault out interceptor closes out all the attachment input sources to ensure that streamed tmp files are deleted
  * properly.
- * 
+ *
  * @author akong
- * 
+ *
  */
 public class AttachmentReleaseFaultOutInterceptor extends AbstractPhaseInterceptor<Message> {
 
@@ -57,9 +54,10 @@ public class AttachmentReleaseFaultOutInterceptor extends AbstractPhaseIntercept
     /**
      * Releases and closes all incoming attachment input streams. This is a workaround for a CXF bug that is not
      * deleting tmp files when a soap fault occurs during file transfers.
-     * 
+     *
      * @param message The message object of the session
      */
+    @Override
     public void handleMessage(Message message) {
         Collection<Attachment> attachments = message.getExchange().getInMessage().getAttachments();
         if (attachments != null) {
@@ -75,15 +73,15 @@ public class AttachmentReleaseFaultOutInterceptor extends AbstractPhaseIntercept
     }
 
     private DataSource getDataSource(Attachment attachment) {
-        if ((attachment != null) && (attachment.getDataHandler() != null)) {
+        if (attachment != null && attachment.getDataHandler() != null) {
             return attachment.getDataHandler().getDataSource();
         }
 
         return null;
     }
-    
-    protected LargeFileUtils getLargeFileUtils(){
-    	return LargeFileUtils.getInstance();
+
+    protected LargeFileUtils getLargeFileUtils() {
+        return LargeFileUtils.getInstance();
     }
 
 }

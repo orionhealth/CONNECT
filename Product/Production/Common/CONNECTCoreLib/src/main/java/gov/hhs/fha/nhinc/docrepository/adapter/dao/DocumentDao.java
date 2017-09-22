@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,17 +29,20 @@ package gov.hhs.fha.nhinc.docrepository.adapter.dao;
 import gov.hhs.fha.nhinc.docrepository.adapter.model.Document;
 import gov.hhs.fha.nhinc.docrepository.adapter.model.DocumentQueryParams;
 import gov.hhs.fha.nhinc.docrepository.adapter.persistence.HibernateUtil;
+import gov.hhs.fha.nhinc.persistence.HibernateUtilFactory;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
-import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
+import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Expression;
 import org.hibernate.criterion.Restrictions;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Data access object class for Document data
@@ -47,7 +50,7 @@ import org.hibernate.criterion.Restrictions;
  * @author Neil Webb
  */
 public class DocumentDao {
-    private static final Logger LOG = Logger.getLogger(DocumentDao.class);
+    private static final Logger LOG = LoggerFactory.getLogger(DocumentDao.class);
 
     /**
      * Save a document record to the database. Insert if document id is null. Update otherwise.
@@ -71,15 +74,15 @@ public class DocumentDao {
             if (trans != null) {
                 try {
                     trans.commit();
-                } catch (Throwable t) {
-                    LOG.error("Failed to commit transaction: " + t.getMessage(), t);
+                } catch (HibernateException he) {
+                    LOG.error("Failed to commit transaction: {}", he.getMessage(), he);
                 }
             }
             if (sess != null) {
                 try {
                     sess.close();
-                } catch (Throwable t) {
-                    LOG.error("Failed to close session: " + t.getMessage(), t);
+                } catch (HibernateException he) {
+                    LOG.error("Failed to close session: {}", he.getMessage(), he);
                 }
             }
         }
@@ -110,15 +113,15 @@ public class DocumentDao {
             if (trans != null) {
                 try {
                     trans.commit();
-                } catch (Throwable t) {
-                    LOG.error("Failed to commit transaction: " + t.getMessage(), t);
+                } catch (HibernateException he) {
+                    LOG.error("Failed to commit transaction: {}", he.getMessage(), he);
                 }
             }
             if (sess != null) {
                 try {
                     sess.close();
-                } catch (Throwable t) {
-                    LOG.error("Failed to close session: " + t.getMessage(), t);
+                } catch (HibernateException he) {
+                    LOG.error("Failed to close session: {}", he.getMessage(), he);
                 }
             }
         }
@@ -138,30 +141,25 @@ public class DocumentDao {
         try {
             sess = getSession();
             if (sess != null) {
-                document = (Document) sess.get(Document.class, documentId);
+                document = sess.get(Document.class, documentId);
             } else {
                 LOG.error("Failed to obtain a session from the sessionFactory");
             }
 
             if (LOG.isDebugEnabled()) {
-                LOG.debug("Completed document retrieve by id. Result was " + ((document == null) ? "not " : "")
-                        + "found");
+                LOG.debug(
+                        "Completed document retrieve by id. Result was " + (document == null ? "not " : "") + "found");
             }
         } finally {
             if (sess != null) {
                 try {
                     sess.close();
-                } catch (Throwable t) {
-                    LOG.error("Failed to close session: " + t.getMessage(), t);
+                } catch (HibernateException he) {
+                    LOG.error("Failed to close session: {}", he.getMessage(), he);
                 }
             }
         }
         return document;
-    }
-
-    protected SessionFactory getSessionFactory() {
-        SessionFactory fact = HibernateUtil.getSessionFactory();
-        return fact;
     }
 
     /**
@@ -185,14 +183,14 @@ public class DocumentDao {
 
             if (LOG.isDebugEnabled()) {
                 LOG.debug("Completed retrieve of all documents. "
-                        + ((documents == null) ? "0" : Integer.toString(documents.size())) + " results returned.");
+                        + (documents == null ? "0" : Integer.toString(documents.size())) + " results returned.");
             }
         } finally {
             if (sess != null) {
                 try {
                     sess.close();
-                } catch (Throwable t) {
-                    LOG.error("Failed to close session: " + t.getMessage(), t);
+                } catch (HibernateException he) {
+                    LOG.error("Failed to close session: {}", he.getMessage(), he);
                 }
             }
         }
@@ -245,13 +243,14 @@ public class DocumentDao {
                     criteria.add(Expression.eq("patientId", patientId));
                 }
 
-                if ((classCodes != null) && (!classCodes.isEmpty())) {
+                if (classCodes != null && !classCodes.isEmpty()) {
                     /**************************************************************
                      * The class code and class code scheme combination can come in two different formats:
                      *
                      * <ns7:Slot name="$XDSDocumentEntryClassCode"> <ns7:ValueList> <ns7:Value>34133-9</ns7:Value>
-                     * </ns7:ValueList> </ns7:Slot> <ns7:Slot name="$XDSDocumentEntryClassCodeScheme"> <ns7:ValueList>
-                     * <ns7:Value>2.16.840.1.113883.6.1</ns7:Value> </ns7:ValueList> </ns7:Slot>
+                     * </ns7:ValueList> </ns7:Slot>
+                     * <ns7:Slot name="$XDSDocumentEntryClassCodeScheme"> <ns7:ValueList> <ns7:Value>2.16.840.1.113883.6
+                     * .1</ns7:Value> </ns7:ValueList> </ns7:Slot>
                      *
                      * or
                      *
@@ -266,8 +265,8 @@ public class DocumentDao {
                         if (LOG.isDebugEnabled()) {
                             LOG.debug("Document query - class code: " + classCode);
                         }
-                        String newClassCode = null;
-                        String newCodeScheme = null;
+                        String newClassCode;
+                        String newCodeScheme;
 
                         if (classCode.contains("^^")) {
                             int index = classCode.indexOf("^^");
@@ -331,13 +330,13 @@ public class DocumentDao {
 
                 if (serviceStopTimeTo != null) {
                     if (LOG.isDebugEnabled()) {
-                        LOG.debug("Document query - service stop time to: "
-                                + logDateFormatter.format(serviceStopTimeTo));
+                        LOG.debug(
+                                "Document query - service stop time to: " + logDateFormatter.format(serviceStopTimeTo));
                     }
                     criteria.add(Expression.le("serviceStopTime", serviceStopTimeTo));
                 }
 
-                if ((statuses != null) && (!statuses.isEmpty())) {
+                if (statuses != null && !statuses.isEmpty()) {
                     if (LOG.isDebugEnabled()) {
                         for (String status : statuses) {
                             LOG.debug("Document query - status: " + status);
@@ -346,7 +345,7 @@ public class DocumentDao {
                     criteria.add(Expression.in("status", statuses));
                 }
 
-                if ((documentUniqueIds != null) && (!documentUniqueIds.isEmpty())) {
+                if (documentUniqueIds != null && !documentUniqueIds.isEmpty()) {
                     if (LOG.isDebugEnabled()) {
                         for (String documentUniqueId : documentUniqueIds) {
                             LOG.debug("Document query - document unique id: " + documentUniqueId);
@@ -357,9 +356,9 @@ public class DocumentDao {
 
                 if (params.getOnDemand() != null) {
                     if (LOG.isDebugEnabled()) {
-                        LOG.debug("Document query - onDemand: " + params.getOnDemand().booleanValue());
+                        LOG.debug("Document query - onDemand: " + params.getOnDemand());
                     }
-                    criteria.add(Expression.eq("onDemand", params.getOnDemand().booleanValue()));
+                    criteria.add(Expression.eq("onDemand", params.getOnDemand()));
                 }
 
                 documents = criteria.list();
@@ -369,14 +368,14 @@ public class DocumentDao {
 
             if (LOG.isDebugEnabled()) {
                 LOG.debug("Completed retrieve of document query. "
-                        + ((documents == null) ? "0" : Integer.toString(documents.size())) + " results returned.");
+                        + (documents == null ? "0" : Integer.toString(documents.size())) + " results returned.");
             }
         } finally {
             if (sess != null) {
                 try {
                     sess.close();
-                } catch (Throwable t) {
-                    LOG.error("Failed to close session: " + t.getMessage(), t);
+                } catch (HibernateException he) {
+                    LOG.error("Failed to close session: {}", he.getMessage(), he);
                 }
             }
         }
@@ -385,8 +384,10 @@ public class DocumentDao {
 
     protected Session getSession() {
         Session session = null;
-        SessionFactory fact = HibernateUtil.getSessionFactory();
-        if (fact != null) {
+
+        HibernateUtil util = HibernateUtilFactory.getDocRepoHibernateUtil();
+        if (util != null) {
+            SessionFactory fact = util.getSessionFactory();
             session = fact.openSession();
         } else {
             LOG.error("Session is null");

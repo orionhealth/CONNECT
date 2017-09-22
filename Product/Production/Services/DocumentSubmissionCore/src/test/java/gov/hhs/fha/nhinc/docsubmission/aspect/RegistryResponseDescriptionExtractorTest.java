@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,30 +26,27 @@
  */
 package gov.hhs.fha.nhinc.docsubmission.aspect;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import gov.hhs.fha.nhinc.event.BaseDescriptionBuilderTest;
 import gov.hhs.fha.nhinc.document.DocumentConstants;
-
+import gov.hhs.fha.nhinc.event.BaseDescriptionBuilderTest;
 import java.util.List;
-
 import oasis.names.tc.ebxml_regrep.xsd.rs._3.RegistryError;
 import oasis.names.tc.ebxml_regrep.xsd.rs._3.RegistryErrorList;
 import oasis.names.tc.ebxml_regrep.xsd.rs._3.RegistryResponseType;
-
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 import org.springframework.util.CollectionUtils;
 
 /**
  * @author akong
- * 
+ *
  */
 public class RegistryResponseDescriptionExtractorTest extends BaseDescriptionBuilderTest {
 
     @Test
     public void noResponse() {
         RegistryResponseDescriptionExtractor extractor = new RegistryResponseDescriptionExtractor();
-        
+
         assertTrue(CollectionUtils.isEmpty(extractor.getStatuses(null)));
         assertTrue(CollectionUtils.isEmpty(extractor.getErrorCodes(null)));
     }
@@ -59,7 +56,7 @@ public class RegistryResponseDescriptionExtractorTest extends BaseDescriptionBui
         RegistryResponseType response = new RegistryResponseType();
 
         RegistryResponseDescriptionExtractor extractor = new RegistryResponseDescriptionExtractor();
-        
+
         assertTrue(CollectionUtils.isEmpty(extractor.getStatuses(response)));
         assertTrue(CollectionUtils.isEmpty(extractor.getErrorCodes(response)));
     }

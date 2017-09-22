@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -38,8 +38,8 @@ import gov.hhs.fha.nhinc.nhinclib.NhincConstants;
 import gov.hhs.fha.nhinc.webserviceproxy.WebServiceProxyHelper;
 import oasis.names.tc.ebxml_regrep.xsd.query._3.AdhocQueryRequest;
 import oasis.names.tc.ebxml_regrep.xsd.query._3.AdhocQueryResponse;
-
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author
@@ -47,7 +47,7 @@ import org.apache.log4j.Logger;
  */
 public class EntityDocQueryProxyWebServiceSecuredImpl implements EntityDocQueryProxy {
 
-    private static final Logger LOG = Logger.getLogger(EntityDocQueryProxyWebServiceSecuredImpl.class);
+    private static final Logger LOG = LoggerFactory.getLogger(EntityDocQueryProxyWebServiceSecuredImpl.class);
 
     private WebServiceProxyHelper oProxyHelper = null;
 
@@ -71,12 +71,7 @@ public class EntityDocQueryProxyWebServiceSecuredImpl implements EntityDocQueryP
      */
     public ServicePortDescriptor<EntityDocQuerySecuredPortType> getServicePortDescriptor(
             NhincConstants.ADAPTER_API_LEVEL apiLevel) {
-        switch (apiLevel) {
-        case LEVEL_a0:
-            return new EntityDocQuerySecuredServicePortDescriptor();
-        default:
-            return new EntityDocQuerySecuredServicePortDescriptor();
-        }
+        return new EntityDocQuerySecuredServicePortDescriptor();
     }
 
     /** This method returns AdhocQueryResponse from entity Interface.
@@ -85,6 +80,7 @@ public class EntityDocQueryProxyWebServiceSecuredImpl implements EntityDocQueryP
      * @param target TargetCommunities to send request.
      * @return AdhocQueryResponse from Entity Interface.
      */
+    @Override
     public AdhocQueryResponse respondingGatewayCrossGatewayQuery(AdhocQueryRequest body, AssertionType assertion,
             NhinTargetCommunitiesType target) {
         LOG.debug("Begin respondingGatewayCrossGatewayQuery");

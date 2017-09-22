@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2013, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,24 +30,21 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
 import gov.hhs.fha.nhinc.docrepository.adapter.model.EventCode;
 import gov.hhs.fha.nhinc.docrepository.adapter.model.EventCodeParam;
-
 import java.util.ArrayList;
 import java.util.List;
-
 import oasis.names.tc.ebxml_regrep.xsd.rim._3.SlotType1;
-
 import org.hibernate.Criteria;
 import org.hibernate.Session;
-import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.junit.Before;
 import org.junit.Test;
 
 /**
  * The Class EventCodeDaoTest.
- * 
+ *
  * @author unknown, msw
  */
 public class EventCodeDaoTest {
@@ -61,30 +58,22 @@ public class EventCodeDaoTest {
     /** The event code dao. */
     private EventCodeDao eventCodeDao;
 
-    /** The session factory. */
-    private SessionFactory sessionFactory;
-
     /**
      * Sets the up.
      */
     @Before
     public void setUp() {
         transaction = mock(Transaction.class);
-        sessionFactory = mock(SessionFactory.class);
 
         eventCodeDao = new EventCodeDao() {
             @Override
-            protected Session getSession(SessionFactory sessionFactory) {
+            protected Session getSession() {
                 return session;
             }
 
             @Override
-            protected SessionFactory getSessionFactory() {
-                return sessionFactory;
-            }
-
             protected List<Long> getDocumentIds(List<EventCode> eventCodes) {
-                List<Long> DocumentIds = new ArrayList<Long>();
+                List<Long> DocumentIds = new ArrayList<>();
                 return DocumentIds;
             }
 
@@ -110,7 +99,7 @@ public class EventCodeDaoTest {
      */
     @Test
     public void testEventCodeQuery() {
-        List<EventCode> eventCodeList = new ArrayList<EventCode>();
+        List<EventCode> eventCodeList = new ArrayList<>();
         EventCode eventCode = new EventCode();
         final long EVENT_CODE_ID = 12345;
         eventCode.setEventCodeId(EVENT_CODE_ID);

@@ -1,41 +1,39 @@
 /*
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services. 
- * All rights reserved. 
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
+ * All rights reserved.
  *
- * Redistribution and use in source and binary forms, with or without 
- * modification, are permitted provided that the following conditions are met: 
- *     * Redistributions of source code must retain the above 
- *       copyright notice, this list of conditions and the following disclaimer. 
- *     * Redistributions in binary form must reproduce the above copyright 
- *       notice, this list of conditions and the following disclaimer in the documentation 
- *       and/or other materials provided with the distribution. 
- *     * Neither the name of the United States Government nor the 
- *       names of its contributors may be used to endorse or promote products 
- *       derived from this software without specific prior written permission. 
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *     * Redistributions of source code must retain the above
+ *       copyright notice, this list of conditions and the following disclaimer.
+ *     * Redistributions in binary form must reproduce the above copyright
+ *       notice, this list of conditions and the following disclaimer in the documentation
+ *       and/or other materials provided with the distribution.
+ *     * Neither the name of the United States Government nor the
+ *       names of its contributors may be used to endorse or promote products
+ *       derived from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
- * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED 
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE 
- * DISCLAIMED. IN NO EVENT SHALL THE UNITED STATES GOVERNMENT BE LIABLE FOR ANY 
- * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES 
- * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; 
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND 
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT 
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS 
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE UNITED STATES GOVERNMENT BE LIABLE FOR ANY
+ * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 package gov.hhs.fha.nhinc.docrepository.adapter.model;
 
 import gov.hhs.fha.nhinc.nhinclib.NullChecker;
-
 import java.util.Date;
 import java.util.List;
-
 import oasis.names.tc.ebxml_regrep.xsd.rim._3.SlotType1;
 
 /**
  * Parameter object for document queries
- * 
+ *
  * @author Neil Webb
  */
 public class DocumentQueryParams {
@@ -245,88 +243,82 @@ public class DocumentQueryParams {
         }
         DocumentQueryParams toCheck = (DocumentQueryParams) obj;
 
-        if ((this.getPatientId() == null) && (toCheck.getPatientId() != null)) {
+        if (getPatientId() == null && toCheck.getPatientId() != null) {
             return false;
-        } else if ((this.getPatientId() != null) && (!this.getPatientId().equals(toCheck.getPatientId()))) {
-            return false;
-        }
-
-        if ((this.getClassCodes() == null) && (toCheck.getClassCodes() != null)) {
-            return false;
-        } else if ((this.getClassCodes() != null) && (!this.getClassCodes().equals(toCheck.getClassCodes()))) {
+        } else if (getPatientId() != null && !getPatientId().equals(toCheck.getPatientId())) {
             return false;
         }
 
-        if ((this.getClassCodeScheme() == null) && (toCheck.getClassCodeScheme() != null)) {
+        if (getClassCodes() == null && toCheck.getClassCodes() != null) {
             return false;
-        } else if ((this.getClassCodeScheme() != null)
-                && (!this.getClassCodeScheme().equals(toCheck.getClassCodeScheme()))) {
-            return false;
-        }
-
-        if ((this.getCreationTimeFrom() == null) && (toCheck.getCreationTimeFrom() != null)) {
-            return false;
-        } else if ((this.getCreationTimeFrom() != null)
-                && (!this.getCreationTimeFrom().equals(toCheck.getCreationTimeFrom()))) {
+        } else if (getClassCodes() != null && !getClassCodes().equals(toCheck.getClassCodes())) {
             return false;
         }
 
-        if ((this.getCreationTimeTo() == null) && (toCheck.getCreationTimeTo() != null)) {
+        if (getClassCodeScheme() == null && toCheck.getClassCodeScheme() != null) {
             return false;
-        } else if ((this.getCreationTimeTo() != null)
-                && (!this.getCreationTimeTo().equals(toCheck.getCreationTimeTo()))) {
-            return false;
-        }
-
-        if ((this.getServiceStartTimeFrom() == null) && (toCheck.getServiceStartTimeFrom() != null)) {
-            return false;
-        } else if ((this.getServiceStartTimeFrom() != null)
-                && (!this.getServiceStartTimeFrom().equals(toCheck.getServiceStartTimeFrom()))) {
+        } else if (getClassCodeScheme() != null && !getClassCodeScheme().equals(toCheck.getClassCodeScheme())) {
             return false;
         }
 
-        if ((this.getServiceStartTimeTo() == null) && (toCheck.getServiceStartTimeTo() != null)) {
+        if (getCreationTimeFrom() == null && toCheck.getCreationTimeFrom() != null) {
             return false;
-        } else if ((this.getServiceStartTimeTo() != null)
-                && (!this.getServiceStartTimeTo().equals(toCheck.getServiceStartTimeTo()))) {
-            return false;
-        }
-
-        if ((this.getServiceStopTimeFrom() == null) && (toCheck.getServiceStopTimeFrom() != null)) {
-            return false;
-        } else if ((this.getServiceStopTimeFrom() != null)
-                && (!this.getServiceStopTimeFrom().equals(toCheck.getServiceStopTimeFrom()))) {
+        } else if (getCreationTimeFrom() != null && !getCreationTimeFrom().equals(toCheck.getCreationTimeFrom())) {
             return false;
         }
 
-        if ((this.getServiceStopTimeTo() == null) && (toCheck.getServiceStopTimeTo() != null)) {
+        if (getCreationTimeTo() == null && toCheck.getCreationTimeTo() != null) {
             return false;
-        } else if ((this.getServiceStopTimeTo() != null)
-                && (!this.getServiceStopTimeTo().equals(toCheck.getServiceStopTimeTo()))) {
-            return false;
-        }
-
-        if ((this.getStatuses() == null) && (toCheck.getStatuses() != null)) {
-            return false;
-        } else if ((this.getStatuses() != null) && (!this.getStatuses().equals(toCheck.getStatuses()))) {
+        } else if (getCreationTimeTo() != null && !getCreationTimeTo().equals(toCheck.getCreationTimeTo())) {
             return false;
         }
 
-        if ((this.getDocumentUniqueIds() == null) && (toCheck.getDocumentUniqueIds() != null)) {
+        if (getServiceStartTimeFrom() == null && toCheck.getServiceStartTimeFrom() != null) {
             return false;
-        } else if ((this.getDocumentUniqueIds() != null)
-                && (!this.getDocumentUniqueIds().equals(toCheck.getDocumentUniqueIds()))) {
-            return false;
-        }
-
-        if ((this.getEventCodeParams() == null) && (toCheck.getEventCodeParams() != null)) {
-            return false;
-        } else if ((this.getEventCodeParams() != null)
-                && (!this.getEventCodeParams().equals(toCheck.getEventCodeParams()))) {
+        } else if (getServiceStartTimeFrom() != null
+                && !getServiceStartTimeFrom().equals(toCheck.getServiceStartTimeFrom())) {
             return false;
         }
 
-        if (this.getOnDemand() != toCheck.getOnDemand()) {
+        if (getServiceStartTimeTo() == null && toCheck.getServiceStartTimeTo() != null) {
+            return false;
+        } else if (getServiceStartTimeTo() != null
+                && !getServiceStartTimeTo().equals(toCheck.getServiceStartTimeTo())) {
+            return false;
+        }
+
+        if (getServiceStopTimeFrom() == null && toCheck.getServiceStopTimeFrom() != null) {
+            return false;
+        } else if (getServiceStopTimeFrom() != null
+                && !getServiceStopTimeFrom().equals(toCheck.getServiceStopTimeFrom())) {
+            return false;
+        }
+
+        if (getServiceStopTimeTo() == null && toCheck.getServiceStopTimeTo() != null) {
+            return false;
+        } else if (getServiceStopTimeTo() != null && !getServiceStopTimeTo().equals(toCheck.getServiceStopTimeTo())) {
+            return false;
+        }
+
+        if (getStatuses() == null && toCheck.getStatuses() != null) {
+            return false;
+        } else if (getStatuses() != null && !getStatuses().equals(toCheck.getStatuses())) {
+            return false;
+        }
+
+        if (getDocumentUniqueIds() == null && toCheck.getDocumentUniqueIds() != null) {
+            return false;
+        } else if (getDocumentUniqueIds() != null && !getDocumentUniqueIds().equals(toCheck.getDocumentUniqueIds())) {
+            return false;
+        }
+
+        if (getEventCodeParams() == null && toCheck.getEventCodeParams() != null) {
+            return false;
+        } else if (getEventCodeParams() != null && !getEventCodeParams().equals(toCheck.getEventCodeParams())) {
+            return false;
+        }
+
+        if (getOnDemand() != toCheck.getOnDemand()) {
             return false;
         }
 

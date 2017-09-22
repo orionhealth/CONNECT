@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,10 +27,9 @@
 package gov.hhs.fha.nhinc.direct;
 
 import gov.hhs.fha.nhinc.mail.MessageHandler;
-
 import javax.mail.internet.MimeMessage;
-
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Handles inbound messages from an external mail client. Inbound messages are
@@ -39,7 +38,7 @@ import org.apache.log4j.Logger;
  */
 public class DirectInboundMsgHandler implements MessageHandler {
 
-    private static final Logger LOG = Logger.getLogger(DirectInboundMsgHandler.class);
+    private static final Logger LOG = LoggerFactory.getLogger(DirectInboundMsgHandler.class);
     /**
      * Property for the external direct client used to send the outbound
      * message.

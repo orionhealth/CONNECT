@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,17 +27,6 @@
 
 package gov.hhs.fha.nhinc.docsubmission.entity;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import oasis.names.tc.ebxml_regrep.xsd.rs._3.RegistryResponseType;
-
-import org.jmock.Expectations;
-import org.jmock.Mockery;
-import org.jmock.integration.junit4.JUnit4Mockery;
-import org.jmock.lib.legacy.ClassImposteriser;
-import org.junit.Test;
-
 import gov.hhs.fha.nhinc.common.nhinccommon.HomeCommunityType;
 import gov.hhs.fha.nhinc.common.nhinccommon.NhinTargetSystemType;
 import gov.hhs.fha.nhinc.docsubmission.orchestration.OrchestrationContextFactory;
@@ -45,6 +34,15 @@ import gov.hhs.fha.nhinc.nhinclib.NhincConstants;
 import gov.hhs.fha.nhinc.orchestration.Orchestratable;
 import gov.hhs.fha.nhinc.orchestration.OrchestrationContext;
 import gov.hhs.fha.nhinc.orchestration.OutboundOrchestratable;
+import oasis.names.tc.ebxml_regrep.xsd.rs._3.RegistryResponseType;
+import org.jmock.Expectations;
+import org.jmock.Mockery;
+import org.jmock.integration.junit4.JUnit4Mockery;
+import org.jmock.lib.legacy.ClassImposteriser;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import org.junit.Test;
 
 public class OutboundDocSubmissionDelegateTest {
 
@@ -161,7 +159,7 @@ public class OutboundDocSubmissionDelegateTest {
     private void setMockContextFactoryToReturnG0() {
         context.checking(new Expectations() {
             {
-                oneOf(mockContextFactory).getBuilder(with(any(HomeCommunityType.class)), with(equal(NhincConstants.NHIN_SERVICE_NAMES.DOCUMENT_SUBMISSION)));
+                oneOf(mockContextFactory).getBuilder(with(any(NhinTargetSystemType.class)), with(equal(NhincConstants.NHIN_SERVICE_NAMES.DOCUMENT_SUBMISSION)));
                 will(returnValue(createOutboundDocSubmissionOrchestrationContextBuilder_g0()));
             }
         });
@@ -176,6 +174,7 @@ public class OutboundDocSubmissionDelegateTest {
         });
 
         return new OutboundDocSubmissionOrchestrationContextBuilder_g0() {
+            @Override
             public OrchestrationContext build() {
                 return mockOrchestrationContext;
             }
@@ -185,7 +184,7 @@ public class OutboundDocSubmissionDelegateTest {
     private void setMockContextFactoryToReturnG1() {
         context.checking(new Expectations() {
             {
-                oneOf(mockContextFactory).getBuilder(with(any(HomeCommunityType.class)), with(equal(NhincConstants.NHIN_SERVICE_NAMES.DOCUMENT_SUBMISSION)));
+                oneOf(mockContextFactory).getBuilder(with(any(NhinTargetSystemType.class)), with(equal(NhincConstants.NHIN_SERVICE_NAMES.DOCUMENT_SUBMISSION)));
                 will(returnValue(createOutboundDocSubmissionOrchestrationContextBuilder_g1()));
             }
         });
@@ -200,6 +199,7 @@ public class OutboundDocSubmissionDelegateTest {
         });
 
         return new OutboundDocSubmissionOrchestrationContextBuilder_g1() {
+            @Override
             public OrchestrationContext build() {
                 return mockOrchestrationContext;
             }
@@ -209,7 +209,7 @@ public class OutboundDocSubmissionDelegateTest {
     private void setMockContextFactoryToReturnNull() {
         context.checking(new Expectations() {
             {
-                oneOf(mockContextFactory).getBuilder(with(any(HomeCommunityType.class)), with(equal(NhincConstants.NHIN_SERVICE_NAMES.DOCUMENT_SUBMISSION)));
+                oneOf(mockContextFactory).getBuilder(with(any(NhinTargetSystemType.class)), with(equal(NhincConstants.NHIN_SERVICE_NAMES.DOCUMENT_SUBMISSION)));
                 will(returnValue(null));
             }
         });
@@ -227,6 +227,7 @@ public class OutboundDocSubmissionDelegateTest {
 
     private OutboundDocSubmissionDelegate createOutboundDocSubmissionDelegate() {
         return new OutboundDocSubmissionDelegate() {
+            @Override
             protected OrchestrationContextFactory getOrchestrationContextFactory() {
                 return mockContextFactory;
             }

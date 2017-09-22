@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2014, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,67 +26,103 @@
  */
 package gov.hhs.fha.nhinc.patientdiscovery.inbound;
 
+import gov.hhs.fha.nhinc.audit.ejb.AuditEJBLogger;
+import gov.hhs.fha.nhinc.common.nhinccommon.AssertionType;
+import gov.hhs.fha.nhinc.common.nhinccommon.NhinTargetSystemType;
+import gov.hhs.fha.nhinc.nhinclib.NhincConstants;
+import gov.hhs.fha.nhinc.patientdiscovery.PatientDiscoveryException;
+import gov.hhs.fha.nhinc.patientdiscovery.adapter.proxy.AdapterPatientDiscoveryProxy;
+import gov.hhs.fha.nhinc.patientdiscovery.adapter.proxy.AdapterPatientDiscoveryProxyObjectFactory;
+import gov.hhs.fha.nhinc.patientdiscovery.audit.PatientDiscoveryAuditLogger;
+import gov.hhs.fha.nhinc.patientdiscovery.audit.transform.PatientDiscoveryAuditTransforms;
+import java.util.Properties;
+import org.hl7.v3.PRPAIN201305UV02;
+import org.hl7.v3.PRPAIN201306UV02;
 import static org.junit.Assert.assertSame;
+import org.junit.Test;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.inOrder;
+import static org.mockito.Matchers.isNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import gov.hhs.fha.nhinc.common.nhinccommon.AssertionType;
-import gov.hhs.fha.nhinc.nhinclib.NhincConstants;
-import gov.hhs.fha.nhinc.patientdiscovery.PatientDiscoveryAuditLogger;
-import gov.hhs.fha.nhinc.patientdiscovery.PatientDiscoveryException;
-import gov.hhs.fha.nhinc.patientdiscovery.adapter.proxy.AdapterPatientDiscoveryProxy;
-import gov.hhs.fha.nhinc.patientdiscovery.adapter.proxy.AdapterPatientDiscoveryProxyObjectFactory;
-
-import org.hl7.v3.PRPAIN201305UV02;
-import org.hl7.v3.PRPAIN201306UV02;
-import org.junit.Test;
-import org.mockito.InOrder;
 
 /**
  * @author akong
- * 
+ *
  */
 public class PassthroughInboundPatientDiscoveryTest {
+
+    private final AuditEJBLogger mockEJBLogger = mock(AuditEJBLogger.class);
+    private final AdapterPatientDiscoveryProxyObjectFactory adapterFactory
+        = mock(AdapterPatientDiscoveryProxyObjectFactory.class);
+    private final AdapterPatientDiscoveryProxy adapterProxy = mock(AdapterPatientDiscoveryProxy.class);
 
     @Test
     public void passthroughInboundPatientDiscovery() throws PatientDiscoveryException {
         PRPAIN201305UV02 request = new PRPAIN201305UV02();
         AssertionType assertion = new AssertionType();
         PRPAIN201306UV02 expectedResponse = new PRPAIN201306UV02();
+        Properties webContextProperties = new Properties();
 
-        AdapterPatientDiscoveryProxyObjectFactory adapterFactory = mock(AdapterPatientDiscoveryProxyObjectFactory.class);
-        AdapterPatientDiscoveryProxy adapterProxy = mock(AdapterPatientDiscoveryProxy.class);
-        PatientDiscoveryAuditLogger auditLogger = mock(PatientDiscoveryAuditLogger.class);
+        PatientDiscoveryAuditLogger auditLogger = getAuditLogger(true);
 
         when(adapterFactory.create()).thenReturn(adapterProxy);
-
         when(adapterProxy.respondingGatewayPRPAIN201305UV02(request, assertion)).thenReturn(expectedResponse);
 
         PassthroughInboundPatientDiscovery passthroughPatientDiscovery = new PassthroughInboundPatientDiscovery(
-                adapterFactory, auditLogger);
+            adapterFactory, auditLogger);
 
         PRPAIN201306UV02 actualResponse = passthroughPatientDiscovery.respondingGatewayPRPAIN201305UV02(request,
-                assertion);
+            assertion, webContextProperties);
 
         assertSame(expectedResponse, actualResponse);
 
-        InOrder inOrder = inOrder(auditLogger);
+        verify(mockEJBLogger).auditResponseMessage(any(PRPAIN201305UV02.class), any(PRPAIN201306UV02.class),
+            any(AssertionType.class), isNull(NhinTargetSystemType.class), eq(NhincConstants.AUDIT_LOG_INBOUND_DIRECTION),
+            eq(NhincConstants.AUDIT_LOG_NHIN_INTERFACE), eq(Boolean.FALSE), eq(webContextProperties),
+            eq(NhincConstants.PATIENT_DISCOVERY_SERVICE_NAME), any(PatientDiscoveryAuditTransforms.class));
+    }
 
-        inOrder.verify(auditLogger).auditNhin201305(eq(request), eq(assertion),
-                eq(NhincConstants.AUDIT_LOG_INBOUND_DIRECTION));
+    @Test
+    public void passthroughInboundPDWithAuditLoggingOff() throws PatientDiscoveryException {
+        PRPAIN201305UV02 request = new PRPAIN201305UV02();
+        AssertionType assertion = new AssertionType();
+        PRPAIN201306UV02 expectedResponse = new PRPAIN201306UV02();
+        Properties webContextProperties = new Properties();
 
-        inOrder.verify(auditLogger).auditNhin201306(eq(actualResponse), eq(assertion),
-                eq(NhincConstants.AUDIT_LOG_OUTBOUND_DIRECTION));
+        PatientDiscoveryAuditLogger auditLogger = getAuditLogger(false);
 
-        verify(auditLogger, never()).auditAdapter201305(any(PRPAIN201305UV02.class), any(AssertionType.class),
-                any(String.class));
+        when(adapterFactory.create()).thenReturn(adapterProxy);
+        when(adapterProxy.respondingGatewayPRPAIN201305UV02(request, assertion)).thenReturn(expectedResponse);
 
-        verify(auditLogger, never()).auditAdapter201306(any(PRPAIN201306UV02.class), any(AssertionType.class),
-                any(String.class));
+        PassthroughInboundPatientDiscovery passthroughPatientDiscovery = new PassthroughInboundPatientDiscovery(
+            adapterFactory, auditLogger);
+
+        PRPAIN201306UV02 actualResponse = passthroughPatientDiscovery.respondingGatewayPRPAIN201305UV02(request,
+            assertion, webContextProperties);
+
+        assertSame(expectedResponse, actualResponse);
+
+        verify(mockEJBLogger, never()).auditResponseMessage(any(PRPAIN201305UV02.class), any(PRPAIN201306UV02.class),
+            any(AssertionType.class), isNull(NhinTargetSystemType.class), eq(NhincConstants.AUDIT_LOG_INBOUND_DIRECTION),
+            eq(NhincConstants.AUDIT_LOG_NHIN_INTERFACE), eq(Boolean.FALSE), eq(webContextProperties),
+            eq(NhincConstants.PATIENT_DISCOVERY_SERVICE_NAME), any(PatientDiscoveryAuditTransforms.class));
+    }
+
+    private PatientDiscoveryAuditLogger getAuditLogger(final boolean isLoggingOn) {
+        return new PatientDiscoveryAuditLogger() {
+            @Override
+            protected AuditEJBLogger getAuditLogger() {
+                return mockEJBLogger;
+            }
+
+            @Override
+            protected boolean isAuditLoggingOn(String serviceName) {
+                return isLoggingOn;
+            }
+        };
     }
 
 }

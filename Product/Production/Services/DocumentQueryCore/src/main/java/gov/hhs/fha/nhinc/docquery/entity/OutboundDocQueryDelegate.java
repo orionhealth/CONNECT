@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -31,8 +31,8 @@ import gov.hhs.fha.nhinc.nhinclib.NhincConstants;
 import gov.hhs.fha.nhinc.orchestration.Orchestratable;
 import gov.hhs.fha.nhinc.orchestration.OutboundDelegate;
 import gov.hhs.fha.nhinc.orchestration.OutboundOrchestratable;
-
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Doc Query implementation of OutboundDelegate.
@@ -41,7 +41,7 @@ import org.apache.log4j.Logger;
  */
 public class OutboundDocQueryDelegate implements OutboundDelegate {
 
-    private static final Logger LOG = Logger.getLogger(OutboundDocQueryDelegate.class);
+    private static final Logger LOG = LoggerFactory.getLogger(OutboundDocQueryDelegate.class);
 
     /**
      * Default constructor.
@@ -78,15 +78,14 @@ public class OutboundDocQueryDelegate implements OutboundDelegate {
     public OutboundDocQueryOrchestratable process(OutboundDocQueryOrchestratable message) {
         LOG.debug("NhinDocQueryDelegate::process EntityDocQueryOrchestratable");
 
-        OutboundDocQueryOrchestrationContextBuilder contextBuilder =
-           (OutboundDocQueryOrchestrationContextBuilder) OrchestrationContextFactory.getInstance().
-           getBuilder(message.getTarget().getHomeCommunity(), NhincConstants.NHIN_SERVICE_NAMES.DOCUMENT_QUERY);
+        OutboundDocQueryOrchestrationContextBuilder contextBuilder
+            = (OutboundDocQueryOrchestrationContextBuilder) OrchestrationContextFactory.getInstance().
+            getBuilder(message.getTarget().getHomeCommunity(), NhincConstants.NHIN_SERVICE_NAMES.DOCUMENT_QUERY);
         contextBuilder.setAssertionType(message.getAssertion());
         contextBuilder.setRequest(message.getRequest());
         contextBuilder.setTarget(message.getTarget());
         contextBuilder.setServiceName(message.getServiceName());
         contextBuilder.setPolicyTransformer(message.getPolicyTransformer());
-        contextBuilder.setAuditTransformer(message.getAuditTransformer());
         contextBuilder.setProcessor(message.getResponseProcessor());
 
         OutboundDocQueryOrchestratable response = (OutboundDocQueryOrchestratable) contextBuilder.build().execute();
@@ -100,8 +99,6 @@ public class OutboundDocQueryDelegate implements OutboundDelegate {
         }
         return response;
     }
-
-   
 
     @Override
     public void createErrorResponse(OutboundOrchestratable message, String error) {

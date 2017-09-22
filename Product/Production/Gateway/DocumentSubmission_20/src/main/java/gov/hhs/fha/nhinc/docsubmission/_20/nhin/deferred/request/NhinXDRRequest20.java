@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,26 +26,23 @@
  */
 package gov.hhs.fha.nhinc.docsubmission._20.nhin.deferred.request;
 
-
 import gov.hhs.fha.nhinc.aspect.InboundMessageEvent;
 import gov.hhs.fha.nhinc.docsubmission.aspect.DocSubmissionBaseEventDescriptionBuilder;
 import gov.hhs.fha.nhinc.docsubmission.inbound.deferred.request.InboundDocSubmissionDeferredRequest;
 import ihe.iti.xdr._2007.XDRDeferredRequest20PortType;
 import ihe.iti.xds_b._2007.ProvideAndRegisterDocumentSetRequestType;
-
 import javax.annotation.Resource;
 import javax.xml.ws.BindingType;
 import javax.xml.ws.WebServiceContext;
 import javax.xml.ws.soap.Addressing;
-
+import javax.xml.ws.soap.SOAPBinding;
 import oasis.names.tc.ebxml_regrep.xsd.rs._3.RegistryResponseType;
 
-
 /**
- * 
+ *
  * @author JHOPPESC
  */
-@BindingType(value = javax.xml.ws.soap.SOAPBinding.SOAP12HTTP_BINDING)
+@BindingType(value = SOAPBinding.SOAP12HTTP_BINDING)
 @Addressing(enabled = true)
 public class NhinXDRRequest20 implements XDRDeferredRequest20PortType {
 
@@ -53,13 +50,14 @@ public class NhinXDRRequest20 implements XDRDeferredRequest20PortType {
 
     private InboundDocSubmissionDeferredRequest inboundDocSubmissionRequest;
 
-    @InboundMessageEvent(serviceType = "Document Submission Deferred Request", version = "2.0", 
-            beforeBuilder = DocSubmissionBaseEventDescriptionBuilder.class, 
-            afterReturningBuilder = DocSubmissionBaseEventDescriptionBuilder.class)
+    @InboundMessageEvent(serviceType = "Document Submission Deferred Request", version = "2.0",
+        beforeBuilder = DocSubmissionBaseEventDescriptionBuilder.class,
+        afterReturningBuilder = DocSubmissionBaseEventDescriptionBuilder.class)
+    @Override
     public RegistryResponseType provideAndRegisterDocumentSetBDeferredRequest(
-            ProvideAndRegisterDocumentSetRequestType body) {
+        ProvideAndRegisterDocumentSetRequestType body) {
         return new NhinDocSubmissionDeferredRequestImpl20(inboundDocSubmissionRequest)
-                .provideAndRegisterDocumentSetBRequest(body, context);
+            .provideAndRegisterDocumentSetBRequest(body, context);
     }
 
     public void setInboundDocSubmissionRequest(InboundDocSubmissionDeferredRequest inboundDocSubmissionRequest) {

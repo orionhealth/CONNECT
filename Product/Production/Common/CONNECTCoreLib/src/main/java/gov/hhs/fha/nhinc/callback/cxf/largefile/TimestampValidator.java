@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,38 +29,39 @@ package gov.hhs.fha.nhinc.callback.cxf.largefile;
 import gov.hhs.fha.nhinc.nhinclib.NhincConstants;
 import gov.hhs.fha.nhinc.properties.PropertyAccessException;
 import gov.hhs.fha.nhinc.properties.PropertyAccessor;
-
 import java.util.Date;
-
-import org.apache.log4j.Logger;
 import org.apache.cxf.message.Message;
 import org.apache.ws.security.WSSConfig;
 import org.apache.ws.security.WSSecurityException;
 import org.apache.ws.security.handler.RequestData;
 import org.apache.ws.security.validate.Credential;
 import org.apache.ws.security.validate.Validator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This class replaces the default WSS4J TimestampValidator (org.apache.ws.security.validate.TimestampValidator). The
  * validation logic was copied from that class but modified to use a passed in time from the Message Context. This
  * passed in time needs to be set by a CXF interceptor before validation is to occur. In addition, this class will
  * prefer configuration from the CONNECT gateway properties file instead of CXF.
- * 
+ *
  * @author akong
- * 
+ *
  */
 public class TimestampValidator implements Validator {
 
-    private static final Logger LOG = Logger.getLogger(TimestampValidator.class);
+    private static final Logger LOG = LoggerFactory.getLogger(TimestampValidator.class);
     protected static final long INVALID_LONG_VALUE = -1;
 
     /**
      * Validate the credential argument. It must contain a non-null Timestamp.
-     * 
+     *
      * @param credential the Credential to be validated
      * @param data the RequestData associated with the request
+     * @return
      * @throws WSSecurityException on a failed validation
      */
+    @Override
     public Credential validate(Credential credential, RequestData data) throws WSSecurityException {
         if (credential == null || credential.getTimestamp() == null) {
             throw new WSSecurityException(WSSecurityException.FAILURE, "noCredential");
@@ -69,7 +70,7 @@ public class TimestampValidator implements Validator {
             throw new WSSecurityException("WSSConfig cannot be null");
         }
         WSSConfig wssConfig = data.getWssConfig();
-        boolean timeStampStrict = true;
+        boolean timeStampStrict;
         int timeStampTTL = 300;
         int futureTimeToLive = 60;
         if (wssConfig != null) {
@@ -93,7 +94,7 @@ public class TimestampValidator implements Validator {
         Date invocationTime = (Date) ((Message) data.getMsgContext()).get(TimestampInterceptor.INVOCATION_TIME_KEY);
 
         // Validate whether the security semantics have expired
-        if ((timeStampStrict && timeStamp.isExpired(invocationTime))
+        if (timeStampStrict && timeStamp.isExpired(invocationTime)
                 || !timeStamp.verifyCreated(timeStampTTL, futureTimeToLive, invocationTime)) {
             throw new WSSecurityException(WSSecurityException.MESSAGE_EXPIRED, "invalidTimestamp",
                     new Object[] { "The security semantics of the message have expired" });
@@ -106,7 +107,9 @@ public class TimestampValidator implements Validator {
             return PropertyAccessor.getInstance().getPropertyLong(NhincConstants.GATEWAY_PROPERTY_FILE,
                     NhincConstants.TIMESTAMP_TIME_TO_LIVE);
         } catch (PropertyAccessException pae) {
-            LOG.info("Failed to determine timestamp time to live in gateway.properties.  Will use default values.");
+            LOG.warn("Failed to determine timestamp time to live in gateway.properties, will use default values: {}",
+                    pae.getLocalizedMessage());
+            LOG.trace("Get Timestamp TTL exception: {}", pae.getLocalizedMessage(), pae);
         }
 
         return INVALID_LONG_VALUE;
@@ -117,7 +120,9 @@ public class TimestampValidator implements Validator {
             return PropertyAccessor.getInstance().getPropertyLong(NhincConstants.GATEWAY_PROPERTY_FILE,
                     NhincConstants.TIMESTAMP_FUTURE_TIME_TO_LIVE);
         } catch (PropertyAccessException pae) {
-            LOG.info("Failed to determine timestamp future time to live in gateway.properties.  Will use default values.");
+            LOG.warn("Failed to determine timestamp future TTL in gateway.properties, will use default value: {}",
+                    pae.getLocalizedMessage());
+            LOG.trace("Get Timestamp future TTL exception: {}", pae.getLocalizedMessage(), pae);
         }
 
         return INVALID_LONG_VALUE;
@@ -128,7 +133,9 @@ public class TimestampValidator implements Validator {
             return PropertyAccessor.getInstance().getPropertyBoolean(NhincConstants.GATEWAY_PROPERTY_FILE,
                     NhincConstants.TIMESTAMP_STRICT);
         } catch (PropertyAccessException pae) {
-            LOG.info("Failed to determine timestamp strict in gateway.properties.  Will use default values.");
+            LOG.warn("Failed to determine timestamp strict in gateway.properties, will use default value: {}",
+                    pae.getLocalizedMessage());
+            LOG.trace("Get Timestamp strict exception: {}", pae.getLocalizedMessage(), pae);
         }
 
         return true;

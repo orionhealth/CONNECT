@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,63 +26,57 @@
  */
 package gov.hhs.fha.nhinc.docsubmission.inbound.deferred.request;
 
-import gov.hhs.fha.nhinc.aspect.InboundProcessingEvent;
 import gov.hhs.fha.nhinc.common.nhinccommon.AssertionType;
-import gov.hhs.fha.nhinc.docsubmission.XDRAuditLogger;
 import gov.hhs.fha.nhinc.docsubmission.adapter.deferred.request.proxy.AdapterDocSubmissionDeferredRequestProxy;
 import gov.hhs.fha.nhinc.docsubmission.adapter.deferred.request.proxy.AdapterDocSubmissionDeferredRequestProxyObjectFactory;
-import gov.hhs.fha.nhinc.docsubmission.aspect.DocSubmissionBaseEventDescriptionBuilder;
-import gov.hhs.fha.nhinc.docsubmission.aspect.DocSubmissionArgTransformerBuilder;
+import gov.hhs.fha.nhinc.docsubmission.audit.DocSubmissionDeferredRequestAuditLogger;
 import gov.hhs.fha.nhinc.nhinclib.NhincConstants;
 import gov.hhs.healthit.nhin.XDRAcknowledgementType;
 import ihe.iti.xds_b._2007.ProvideAndRegisterDocumentSetRequestType;
+import java.util.Properties;
 
 public abstract class AbstractInboundDocSubmissionDeferredRequest implements InboundDocSubmissionDeferredRequest {
 
     abstract XDRAcknowledgementType processDocSubmissionRequest(ProvideAndRegisterDocumentSetRequestType body,
-            AssertionType assertion);
-    
-    private XDRAuditLogger auditLogger;
-    private AdapterDocSubmissionDeferredRequestProxyObjectFactory adapterFactory;
-    
+        AssertionType assertion);
+
+    private DocSubmissionDeferredRequestAuditLogger auditLogger = null;
+    private AdapterDocSubmissionDeferredRequestProxyObjectFactory adapterFactory = null;
+
     public AbstractInboundDocSubmissionDeferredRequest(
-            AdapterDocSubmissionDeferredRequestProxyObjectFactory adapterFactory, XDRAuditLogger auditLogger) {
+        AdapterDocSubmissionDeferredRequestProxyObjectFactory adapterFactory,
+        DocSubmissionDeferredRequestAuditLogger auditLogger) {
         this.adapterFactory = adapterFactory;
         this.auditLogger = auditLogger;
     }
-    
-    public XDRAcknowledgementType provideAndRegisterDocumentSetBRequest(ProvideAndRegisterDocumentSetRequestType body,
-            AssertionType assertion) {
 
-        auditRequestFromNhin(body, assertion);
+    /**
+     *
+     * @param body
+     * @param assertion
+     * @param webContextProperties
+     * @return
+     */
+    @Override
+    public XDRAcknowledgementType provideAndRegisterDocumentSetBRequest(ProvideAndRegisterDocumentSetRequestType body,
+        AssertionType assertion, Properties webContextProperties) {
 
         XDRAcknowledgementType response = processDocSubmissionRequest(body, assertion);
 
-        auditResponseToNhin(response, assertion);
+        auditResponse(body, response, assertion, webContextProperties);
 
         return response;
     }
-    
+
     protected XDRAcknowledgementType sendToAdapter(ProvideAndRegisterDocumentSetRequestType body, AssertionType assertion) {
         AdapterDocSubmissionDeferredRequestProxy proxy = adapterFactory.getAdapterDocSubmissionDeferredRequestProxy();
         return proxy.provideAndRegisterDocumentSetBRequest(body, assertion);
     }
-    
-    protected void auditRequestToAdapter(ProvideAndRegisterDocumentSetRequestType request, AssertionType assertion) {
-        auditLogger.auditAdapterXDR(request, assertion, NhincConstants.AUDIT_LOG_OUTBOUND_DIRECTION);
-    }
 
-    protected void auditResponseFromAdapter(XDRAcknowledgementType response, AssertionType assertion) {
-        auditLogger.auditAdapterAcknowledgement(response, assertion, NhincConstants.AUDIT_LOG_INBOUND_DIRECTION,
-                NhincConstants.XDR_REQUEST_ACTION);
-    }
-
-    protected void auditRequestFromNhin(ProvideAndRegisterDocumentSetRequestType request, AssertionType assertion) {
-        auditLogger.auditNhinXDR(request, assertion, null, NhincConstants.AUDIT_LOG_INBOUND_DIRECTION);
-    }
-
-    protected void auditResponseToNhin(XDRAcknowledgementType response, AssertionType assertion) {
-        auditLogger.auditAcknowledgement(response, assertion, null, NhincConstants.AUDIT_LOG_OUTBOUND_DIRECTION,
-                NhincConstants.XDR_REQUEST_ACTION);
+    protected void auditResponse(ProvideAndRegisterDocumentSetRequestType request, XDRAcknowledgementType response,
+        AssertionType assertion, Properties webContextProperties) {
+        auditLogger.auditResponseMessage(request, response, assertion, null, NhincConstants.AUDIT_LOG_INBOUND_DIRECTION,
+            NhincConstants.AUDIT_LOG_NHIN_INTERFACE, Boolean.FALSE, webContextProperties,
+            NhincConstants.NHINC_XDR_REQUEST_SERVICE_NAME);
     }
 }

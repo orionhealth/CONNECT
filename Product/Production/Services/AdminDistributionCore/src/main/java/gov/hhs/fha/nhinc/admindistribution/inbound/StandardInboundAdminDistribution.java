@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,8 +26,6 @@
  */
 package gov.hhs.fha.nhinc.admindistribution.inbound;
 
-import org.apache.log4j.Logger;
-
 import gov.hhs.fha.nhinc.admindistribution.AdminDistributionAuditLogger;
 import gov.hhs.fha.nhinc.admindistribution.AdminDistributionPolicyChecker;
 import gov.hhs.fha.nhinc.admindistribution.AdminDistributionUtils;
@@ -35,19 +33,20 @@ import gov.hhs.fha.nhinc.admindistribution.adapter.proxy.AdapterAdminDistributio
 import gov.hhs.fha.nhinc.admindistribution.aspect.EDXLDistributionEventDescriptionBuilder;
 import gov.hhs.fha.nhinc.aspect.InboundProcessingEvent;
 import gov.hhs.fha.nhinc.common.nhinccommon.AssertionType;
-import gov.hhs.fha.nhinc.event.DefaultEventDescriptionBuilder;
 import gov.hhs.fha.nhinc.nhinclib.NhincConstants;
 import oasis.names.tc.emergency.edxl.de._1.EDXLDistribution;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author akong
- * 
+ *
  */
 public class StandardInboundAdminDistribution extends AbstractInboundAdminDistribution {
 
-    private static final Logger LOG = Logger.getLogger(StandardInboundAdminDistribution.class);
+    private static final Logger LOG = LoggerFactory.getLogger(StandardInboundAdminDistribution.class);
     private AdminDistributionPolicyChecker policyChecker = new AdminDistributionPolicyChecker();
-    
+
     /**
      * Constructor.
      */
@@ -57,26 +56,26 @@ public class StandardInboundAdminDistribution extends AbstractInboundAdminDistri
 
     /**
      * Constructor.
-     * 
+     *
      * @param passthroughAdminDist
      * @param policyChecker
      * @param auditLogger
      */
     public StandardInboundAdminDistribution(AdminDistributionPolicyChecker policyChecker,
-    		AdminDistributionAuditLogger auditLogger, AdapterAdminDistributionProxyObjectFactory adapterFactory,
-    		AdminDistributionUtils adminUtils) {
+        AdminDistributionAuditLogger auditLogger, AdapterAdminDistributionProxyObjectFactory adapterFactory,
+        AdminDistributionUtils adminUtils) {
         this.policyChecker = policyChecker;
         this.auditLogger = auditLogger;
         this.adapterFactory = adapterFactory;
         this.adminUtils = adminUtils;
-        
+
     }
 
     @Override
     void processAdminDistribution(EDXLDistribution body, AssertionType assertion) {
         if (isPolicyValid(body, assertion)) {
-        	auditRequestToAdapter(body, assertion);
-        	sendToAdapter(body, assertion, adminUtils, adapterFactory);
+            auditRequestToAdapter(body, assertion);
+            sendToAdapter(body, assertion, adminUtils, adapterFactory);
         } else {
             LOG.warn("Invalid policy.  Will not send message to adapter.");
         }
@@ -95,13 +94,12 @@ public class StandardInboundAdminDistribution extends AbstractInboundAdminDistri
     }
 
     private void auditRequestToAdapter(EDXLDistribution body, AssertionType assertion) {
-        auditLogger.auditNhinAdminDist(body, assertion, NhincConstants.AUDIT_LOG_OUTBOUND_DIRECTION,
-                null, NhincConstants.AUDIT_LOG_ADAPTER_INTERFACE);
+        auditLogger.auditNhinAdminDist(body, assertion, NhincConstants.AUDIT_LOG_OUTBOUND_DIRECTION, null,
+            NhincConstants.AUDIT_LOG_ADAPTER_INTERFACE);
     }
+
     @Override
-    @InboundProcessingEvent(serviceType = "Admin Distribution", version = "",
-            afterReturningBuilder = DefaultEventDescriptionBuilder.class,
-            beforeBuilder = EDXLDistributionEventDescriptionBuilder.class)
+    @InboundProcessingEvent(serviceType = "Admin Distribution", version = "", afterReturningBuilder = EDXLDistributionEventDescriptionBuilder.class, beforeBuilder = EDXLDistributionEventDescriptionBuilder.class)
     public void sendAlertMessage(EDXLDistribution body, AssertionType assertion) {
         auditRequestFromNhin(body, assertion);
 

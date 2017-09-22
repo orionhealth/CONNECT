@@ -1,50 +1,39 @@
 /*
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services. 
- * All rights reserved. 
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
+ * All rights reserved.
  *
- * Redistribution and use in source and binary forms, with or without 
- * modification, are permitted provided that the following conditions are met: 
- *     * Redistributions of source code must retain the above 
- *       copyright notice, this list of conditions and the following disclaimer. 
- *     * Redistributions in binary form must reproduce the above copyright 
- *       notice, this list of conditions and the following disclaimer in the documentation 
- *       and/or other materials provided with the distribution. 
- *     * Neither the name of the United States Government nor the 
- *       names of its contributors may be used to endorse or promote products 
- *       derived from this software without specific prior written permission. 
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *     * Redistributions of source code must retain the above
+ *       copyright notice, this list of conditions and the following disclaimer.
+ *     * Redistributions in binary form must reproduce the above copyright
+ *       notice, this list of conditions and the following disclaimer in the documentation
+ *       and/or other materials provided with the distribution.
+ *     * Neither the name of the United States Government nor the
+ *       names of its contributors may be used to endorse or promote products
+ *       derived from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
- * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED 
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE 
- * DISCLAIMED. IN NO EVENT SHALL THE UNITED STATES GOVERNMENT BE LIABLE FOR ANY 
- * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES 
- * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; 
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND 
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT 
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS 
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE UNITED STATES GOVERNMENT BE LIABLE FOR ANY
+ * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 package gov.hhs.fha.nhinc.policyengine.adapter.pip;
 
 import gov.hhs.fha.nhinc.common.nhinccommonadapter.PatientPreferencesType;
-
-import gov.hhs.fha.nhinc.properties.PropertyAccessor;
 import gov.hhs.fha.nhinc.nhinclib.NhincConstants;
-
+import gov.hhs.fha.nhinc.properties.PropertyAccessor;
 import java.io.Serializable;
-import org.hl7.v3.POCDMT000040ClinicalDocument;
-
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import javax.xml.bind.JAXBElement;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import static org.junit.Assert.*;
-
 import org.hl7.v3.ADExplicit;
 import org.hl7.v3.ActClassClinicalDocument;
 import org.hl7.v3.AdxpExplicitCity;
@@ -64,19 +53,25 @@ import org.hl7.v3.IVXBTSExplicit;
 import org.hl7.v3.ONExplicit;
 import org.hl7.v3.PNExplicit;
 import org.hl7.v3.POCDMT000040Author;
+import org.hl7.v3.POCDMT000040ClinicalDocument;
 import org.hl7.v3.POCDMT000040Patient;
 import org.hl7.v3.POCDMT000040PatientRole;
 import org.hl7.v3.SCExplicit;
 import org.jmock.Mockery;
 import org.jmock.integration.junit4.JMock;
 import org.jmock.integration.junit4.JUnit4Mockery;
-
+import org.junit.After;
+import org.junit.AfterClass;
+import static org.junit.Assert.*;
+import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Ignore;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 
 /**
  * This class is used to test the CdaPdfCreator class.
- * 
+ *
  * @author Les Westberg
  */
 @Ignore
@@ -247,7 +242,7 @@ public class CdaPdfCreatorTest {
 
     /**
      * This method verifies that the date and time are the same.
-     * 
+     *
      * @param sMessage The message to output with the assert statement.
      * @param sExpectedDate The expected date and time.
      * @param sActualDate The actual date and time.
@@ -274,7 +269,7 @@ public class CdaPdfCreatorTest {
 
     /**
      * This method verifies that the date and time are the same.
-     * 
+     *
      * @param sMessage The message to output with the assert statement.
      * @param sExpectedDate The expected date and time.
      * @param sActualDate The actual date and time.
@@ -310,7 +305,7 @@ public class CdaPdfCreatorTest {
 
     /**
      * This method asserts the value of an II data type.
-     * 
+     *
      * @param oII The II that is being asserted.
      * @param sFieldName The field name for the message.
      * @param sExtension The extension value.
@@ -324,7 +319,7 @@ public class CdaPdfCreatorTest {
 
     /**
      * This method asserts the value of an address.
-     * 
+     *
      * @param sFieldName The name of the field for the output message.
      * @param oAddr The address to be asserted.
      * @param sSreet The value of the street tag.
@@ -338,7 +333,7 @@ public class CdaPdfCreatorTest {
         // Check for the null or empty case...
         // ------------------------------------
         if ((sStreet == null) && (sCity == null) && (sState == null) && (sZipcode == null) && (sCountry == null)
-                && ((oAddr == null) || (oAddr.getContent() == null) || (oAddr.getContent().size() == 0))) {
+                && ((oAddr == null) || (oAddr.getContent() == null) || (oAddr.getContent().isEmpty()))) {
             return; // We expected null and we got null.
         }
 
@@ -424,9 +419,9 @@ public class CdaPdfCreatorTest {
 
     /**
      * Assert the id tag wihtin the cda.RecordTarget.patientRole.
-     * 
+     *
      * @param olII The list of IDs to assert.
-     * 
+     *
      */
     private void assertRecordTargetPatientRoleId(List<II> olII) {
         assertNotNull("cda.recordTarget[0].patientRole.id should not have been null.  ", olII);
@@ -436,9 +431,9 @@ public class CdaPdfCreatorTest {
 
     /**
      * Assert the addr tag wihtin the cda.RecordTarget.patientRole.
-     * 
+     *
      * @param olAD The list of addresses to assert.
-     * 
+     *
      */
     private void assertRecordTargetPatientRoleAddr(List<ADExplicit> olAD) {
         assertNotNull("cda.recordTarget[0].patientRole.addr should not have been null.  ", olAD);
@@ -449,7 +444,7 @@ public class CdaPdfCreatorTest {
 
     /**
      * This validates the parts of the name field.
-     * 
+     *
      * @param sFieldName The name of the field for the messages.
      * @param oName The name field containing the data.
      * @param sPrefix The expected prefix of the name.
@@ -462,7 +457,7 @@ public class CdaPdfCreatorTest {
         // Check for the null or empty case...
         // ------------------------------------
         if ((sPrefix == null) && (sGiven == null) && (sFamily == null) && (sSuffix == null)
-                && ((oName == null) || (oName.getContent() == null) || (oName.getContent().size() == 0))) {
+                && ((oName == null) || (oName.getContent() == null) || (oName.getContent().isEmpty()))) {
             return; // We expected null and we got null.
         }
 
@@ -537,7 +532,7 @@ public class CdaPdfCreatorTest {
 
     /**
      * Assert the given code has the correct values.
-     * 
+     *
      * @param sFieldName The name of the field being checked.
      * @param oCE The code to be checked.
      * @param sCode The expected code.
@@ -557,7 +552,7 @@ public class CdaPdfCreatorTest {
 
     /**
      * Assert the given CS (basically a code) has the correct values.
-     * 
+     *
      * @param sFieldName The name of the field being checked.
      * @param oCS The code to be checked.
      * @param sCode The expected code.
@@ -576,9 +571,9 @@ public class CdaPdfCreatorTest {
 
     /**
      * Assert the patient tag wihtin the cda.RecordTarget.patientRole.
-     * 
+     *
      * @param oPatient The patient information to be checked.
-     * 
+     *
      */
     private void assertRecordTargetPatientRolePatient(POCDMT000040Patient oPatient) {
         assertNotNull("cda.recordTarget[0].patientRole.patient should not have been null.  ", oPatient);
@@ -601,7 +596,7 @@ public class CdaPdfCreatorTest {
 
     /**
      * Assert the patient role tag within the Record target tag.
-     * 
+     *
      */
     private void assertRecordTargetPatientRole(POCDMT000040PatientRole oPatientRole) {
         assertNotNull("cda.recordTarget[0].patientRole should not have been null.  ", oPatientRole);
@@ -613,7 +608,7 @@ public class CdaPdfCreatorTest {
 
     /**
      * This is a helper class that will create the list of clinical documents by calling the CdaPdfCreator methods.
-     * 
+     *
      * @param oPtPref The patient preferences object to be converted.
      * @return The CDA document that came out of the transformation.
      */
@@ -638,7 +633,7 @@ public class CdaPdfCreatorTest {
 
     /**
      * This checkes the ONExplicit object for single string containing the specified value.
-     * 
+     *
      * @param sFieldName The name of the field.
      * @param oHL7On The HL7 type being checked.
      * @param sExpectedName The expcted value.
@@ -656,7 +651,7 @@ public class CdaPdfCreatorTest {
 
     /**
      * This checkes the SCExplicit object for single string containing the specified value.
-     * 
+     *
      * @param sFieldName The name of the field.
      * @param oHL7Sc The HL7 type being checked.
      * @param sExpectedName The expcted value.
@@ -674,7 +669,7 @@ public class CdaPdfCreatorTest {
 
     /**
      * Assert that the author (scanner) contained the correct values.
-     * 
+     *
      * @param oAuthor The object containing the author information.
      */
     private void assertAuthorScanner(POCDMT000040Author oAuthor) {
@@ -744,7 +739,7 @@ public class CdaPdfCreatorTest {
 
     /**
      * Assert that the author (original) contained the correct values.
-     * 
+     *
      * @param oAuthor The object containing the author information.
      */
     private void assertAuthorOriginal(POCDMT000040Author oAuthor) {
@@ -797,7 +792,7 @@ public class CdaPdfCreatorTest {
 
     /**
      * Assert that the time interval is correct with precision only to the date.
-     * 
+     *
      * @param sFieldName The name of the field.
      * @param oTimeInterval The time interval that is being checked.
      * @param sExpectedLowValue The low date.
@@ -816,7 +811,7 @@ public class CdaPdfCreatorTest {
                     && (oJaxbElement.getName().getLocalPart().equals("low")) && (oJaxbElement.getValue() != null)
                     && (oJaxbElement.getValue() instanceof IVXBTSExplicit)) {
                 IVXBTSExplicit oHL7LowTime = (IVXBTSExplicit) oJaxbElement.getValue();
-                assertHL7DateOnly(sFieldName + ".content[].low", sExpectedLowValue, ((String) oHL7LowTime.getValue()));
+                assertHL7DateOnly(sFieldName + ".content[].low", sExpectedLowValue, oHL7LowTime.getValue());
             } // if ((oJaxbElement.getName() != null) &&
               // End Time
               // ------------
@@ -825,7 +820,7 @@ public class CdaPdfCreatorTest {
                     && (oJaxbElement.getValue() instanceof IVXBTSExplicit)) {
                 IVXBTSExplicit oHL7HighTime = (IVXBTSExplicit) oJaxbElement.getValue();
                 assertHL7DateOnly(sFieldName + ".content[].high", sExpectedHighValue,
-                        ((String) oHL7HighTime.getValue()));
+                        oHL7HighTime.getValue());
             } // else if ((oJaxbElement.getName() != null) &&
             else {
                 fail(sFieldName + ".content[] contained an unknown object type.");
@@ -836,7 +831,7 @@ public class CdaPdfCreatorTest {
 
     /**
      * Test out the Cda attribute fields: Class Code and Mood Code.
-     * 
+     *
      */
     @Test
     public void testCreateCdaAttributes() {
@@ -851,7 +846,7 @@ public class CdaPdfCreatorTest {
 
     /**
      * Tests the type ID tag to make sure that it has what was expected.
-     * 
+     *
      */
     @Test
     public void testTypeIdTag() {
@@ -864,7 +859,7 @@ public class CdaPdfCreatorTest {
 
     /**
      * Tests the templateId tag to make sure that it has what was expected.
-     * 
+     *
      */
     @Test
     public void testTemplateIdTag() {
@@ -879,7 +874,7 @@ public class CdaPdfCreatorTest {
 
     /**
      * Tests the Id tag to make sure that it has what was expected.
-     * 
+     *
      */
     @Test
     public void testIdTag() {
@@ -892,7 +887,7 @@ public class CdaPdfCreatorTest {
 
     /**
      * Tests the Code tag to make sure that it has what was expected.
-     * 
+     *
      */
     @Test
     public void testCodeTag() {
@@ -908,7 +903,7 @@ public class CdaPdfCreatorTest {
 
     /**
      * Tests the title tag to make sure that it has what was expected.
-     * 
+     *
      */
     @Test
     public void testTitleTag() {
@@ -917,7 +912,7 @@ public class CdaPdfCreatorTest {
         assertNotNull("cda.title should not have been null. ", oCda.getTitle());
         assertNotNull("cda.title.content should not have been null.  ", oCda.getTitle().getContent());
         assertEquals("cda.title.content,size incorrect: ", 1, oCda.getTitle().getContent().size());
-        assertEquals("cda.title incorrect: ", "Good Health Clinic Care Record Summary", (String) oCda.getTitle()
+        assertEquals("cda.title incorrect: ", "Good Health Clinic Care Record Summary", oCda.getTitle()
                 .getContent().get(0));
     }
 
@@ -936,7 +931,7 @@ public class CdaPdfCreatorTest {
 
     /**
      * Tests the Confidentiality Code tag to make sure that it has what was expected.
-     * 
+     *
      */
     @Test
     public void testConfidentialityCodeTag() {
@@ -953,7 +948,7 @@ public class CdaPdfCreatorTest {
 
     /**
      * Tests the language code tag to make sure that it has what was expected.
-     * 
+     *
      */
     @Test
     public void testLanguageCodeTag() {
@@ -968,7 +963,7 @@ public class CdaPdfCreatorTest {
 
     /**
      * Tests the record target tag to make sure that it has what was expected.
-     * 
+     *
      */
     @Test
     public void testRecordTargetTag() {
@@ -982,7 +977,7 @@ public class CdaPdfCreatorTest {
 
     /**
      * Tests the author tag to make sure that it has what was expected.
-     * 
+     *
      */
     @Test
     public void testAuthorTag() {
@@ -1019,7 +1014,7 @@ public class CdaPdfCreatorTest {
 
     /**
      * Tests the data enterer tag to make sure that it has what was expected.
-     * 
+     *
      */
     @Test
     public void testDataEntererTag() {
@@ -1065,7 +1060,7 @@ public class CdaPdfCreatorTest {
 
     /**
      * Tests the Custodian tag to make sure that it has what was expected.
-     * 
+     *
      */
     @Test
     public void testCustodianTag() {
@@ -1106,7 +1101,7 @@ public class CdaPdfCreatorTest {
 
     /**
      * Tests the Legal Authenticator tag to make sure that it has what was expected.
-     * 
+     *
      */
     @Test
     public void testLegalAuthenticatorTag() {
@@ -1149,7 +1144,7 @@ public class CdaPdfCreatorTest {
 
     /**
      * Tests the Documentation Of tag to make sure that it has what was expected.
-     * 
+     *
      */
     @Test
     public void testDocumentationOfTag() {
@@ -1210,7 +1205,7 @@ public class CdaPdfCreatorTest {
 
     /**
      * Tests the Component tag to make sure that it has what was expected.
-     * 
+     *
      */
     @Test
     public void testComponentTag() {

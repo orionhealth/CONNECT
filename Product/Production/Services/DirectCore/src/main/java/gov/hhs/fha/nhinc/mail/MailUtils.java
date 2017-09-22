@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -39,14 +39,15 @@ import javax.mail.Store;
 import javax.mail.Transport;
 import javax.mail.internet.MimeMessage;
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Utility methods to help with Java Mail.
  */
 public class MailUtils {
 
-    private static final Logger LOG = Logger.getLogger(MailUtils.class);
+    private static final Logger LOG = LoggerFactory.getLogger(MailUtils.class);
 
     /**
      * Folder Name for "Inbox".
@@ -150,6 +151,7 @@ public class MailUtils {
             /**
              * {@inheritDoc}
              */
+            @Override
             public PasswordAuthentication getPasswordAuthentication() {
                 return new PasswordAuthentication(user, pass);
             }

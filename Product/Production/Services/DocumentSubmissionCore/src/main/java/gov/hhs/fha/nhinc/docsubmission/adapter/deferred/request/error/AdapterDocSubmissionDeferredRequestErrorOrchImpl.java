@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,26 +32,24 @@ import gov.hhs.fha.nhinc.nhinclib.NhincConstants;
 import gov.hhs.healthit.nhin.XDRAcknowledgementType;
 import ihe.iti.xds_b._2007.ProvideAndRegisterDocumentSetRequestType;
 import ihe.iti.xds_b._2007.ProvideAndRegisterDocumentSetRequestType.Document;
-
 import java.util.List;
-
 import oasis.names.tc.ebxml_regrep.xsd.rs._3.RegistryResponseType;
-
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
- * 
+ *
  * @author Neil Webb
  */
 public class AdapterDocSubmissionDeferredRequestErrorOrchImpl {
-    private static final Logger LOG = Logger.getLogger(AdapterDocSubmissionDeferredRequestErrorOrchImpl.class);
+    private static final Logger LOG = LoggerFactory.getLogger(AdapterDocSubmissionDeferredRequestErrorOrchImpl.class);
 
     public XDRAcknowledgementType provideAndRegisterDocumentSetBRequestError(
             ProvideAndRegisterDocumentSetRequestType request, String errorMessage, AssertionType assertion) {
         LOG.trace("Begin AdapterDocSubmissionDeferredRequestErrorOrchImpl.provideAndRegisterDocumentSetBRequestError");
 
         processRequest(request);
-        
+
         // Stub until adapter component is available
         XDRAcknowledgementType ack = new XDRAcknowledgementType();
         RegistryResponseType regResp = new RegistryResponseType();
@@ -61,7 +59,7 @@ public class AdapterDocSubmissionDeferredRequestErrorOrchImpl {
         LOG.trace("End AdapterDocSubmissionDeferredRequestErrorOrchImpl.provideAndRegisterDocumentSetBRequestError");
         return ack;
     }
-    
+
     private void processRequest(ProvideAndRegisterDocumentSetRequestType request) {
         LargeFileUtils fileUtils = LargeFileUtils.getInstance();
         List<Document> docList = request.getDocument();
@@ -72,6 +70,6 @@ public class AdapterDocSubmissionDeferredRequestErrorOrchImpl {
             } catch (Exception ioe) {
                 LOG.error("Failed to close input stream", ioe);
             }
-        }      
+        }
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,26 +27,21 @@
 package gov.hhs.fha.nhinc.direct;
 
 import static gov.hhs.fha.nhinc.direct.DirectUnitTestUtil.getFileAsString;
-import static gov.hhs.fha.nhinc.direct.DirectUnitTestUtil.removeSmtpAgentConfig;
-import static gov.hhs.fha.nhinc.direct.DirectUnitTestUtil.writeSmtpAgentConfig;
-import static org.mockito.Mockito.mock;
 import gov.hhs.fha.nhinc.mail.ImapMailReceiver;
 import gov.hhs.fha.nhinc.mail.MailReceiver;
 import gov.hhs.fha.nhinc.mail.MailUtils;
 import gov.hhs.fha.nhinc.mail.MessageHandler;
-
 import java.util.Properties;
-
 import javax.mail.MessagingException;
 import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.internet.MimeMessage;
-
 import org.apache.commons.io.IOUtils;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
+import static org.mockito.Mockito.mock;
 
 /**
  * This is basically a sanity check to make sure the smtp and imap settings we use can talk to a real mail server. If
@@ -54,33 +49,31 @@ import org.junit.Test;
  */
 @Ignore
 public class DirectMailPollerGmailTest extends DirectBaseTest {
-    
+
     private final Properties props = getMailServerProps();
-        
+
     /**
      * Set up keystore for test.
      */
     @BeforeClass
     public static void setUpClass() {
-        writeSmtpAgentConfig();
     }
-    
+
     /**
      * Tear down keystore created in setup.
      */
     @AfterClass
     public static void tearDownClass() {
-        removeSmtpAgentConfig();
-    }  
-    
+    }
 
     /**
      * Prove that fetch problem for {@link MimeMessage#getRecipients(javax.mail.Message.RecipientType)} is related to
      * greenmail and not the client code.
+     *
      * @throws Exception on error.
      */
     @Test
-    public void testImapsFetchWithGmail() throws Exception {        
+    public void testImapsFetchWithGmail() throws Exception {
         MessageHandler mockHandler = mock(MessageHandler.class);
         MailReceiver mailReceiver = new ImapMailReceiver(props);
         DirectMailPoller mailPoller = new DirectMailPoller(mailReceiver, mockHandler);
@@ -90,7 +83,7 @@ public class DirectMailPollerGmailTest extends DirectBaseTest {
 
     /**
      * Sets up the properties in order to connect to the green mail test server.
-     * 
+     *
      * @param smtpPort for smtps
      * @param imapPort for imaps
      * @return Properties instance holding appropriate values for java mail.
@@ -105,12 +98,12 @@ public class DirectMailPollerGmailTest extends DirectBaseTest {
 
         props.setProperty("connect.mail.session.debug", "true");
         props.setProperty("connect.delete.unhandled.msgs", "false");
-        
+
         props.setProperty("mail.smtp.host", "smtp-01.direct.connectopensource.org");
         props.setProperty("mail.smtp.auth", "false");
         props.setProperty("mail.smtp.port", "587");
-        props.setProperty("mail.smtp.starttls.enable", "true");        
-        
+        props.setProperty("mail.smtp.starttls.enable", "true");
+
         props.setProperty("mail.imaps.host", "imap-01.direct.connectopensource.org");
         props.setProperty("mail.imaps.port", "993");
         props.setProperty("mail.imaps.connectiontimeout", DirectUnitTestUtil.TIMEOUT_CONNECTION_MILLIS);
@@ -118,13 +111,13 @@ public class DirectMailPollerGmailTest extends DirectBaseTest {
 
         return props;
     }
-    
+
     private void initiateEmail() throws MessagingException {
-       
+
         Session session = MailUtils.getMailSession(props, props.getProperty("connect.mail.user"),
-                props.getProperty("connect.mail.pass"));
+            props.getProperty("connect.mail.pass"));
         MimeMessage originalMsg = new MimeMessage(session,
-                IOUtils.toInputStream(getFileAsString("PlainOutgoingMessage.txt")));
+            IOUtils.toInputStream(getFileAsString("PlainOutgoingMessage.txt")));
         session.setDebug(true);
         session.setDebugOut(System.out);
         Transport transport = null;

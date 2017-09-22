@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,18 +26,14 @@
  */
 package gov.hhs.fha.nhinc.docsubmission._11.entity;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-
-import java.lang.reflect.Method;
-
-import org.junit.Test;
-
 import gov.hhs.fha.nhinc.aspect.OutboundMessageEvent;
 import gov.hhs.fha.nhinc.common.nhinccommonentity.RespondingGatewayProvideAndRegisterDocumentSetSecuredRequestType;
-import gov.hhs.fha.nhinc.docsubmission._11.entity.EntityDocSubmissionSecured;
 import gov.hhs.fha.nhinc.docsubmission.aspect.DocSubmissionArgTransformerBuilder;
 import gov.hhs.fha.nhinc.docsubmission.aspect.DocSubmissionBaseEventDescriptionBuilder;
+import java.lang.reflect.Method;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import org.junit.Test;
 
 /**
  * @author achidamb
@@ -47,7 +43,7 @@ public class EntityDocSubmissionSecuredTest {
     @Test
     public void hasOutboundMessageEvent() throws Exception {
         Class<EntityDocSubmissionSecured> clazz = EntityDocSubmissionSecured.class;
-        Method method = clazz.getMethod("provideAndRegisterDocumentSetB", 
+        Method method = clazz.getMethod("provideAndRegisterDocumentSetB",
                 RespondingGatewayProvideAndRegisterDocumentSetSecuredRequestType.class);
         OutboundMessageEvent annotation = method.getAnnotation(OutboundMessageEvent.class);
         assertNotNull(annotation);

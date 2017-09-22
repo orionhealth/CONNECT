@@ -1,7 +1,5 @@
-/**
- * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
- *
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services.
+/*
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -28,14 +26,17 @@
  */
 package gov.hhs.fha.nhinc.event;
 
+import org.apache.commons.lang.StringUtils;
+
 /**
  * EventDescriptionBuilder that delegates all work to the other builder. Concrete implementations should call
  * <code>setDelegate</code> during construction.
- * 
+ *
  * <p>
  * All of the build* methods are final. They each delegate to the builder passed in via setDelegate.
  */
 public abstract class DelegatingEventDescriptionBuilder implements EventDescriptionBuilder {
+
     private EventDescriptionBuilder delegate;
     private MessageRoutingAccessor msgRouting;
     private EventContextAccessor msgContext;
@@ -117,7 +118,7 @@ public abstract class DelegatingEventDescriptionBuilder implements EventDescript
 
     /**
      * For testing purposes.
-     * 
+     *
      * @return the delegate set by a previous call to <code>setDelegate</code>.
      */
     public final EventDescriptionBuilder getDelegate() {
@@ -125,8 +126,7 @@ public abstract class DelegatingEventDescriptionBuilder implements EventDescript
     }
 
     /**
-     * @param delegate
-     *            The builder to delegate to, after transforming the arguments. Must not be null.
+     * @param delegate The builder to delegate to, after transforming the arguments. Must not be null.
      */
     protected final void setDelegate(EventDescriptionBuilder delegate) {
         if (delegate == null) {
@@ -154,19 +154,28 @@ public abstract class DelegatingEventDescriptionBuilder implements EventDescript
             delegate.setMsgRouting(msgRouting);
         }
     }
-    
+
     @Override
-    public final String getServiceType(){
+    public final String getServiceType() {
         return delegate.getServiceType();
     }
-    
+
     @Override
-    public final String getInitiatorHcid(){
+    public final String getInitiatorHcid() {
         return delegate.getInitiatorHcid();
     }
-    
+
     @Override
-    public final String getRespondingHcid(){
+    public final String getRespondingHcid() {
         return delegate.getRespondingHcid();
+    }
+
+    @Override
+    public final void buildMessageId(String messageId) {
+        if (StringUtils.isNotEmpty(messageId)) {
+            delegate.buildMessageId(messageId);
+        } else {
+            delegate.buildMessageId();
+        }
     }
 }

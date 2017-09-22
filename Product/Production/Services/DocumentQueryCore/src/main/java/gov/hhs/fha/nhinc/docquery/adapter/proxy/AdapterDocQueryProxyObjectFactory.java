@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -38,6 +38,7 @@ public class AdapterDocQueryProxyObjectFactory extends ComponentProxyObjectFacto
    /**
     * @return The Spring Proxy config file to be used"
     */
+    @Override
     protected String getConfigFileName() {
         return CONFIG_FILE_NAME;
     }

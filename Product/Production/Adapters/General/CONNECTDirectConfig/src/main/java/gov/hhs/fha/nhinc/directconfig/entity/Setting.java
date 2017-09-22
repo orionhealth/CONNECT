@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2014, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -48,7 +48,6 @@
 package gov.hhs.fha.nhinc.directconfig.entity;
 
 import gov.hhs.fha.nhinc.directconfig.entity.helpers.EntityStatus;
-
 import java.util.Calendar;
 
 /**
@@ -71,7 +70,7 @@ public class Setting {
 
     /**
      * Get the name of the setting.
-     * 
+     *
      * @return the name of the setting.
      */
     public String getName() {
@@ -80,7 +79,7 @@ public class Setting {
 
     /**
      * Set the name of the setting.
-     * 
+     *
      * @param name The name of setting.
      */
     public void setName(String name) {
@@ -89,7 +88,7 @@ public class Setting {
 
     /**
      * Get the value of the setting.
-     * 
+     *
      * @return the value of the setting.
      */
     public String getValue() {
@@ -98,7 +97,7 @@ public class Setting {
 
     /**
      * Set the name of the setting.
-     * 
+     *
      * @param name The value of setting.
      */
     public void setValue(String value) {
@@ -107,7 +106,7 @@ public class Setting {
 
     /**
      * Get the value of id.
-     * 
+     *
      * @return the value of id.
      */
     public Long getId() {
@@ -116,7 +115,7 @@ public class Setting {
 
     /**
      * Set the value of id.
-     * 
+     *
      * @param id The value of id.
      */
     public void setId(Long id) {
@@ -125,7 +124,7 @@ public class Setting {
 
     /**
      * Get the value of status.
-     * 
+     *
      * @return the value of status.
      */
     public EntityStatus getStatus() {
@@ -134,7 +133,7 @@ public class Setting {
 
     /**
      * Set the value of status.
-     * 
+     *
      * @param status The value of status.
      */
     public void setStatus(EntityStatus status) {
@@ -143,7 +142,7 @@ public class Setting {
 
     /**
      * Get the value of createTime.
-     * 
+     *
      * @return the value of createTime.
      */
     public Calendar getCreateTime() {
@@ -152,7 +151,7 @@ public class Setting {
 
     /**
      * Set the value of createTime.
-     * 
+     *
      * @param timestamp The value of createTime.
      */
     public void setCreateTime(Calendar timestamp) {
@@ -161,7 +160,7 @@ public class Setting {
 
     /**
      * Get the value of updateTime.
-     * 
+     *
      * @return the value of updateTime.
      */
     public Calendar getUpdateTime() {
@@ -170,7 +169,7 @@ public class Setting {
 
     /**
      * Set the value of updateTime.
-     * 
+     *
      * @param timestamp The value of updateTime.
      */
     public void setUpdateTime(Calendar timestamp) {

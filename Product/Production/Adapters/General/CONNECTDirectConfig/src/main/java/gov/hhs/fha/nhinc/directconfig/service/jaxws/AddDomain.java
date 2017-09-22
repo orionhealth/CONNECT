@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2014, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -47,11 +47,11 @@ THE POSSIBILITY OF SUCH DAMAGE.
 
 package gov.hhs.fha.nhinc.directconfig.service.jaxws;
 
+import gov.hhs.fha.nhinc.directconfig.entity.Domain;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
-import gov.hhs.fha.nhinc.directconfig.entity.Domain;
 
 @XmlAccessorType(value = XmlAccessType.FIELD)
 @XmlType(name = "addDomain", propOrder= {"domain"})
@@ -59,9 +59,9 @@ public class AddDomain {
 
     @XmlElement(namespace = "http://nhind.org/config")
     private Domain domain;
-    
+
     /**
-     * 
+     *
      * @return
      *     returns Domain
      */
@@ -70,7 +70,7 @@ public class AddDomain {
     }
 
     /**
-     * 
+     *
      * @param domain
      *     the value for the domain property
      */

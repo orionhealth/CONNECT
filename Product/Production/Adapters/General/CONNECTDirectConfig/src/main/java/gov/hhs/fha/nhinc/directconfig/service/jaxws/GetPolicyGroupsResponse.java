@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2014, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -46,13 +46,13 @@ THE POSSIBILITY OF SUCH DAMAGE.
  */
 package gov.hhs.fha.nhinc.directconfig.service.jaxws;
 
+import gov.hhs.fha.nhinc.directconfig.entity.CertPolicyGroup;
 import java.util.Collection;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
-import gov.hhs.fha.nhinc.directconfig.entity.CertPolicyGroup;
 
 @XmlRootElement(name = "getPolicyGroupsResponse", namespace = "http://nhind.org/config")
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -63,7 +63,7 @@ public class GetPolicyGroupsResponse {
     private Collection<CertPolicyGroup> _return;
 
     /**
-     * 
+     *
      * @return
      *     returns Collection<CertPolicyGroup>
      */
@@ -72,7 +72,7 @@ public class GetPolicyGroupsResponse {
     }
 
     /**
-     * 
+     *
      * @param _return
      *     the value for the _return property
      */

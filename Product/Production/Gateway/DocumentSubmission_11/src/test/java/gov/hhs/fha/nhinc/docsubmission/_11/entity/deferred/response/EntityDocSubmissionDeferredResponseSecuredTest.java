@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,19 +26,13 @@
  */
 package gov.hhs.fha.nhinc.docsubmission._11.entity.deferred.response;
 
+import gov.hhs.fha.nhinc.aspect.OutboundMessageEvent;
+import gov.hhs.fha.nhinc.common.nhinccommonentity.RespondingGatewayProvideAndRegisterDocumentSetSecuredResponseRequestType;
+import gov.hhs.fha.nhinc.docsubmission.aspect.DocSubmissionArgTransformerBuilder;
+import java.lang.reflect.Method;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-
-import java.lang.reflect.Method;
-
 import org.junit.Test;
-
-import gov.hhs.fha.nhinc.aspect.OutboundMessageEvent;
-//CheckStyle:OFF
-import gov.hhs.fha.nhinc.common.nhinccommonentity.RespondingGatewayProvideAndRegisterDocumentSetSecuredResponseRequestType;
-//CheckStyle:ON
-import gov.hhs.fha.nhinc.docsubmission._11.entity.deferred.response.EntityDocSubmissionDeferredResponseSecured;
-import gov.hhs.fha.nhinc.docsubmission.aspect.DocSubmissionArgTransformerBuilder;
 
 /**
  * @author achidamb
@@ -48,7 +42,7 @@ public class EntityDocSubmissionDeferredResponseSecuredTest {
     @Test
     public void hasOutboundMessageEvent() throws Exception {
         Class<EntityDocSubmissionDeferredResponseSecured> clazz = EntityDocSubmissionDeferredResponseSecured.class;
-        Method method = clazz.getMethod("provideAndRegisterDocumentSetBAsyncResponse", 
+        Method method = clazz.getMethod("provideAndRegisterDocumentSetBAsyncResponse",
                 RespondingGatewayProvideAndRegisterDocumentSetSecuredResponseRequestType.class);
         OutboundMessageEvent annotation = method.getAnnotation(OutboundMessageEvent.class);
         assertNotNull(annotation);

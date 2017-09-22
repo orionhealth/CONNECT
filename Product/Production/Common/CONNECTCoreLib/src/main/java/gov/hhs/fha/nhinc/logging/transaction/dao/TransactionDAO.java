@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,25 +29,25 @@ package gov.hhs.fha.nhinc.logging.transaction.dao;
 import gov.hhs.fha.nhinc.logging.transaction.model.TransactionRepo;
 import gov.hhs.fha.nhinc.logging.transaction.persistance.HibernateUtil;
 import gov.hhs.fha.nhinc.nhinclib.NullChecker;
-
+import gov.hhs.fha.nhinc.persistence.HibernateUtilFactory;
 import java.util.List;
-
-import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * TransactionDAO provides methods to query and update the transrepo database.
- * 
+ *
  * @author jasonasmith
- * 
+ *
  */
 public class TransactionDAO {
 
-    private static final Logger LOG = Logger.getLogger(TransactionDAO.class);
+    private static final Logger LOG = LoggerFactory.getLogger(TransactionDAO.class);
     private static final TransactionDAO INSTANCE = new TransactionDAO();
 
     /**
@@ -59,7 +59,7 @@ public class TransactionDAO {
 
     /**
      * Returns the instance of the DAO according to the Singleton Pattern.
-     * 
+     *
      * @return TransactionDAO
      */
     public static TransactionDAO getInstance() {
@@ -69,11 +69,11 @@ public class TransactionDAO {
 
     /**
      * Inserts a single TransactionRepo object into the database, returns boolean on success or failure.
-     * 
+     *
      * @param transactionRepo
      * @return boolean
      */
-    public boolean insertIntoTransactionRepo(TransactionRepo transactionRepo) {
+    public boolean insertIntoTransactionRepo(final TransactionRepo transactionRepo) {
 
         LOG.debug("TransactionDAO.insertIntoTransactionRepo() - Begin");
         Session session = null;
@@ -82,7 +82,7 @@ public class TransactionDAO {
 
         if (transactionRepo != null) {
             try {
-                SessionFactory sessionFactory = HibernateUtil.getSessionFactory();
+                final SessionFactory sessionFactory = getSessionFactory();
                 session = sessionFactory.openSession();
                 tx = session.beginTransaction();
                 LOG.info("Inserting Record...");
@@ -91,12 +91,12 @@ public class TransactionDAO {
 
                 LOG.info("TransactionRepo Inserted successfully...");
                 tx.commit();
-            } catch (HibernateException e) {
+            } catch (final HibernateException e) {
                 result = false;
                 transactionRollback(tx);
                 LOG.error("Exception during insertion caused by :" + e.getMessage(), e);
             } finally {
-                closeSession(session, false);
+                closeSession(session);
             }
         }
         LOG.debug("TransactionDAO.insertIntoTransactionRepo() - End");
@@ -105,12 +105,12 @@ public class TransactionDAO {
 
     /**
      * Queries the database for a transaction record using the messageId.
-     * 
+     *
      * @param messageId
      * @return String
      */
     @SuppressWarnings("unchecked")
-    public String getTransactionId(String messageId) {
+    public String getTransactionId(final String messageId) {
         LOG.debug("TransactionDAO.getTransactinId() - Begin");
 
         if (NullChecker.isNullish(messageId)) {
@@ -122,43 +122,54 @@ public class TransactionDAO {
         Session session = null;
 
         try {
-            SessionFactory sessionFactory = HibernateUtil.getSessionFactory();
+            final SessionFactory sessionFactory = getSessionFactory();
             session = sessionFactory.openSession();
 
             if (LOG.isDebugEnabled()) {
                 LOG.info("Getting Records");
             }
-            Query namedQuery = session.getNamedQuery("findTransactionByMessageId");
+            final Query namedQuery = session.getNamedQuery("findTransactionByMessageId");
             namedQuery.setString("messageId", messageId);
 
-            List<TransactionRepo> queryList = (List<TransactionRepo>) namedQuery.list();
-            
+            final List<TransactionRepo> queryList = namedQuery.list();
+
             if (!queryList.isEmpty()) {
-            	TransactionRepo trans = queryList.get(0);
+                final TransactionRepo trans = queryList.get(0);
                 return trans.getTransactionId();
             }
-        } catch (Exception e) {
+        } catch (final Exception e) {
             LOG.error("Exception in getTransactionId() occured due to :" + e.getMessage(), e);
         } finally {
-            closeSession(session, false);
+            closeSession(session);
         }
 
         return null;
     }
 
-    private void closeSession(Session session, boolean flush) {
+    private void closeSession(final Session session) {
         if (session != null) {
-            if (flush) {
-                session.flush();
-            }
             session.close();
         }
     }
 
-    private void transactionRollback(Transaction tx) {
+    private void transactionRollback(final Transaction tx) {
         if (tx != null) {
             tx.rollback();
         }
+    }
+
+    /**
+     * Protected method that gets the SingletonHolder's sessionFactory.
+     *
+     * @return sessionFactory
+     */
+    protected static SessionFactory getSessionFactory() {
+        SessionFactory fact = null;
+        HibernateUtil util = HibernateUtilFactory.getTransactionHibernateUtil();
+        if (util != null) {
+            fact = util.getSessionFactory();
+        }
+        return fact;
     }
 
 }

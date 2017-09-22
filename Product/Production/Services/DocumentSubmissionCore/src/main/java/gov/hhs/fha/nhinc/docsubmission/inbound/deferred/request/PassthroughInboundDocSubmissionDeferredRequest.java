@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,21 +29,21 @@ package gov.hhs.fha.nhinc.docsubmission.inbound.deferred.request;
 import gov.hhs.fha.nhinc.common.nhinccommon.AssertionType;
 import gov.hhs.fha.nhinc.docsubmission.DocSubmissionUtils;
 import gov.hhs.fha.nhinc.docsubmission.MessageGeneratorUtils;
-import gov.hhs.fha.nhinc.docsubmission.XDRAuditLogger;
 import gov.hhs.fha.nhinc.docsubmission.adapter.deferred.request.proxy.AdapterDocSubmissionDeferredRequestProxyObjectFactory;
+import gov.hhs.fha.nhinc.docsubmission.audit.DocSubmissionDeferredRequestAuditLogger;
 import gov.hhs.fha.nhinc.largefile.LargePayloadException;
 import gov.hhs.healthit.nhin.XDRAcknowledgementType;
 import ihe.iti.xds_b._2007.ProvideAndRegisterDocumentSetRequestType;
-
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author akong
- * 
+ *
  */
 public class PassthroughInboundDocSubmissionDeferredRequest extends AbstractInboundDocSubmissionDeferredRequest {
 
-    private static final Logger LOG = Logger.getLogger(PassthroughInboundDocSubmissionDeferredRequest.class);
+    private static final Logger LOG = LoggerFactory.getLogger(PassthroughInboundDocSubmissionDeferredRequest.class);
 
     private MessageGeneratorUtils msgUtils = MessageGeneratorUtils.getInstance();
     private DocSubmissionUtils dsUtils;
@@ -52,35 +52,36 @@ public class PassthroughInboundDocSubmissionDeferredRequest extends AbstractInbo
      * Constructor.
      */
     public PassthroughInboundDocSubmissionDeferredRequest() {
-        this(new AdapterDocSubmissionDeferredRequestProxyObjectFactory(), new XDRAuditLogger(), DocSubmissionUtils
-                .getInstance());
+        this(new AdapterDocSubmissionDeferredRequestProxyObjectFactory(), new DocSubmissionDeferredRequestAuditLogger(),
+            DocSubmissionUtils.getInstance());
     }
 
     /**
      * Constructor with dependency injection of strategy components.
-     * 
+     *
      * @param adapterFactory
      * @param auditLogger
      * @param dsUtils
      */
     public PassthroughInboundDocSubmissionDeferredRequest(
-            AdapterDocSubmissionDeferredRequestProxyObjectFactory adapterFactory, XDRAuditLogger auditLogger,
-            DocSubmissionUtils dsUtils) {
+        AdapterDocSubmissionDeferredRequestProxyObjectFactory adapterFactory,
+        DocSubmissionDeferredRequestAuditLogger auditLogger,
+        DocSubmissionUtils dsUtils) {
         super(adapterFactory, auditLogger);
         this.dsUtils = dsUtils;
     }
 
     @Override
     XDRAcknowledgementType processDocSubmissionRequest(ProvideAndRegisterDocumentSetRequestType body,
-            AssertionType assertion) {
+        AssertionType assertion) {
 
-        XDRAcknowledgementType response = null;
+        XDRAcknowledgementType response;
 
         try {
             dsUtils.convertDataToFileLocationIfEnabled(body);
             response = sendToAdapter(body, assertion);
         } catch (LargePayloadException lpe) {
-            LOG.error("Failed to retrieve payload document.", lpe);
+            LOG.error("Failed to retrieve payload document. " + lpe.getLocalizedMessage(), lpe);
             response = msgUtils.createXDRAckWithRegistryErrorResponse();
         }
 

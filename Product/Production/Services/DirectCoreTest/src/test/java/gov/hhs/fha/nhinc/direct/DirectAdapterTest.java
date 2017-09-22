@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,18 +26,11 @@
  */
 package gov.hhs.fha.nhinc.direct;
 
+import com.google.common.collect.ImmutableList;
+import com.icegreen.greenmail.user.UserException;
 import static gov.hhs.fha.nhinc.direct.DirectUnitTestUtil.getMockDirectDocuments;
 import static gov.hhs.fha.nhinc.direct.DirectUnitTestUtil.getRecipients;
 import static gov.hhs.fha.nhinc.direct.DirectUnitTestUtil.getSender;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 import gov.hhs.fha.nhinc.direct.edge.proxy.DirectEdgeProxySmtpImpl;
 import gov.hhs.fha.nhinc.direct.event.DirectEventType;
 import gov.hhs.fha.nhinc.event.Event;
@@ -46,20 +39,26 @@ import gov.hhs.fha.nhinc.event.EventLoggerFactory;
 import gov.hhs.fha.nhinc.event.EventManager;
 import gov.hhs.fha.nhinc.event.Log4jEventLogger;
 import gov.hhs.fha.nhinc.mail.MailClientException;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.mail.Address;
 import javax.mail.Message.RecipientType;
 import javax.mail.MessagingException;
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
-
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
 import org.junit.Test;
+import static org.mockito.Matchers.any;
 import org.mockito.Mockito;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.nhindirect.gateway.smtp.MessageProcessResult;
@@ -67,15 +66,12 @@ import org.nhindirect.stagent.NHINDAddress;
 import org.nhindirect.stagent.NHINDAddressCollection;
 import org.nhindirect.stagent.mail.Message;
 
-import com.google.common.collect.ImmutableList;
-import com.icegreen.greenmail.user.UserException;
-
 /**
  * Test {@link DirectMailClient}.
  */
 public class DirectAdapterTest extends AbstractDirectMailClientTest {
 
-    private static int eventIndex = 0;    
+    private static int eventIndex = 0;
 
     /**
      * Ensure that we can read all mail server properties as strings.
@@ -97,19 +93,19 @@ public class DirectAdapterTest extends AbstractDirectMailClientTest {
     /**
      * Test {@link DirectMailClient#handleMessages(MessageHandler)} Verify that we can send and receive messages on the
      * direct mail client with one batch when the message count is less than the max batch size.
-     * 
+     *
      * @throws IOException on io error.
      * @throws MessagingException on failure.
-     * @throws MailClientException 
+     * @throws MailClientException
      */
     @Test
     public void canSendAndReceiveInOneBatch() throws IOException, MessagingException, MailClientException {
 
-        whenProcessingMessageReturnMockResult();     
+        whenProcessingMessageReturnMockResult();
         processAndSendMultipleMsgs(NUM_MSGS_ONE_BATCH);
 
         verify(mockSmtpAgent, times(NUM_MSGS_ONE_BATCH)).processMessage(any(MimeMessage.class),
-                any(NHINDAddressCollection.class), any(NHINDAddress.class));
+            any(NHINDAddressCollection.class), any(NHINDAddress.class));
 
         intMailReceiver.handleMessages(mockMessageHandler);
 
@@ -119,19 +115,19 @@ public class DirectAdapterTest extends AbstractDirectMailClientTest {
     /**
      * Test {@link DirectMailClient#handleMessages(MessageHandler)} Verify that we can send an receive messages on the
      * direct mail client with one batch when the message count is less than the max batch size.
-     * 
+     *
      * @throws IOException on io error.
      * @throws MessagingException on failure.
-     * @throws MailClientException 
+     * @throws MailClientException
      */
     @Test
     public void canSendAndReceiveMultipleMsgsInBatches() throws IOException, MessagingException, MailClientException {
-        
+
         whenProcessingMessageReturnMockResult();
         processAndSendMultipleMsgs(NUM_MSGS_MULTI_BATCH);
 
         verify(mockSmtpAgent, times(NUM_MSGS_MULTI_BATCH)).processMessage(any(MimeMessage.class),
-                any(NHINDAddressCollection.class), any(NHINDAddress.class));
+            any(NHINDAddressCollection.class), any(NHINDAddress.class));
 
         int expectedBatchCount = NUM_MSGS_MULTI_BATCH / DirectUnitTestUtil.MAX_NUM_MSGS_IN_BATCH;
         if (NUM_MSGS_MULTI_BATCH % DirectUnitTestUtil.MAX_NUM_MSGS_IN_BATCH > 0) {
@@ -157,29 +153,29 @@ public class DirectAdapterTest extends AbstractDirectMailClientTest {
     private void whenProcessingMessageReturnMockResult() throws MessagingException {
         MessageProcessResult messageProcessResult = getMockMessageProcessResult();
         when(mockSmtpAgent.processMessage(any(MimeMessage.class), any(NHINDAddressCollection.class),
-                        any(NHINDAddress.class))).thenReturn(messageProcessResult);
+            any(NHINDAddress.class))).thenReturn(messageProcessResult);
     }
-    
+
     private void processAndSendMultipleMsgs(int numberOfMsgs) {
         for (int i = 0; i < numberOfMsgs; i++) {
             testDirectSender.sendOutboundDirect(getSender(), getRecipients(), getMockDirectDocuments(),
-                    ATTACHMENT_NAME);
+                ATTACHMENT_NAME);
         }
         try {
             greenMail.waitForIncomingEmail(5000, numberOfMsgs);
-        } catch (InterruptedException e) {            
+        } catch (InterruptedException e) {
             fail("Interrupted while waiting for inbound messages." + e.getMessage());
         }
     }
-    
+
     /**
      * This test is intended to simulate the end-to-end send, receive and MDN of a direct mail send use case, with SMTP
      * edge clients on the sending and receiving side.
-     * 
+     *
      * @throws UserException when the test fails with a user exception.
      * @throws MessagingException when the test fails with a MessagingException.
-     * @throws MailClientException 
-     * @throws InterruptedException 
+     * @throws MailClientException
+     * @throws InterruptedException
      */
     private void canEndToEndWithSmtpEdgeClients(int expectedNumberOfMessages) throws UserException, MessagingException, MailClientException {
 
@@ -205,11 +201,13 @@ public class DirectAdapterTest extends AbstractDirectMailClientTest {
         handleMessages(extMailReceiver, inboundMsgHandler, 2, senderUser);
         verifyInboundMdn(expectedNumberOfMessages);
     }
+
     /**
      * Run the end to end test and also verify that the events are logged in the correct order.
+     *
      * @throws UserException on failure.
      * @throws MessagingException on failure.
-     * @throws MailClientException 
+     * @throws MailClientException
      */
     @Test
     public void canLogEventsDuringEndToEnd() throws UserException, MessagingException, MailClientException {
@@ -219,11 +217,13 @@ public class DirectAdapterTest extends AbstractDirectMailClientTest {
         eventIndex = 0;
         canLogEventsDuringEndToEnd(0);
     }
+
     /**
      * Run the end to end test and also verify that the events are logged in the correct order.
+     *
      * @throws UserException on failure.
      * @throws MessagingException on failure.
-     * @throws MailClientException 
+     * @throws MailClientException
      */
     @Test
     public void canLogEventsDuringEndToEndWithSuppressNotificationDisabled() throws UserException, MessagingException, MailClientException {
@@ -237,16 +237,17 @@ public class DirectAdapterTest extends AbstractDirectMailClientTest {
 
     /**
      * Run the end to end test and also verify that the events are logged in the correct order.
+     *
      * @throws UserException on failure.
      * @throws MessagingException on failure.
-     * @throws MailClientException 
+     * @throws MailClientException
      */
     public void canLogEventsDuringEndToEnd(int expectedNumberOfMessages) throws UserException, MessagingException, MailClientException {
-        
-        final EventLoggerFactory loggerFactory = new EventLoggerFactory(EventManager.getInstance());        
+
+        final EventLoggerFactory loggerFactory = new EventLoggerFactory(EventManager.getInstance());
         final EventLogger mockEventLogger = mock(EventLogger.class);
         final List<Event> triggeredEvents = new ArrayList<Event>();
-        
+
         // mock up the first callback to serviceB:
         doAnswer(new Answer<Void>() {
 
@@ -261,9 +262,9 @@ public class DirectAdapterTest extends AbstractDirectMailClientTest {
 
         loggerFactory.setLoggers(ImmutableList.of(mockEventLogger, new Log4jEventLogger()));
         loggerFactory.registerLoggers();
-        
+
         canEndToEndWithSmtpEdgeClients(expectedNumberOfMessages);
-        
+
         // verify that the events were fired in order.
         assertTriggered(DirectEventType.BEGIN_OUTBOUND_DIRECT, triggeredEvents);
         assertTriggered(DirectEventType.END_OUTBOUND_DIRECT, triggeredEvents);
@@ -277,52 +278,52 @@ public class DirectAdapterTest extends AbstractDirectMailClientTest {
         assertTriggered(DirectEventType.END_OUTBOUND_MDN, triggeredEvents);
 
         assertTriggered(DirectEventType.END_INBOUND_DIRECT, triggeredEvents);
-        
+
         assertTriggered(DirectEventType.BEGIN_INBOUND_MDN, triggeredEvents);
         assertTriggered(DirectEventType.END_INBOUND_MDN, triggeredEvents);
-        
+
         // extra MDN generated (Greenmail quirk)
         assertTriggered(DirectEventType.BEGIN_INBOUND_MDN, triggeredEvents);
-        assertTriggered(DirectEventType.END_INBOUND_MDN, triggeredEvents);        
+        assertTriggered(DirectEventType.END_INBOUND_MDN, triggeredEvents);
     }
-    
-    private void assertTriggered(DirectEventType eventType, List<Event> events) {        
+
+    private void assertTriggered(DirectEventType eventType, List<Event> events) {
         Event event = events.get(eventIndex);
         assertEquals("Event at index: " + eventIndex + " --> " + event.getDescription(), eventType.toString(),
-                event.getEventName());
+            event.getEventName());
         eventIndex++;
     }
-    
+
     @SuppressWarnings("unchecked")
     @Test(expected = DirectException.class)
     public void testExceptionHandlingMessagingException() throws MessagingException {
         DirectAdapter instance = new DirectAdapter(extMailSender, mockSmtpAgent, null) {
             // this abstract class has no abstract methods so...
         };
-        
+
         MimeMessage mockMessage = mock(MimeMessage.class);
         when(mockMessage.getRecipients(any(RecipientType.class))).thenReturn(getMockAddresses());
         when(mockMessage.getFrom()).thenReturn(getMockAddresses());
         when(mockSmtpAgent.processMessage(any(MimeMessage.class), any(NHINDAddressCollection.class),
-                any(NHINDAddress.class))).thenThrow(MessagingException.class);
+            any(NHINDAddress.class))).thenThrow(MessagingException.class);
         instance.process(mockMessage);
     }
-    
+
     @SuppressWarnings("unchecked")
     @Test(expected = DirectException.class)
     public void testExceptionHandlingException() throws MessagingException {
         DirectAdapter instance = new DirectAdapter(extMailSender, mockSmtpAgent, null) {
             // this abstract class has no abstract methods so...
         };
-        
+
         MimeMessage mockMessage = mock(MimeMessage.class);
         when(mockMessage.getRecipients(any(RecipientType.class))).thenReturn(getMockAddresses());
         when(mockMessage.getFrom()).thenReturn(getMockAddresses());
         when(mockSmtpAgent.processMessage(any(MimeMessage.class), any(NHINDAddressCollection.class),
-                any(NHINDAddress.class))).thenThrow(Exception.class);
+            any(NHINDAddress.class))).thenThrow(Exception.class);
         instance.process(mockMessage);
     }
-    
+
     private Address[] getMockAddresses() throws AddressException {
         Address[] addresses = new Address[1];
         addresses[0] = new InternetAddress("test@direct.example.com");

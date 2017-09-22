@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2014, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,10 +26,12 @@
  */
 package gov.hhs.fha.nhinc.callback;
 
+import gov.hhs.fha.nhinc.async.AddressingHeaderCreator;
+import gov.hhs.fha.nhinc.nhinclib.NhincConstants;
+import gov.hhs.fha.nhinc.nhinclib.NullChecker;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.Set;
-
 import javax.xml.namespace.QName;
 import javax.xml.soap.SOAPElement;
 import javax.xml.soap.SOAPException;
@@ -39,25 +41,23 @@ import javax.xml.soap.SOAPMessage;
 import javax.xml.ws.handler.MessageContext;
 import javax.xml.ws.handler.soap.SOAPHandler;
 import javax.xml.ws.handler.soap.SOAPMessageContext;
-
-import org.apache.log4j.Logger;
-
-import gov.hhs.fha.nhinc.async.AddressingHeaderCreator;
-import gov.hhs.fha.nhinc.nhinclib.NhincConstants;
-import gov.hhs.fha.nhinc.nhinclib.NullChecker;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
- * Handles various soap header values including adding mustUnderstand to action if missing and
- * adding messageId if missing and modifying it with appropriate prefix.
- * 
+ * Handles various soap header values including adding mustUnderstand to action if missing and adding messageId if
+ * missing and modifying it with appropriate prefix.
+ *
  * @author rayj / jsmith
  */
 public class SOAPHeaderHandler implements SOAPHandler<SOAPMessageContext> {
 
-    private static final Logger LOG = Logger.getLogger(SOAPHeaderHandler.class);
+    private static final Logger LOG = LoggerFactory.getLogger(SOAPHeaderHandler.class);
     private static final String MESSAGE_ID_CONTEXT = "com.sun.xml.ws.addressing.response.messageID";
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see javax.xml.ws.handler.soap.SOAPHandler#getHeaders()
      */
     @Override
@@ -66,7 +66,9 @@ public class SOAPHeaderHandler implements SOAPHandler<SOAPMessageContext> {
         return Collections.emptySet();
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see javax.xml.ws.handler.Handler#handleMessage(javax.xml.ws.handler.MessageContext)
      */
     @Override
@@ -77,7 +79,7 @@ public class SOAPHeaderHandler implements SOAPHandler<SOAPMessageContext> {
             SOAPMessage oMessage = messageContext.getMessage();
             SOAPHeader oHeader = oMessage.getSOAPHeader();
 
-            if (isOutboundMessage && (!messageContext.containsKey(MESSAGE_ID_CONTEXT))) {
+            if (isOutboundMessage && !messageContext.containsKey(MESSAGE_ID_CONTEXT)) {
                 adjustMessageId(messageContext, oHeader);
             } else {
                 LOG.debug("Will not adjust messageID on inbound request");
@@ -87,7 +89,8 @@ public class SOAPHeaderHandler implements SOAPHandler<SOAPMessageContext> {
                 addMustUnderstandAttribute(oHeader);
             }
         } catch (SOAPException e) {
-            LOG.error(e.getMessage());
+            LOG.error("Unable to handle message: {}", e.getLocalizedMessage());
+            LOG.trace("Unable to handle message: {}", e.getLocalizedMessage(), e);
         }
 
         return true;
@@ -102,7 +105,7 @@ public class SOAPHeaderHandler implements SOAPHandler<SOAPMessageContext> {
      */
     private void adjustMessageId(SOAPMessageContext messageContext, SOAPHeader oHeader) throws SOAPException {
         // Override the Message Id field
-        String messageId = null;
+        String messageId;
         messageId = (String) messageContext.get(MESSAGE_ID_CONTEXT);
         if (NullChecker.isNullish(messageId)) {
             messageId = generateMessageId();
@@ -119,7 +122,7 @@ public class SOAPHeaderHandler implements SOAPHandler<SOAPMessageContext> {
             oMessageIdElem.setTextContent(messageId);
         } else {
             SOAPFactory soapFactory = SOAPFactory.newInstance();
-            oMessageIdElem = soapFactory.createElement(NhincConstants.WS_SOAP_HEADER_MESSAGE_ID, "", 
+            oMessageIdElem = soapFactory.createElement(NhincConstants.WS_SOAP_HEADER_MESSAGE_ID, "",
                     NhincConstants.WS_ADDRESSING_URL);
             oMessageIdElem.setTextContent(messageId);
 
@@ -135,8 +138,7 @@ public class SOAPHeaderHandler implements SOAPHandler<SOAPMessageContext> {
      * @param header The header object from the message
      * @param name The local name of the element being searched for
      * @param ns The namespace of the object being searched for
-     * @return The first instance that matches the localname and namespace or
-     * return null
+     * @return The first instance that matches the localname and namespace or return null
      */
     private SOAPElement getFirstChild(SOAPHeader header, String name, String ns) {
         SOAPElement result = null;
@@ -176,9 +178,10 @@ public class SOAPHeaderHandler implements SOAPHandler<SOAPMessageContext> {
     /**
      * Method handles a fault if one occurs
      *
-     * @param context
+     * @param messageContext
      * @return
      */
+    @Override
     public boolean handleFault(SOAPMessageContext messageContext) {
         LOG.warn("SoapHeaderHandler.handleFault");
 
@@ -191,7 +194,8 @@ public class SOAPHeaderHandler implements SOAPHandler<SOAPMessageContext> {
                 addMustUnderstandAttribute(oHeader);
             }
         } catch (SOAPException ex) {
-            LOG.warn("Exception adding mustunderstand to fault: " + ex.getMessage());
+            LOG.warn("Exception adding mustunderstand to fault: {}", ex.getLocalizedMessage());
+            LOG.trace("Exception adding mustunderstand to fault: {}", ex.getLocalizedMessage(), ex);
         }
 
         return true;
@@ -201,6 +205,7 @@ public class SOAPHeaderHandler implements SOAPHandler<SOAPMessageContext> {
      *
      * @param context
      */
+    @Override
     public void close(MessageContext context) {
         LOG.debug("SoapHeaderHandler.close");
     }
@@ -210,11 +215,11 @@ public class SOAPHeaderHandler implements SOAPHandler<SOAPMessageContext> {
     }
 
     private void addMustUnderstandAttribute(SOAPHeader oHeader) throws SOAPException {
-        SOAPElement action = getFirstChild(oHeader, NhincConstants.WS_SOAP_HEADER_ACTION, 
+        SOAPElement action = getFirstChild(oHeader, NhincConstants.WS_SOAP_HEADER_ACTION,
                 NhincConstants.WS_ADDRESSING_URL);
-        
+
         if (action != null && !action.hasAttribute(NhincConstants.WS_SOAP_ATTR_MUSTUNDERSTAND)) {
-            QName mustUnderstandQ = new QName(NhincConstants.WS_SOAP_ENV_URL, 
+            QName mustUnderstandQ = new QName(NhincConstants.WS_SOAP_ENV_URL,
                     NhincConstants.WS_SOAP_ATTR_MUSTUNDERSTAND, NhincConstants.WS_SOAP_ENV_PREFIX);
             action.addAttribute(mustUnderstandQ, Boolean.TRUE.toString());
         }

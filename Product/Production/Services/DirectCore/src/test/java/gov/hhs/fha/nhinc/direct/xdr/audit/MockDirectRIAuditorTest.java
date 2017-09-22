@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,20 +26,18 @@
  */
 package gov.hhs.fha.nhinc.direct.xdr.audit;
 
+import java.util.Collection;
+import org.junit.Test;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
-
-import java.util.Collection;
-
-import org.junit.Test;
 import org.nhindirect.common.audit.AuditEvent;
 import org.nhindirect.common.audit.Auditor;
 
 /**
  * @author mweaver
- * 
+ *
  */
 public class MockDirectRIAuditorTest extends DirectRIAuditorTest {
 
@@ -61,6 +59,7 @@ public class MockDirectRIAuditorTest extends DirectRIAuditorTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
+    @Override
     public void testWithAllNulls() {
         DirectRIAuditor auditor = getDirectRIAuditor();
         auditor.audit(null, null, null, null);

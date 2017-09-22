@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,20 +32,18 @@ import gov.hhs.fha.nhinc.nhinclib.NhincConstants;
 import gov.hhs.fha.nhinc.nhinclib.NullChecker;
 import gov.hhs.fha.nhinc.properties.PropertyAccessor;
 import gov.hhs.fha.nhinc.util.format.PatientIdFormatUtil;
-
 import java.util.List;
-
 import oasis.names.tc.ebxml_regrep.xsd.rim._3.SlotType1;
-
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
- * 
+ *
  * @author jhoppesc
  */
 public class StandardOutboundDocQueryHelper {
 
-    private static final Logger LOG = Logger.getLogger(StandardOutboundDocQueryHelper.class);
+    private static final Logger LOG = LoggerFactory.getLogger(StandardOutboundDocQueryHelper.class);
     private ConnectionManagerCommunityMapping connectionManagerCommunityMapping;
     private String sHomeCommunity;
 
@@ -56,13 +54,14 @@ public class StandardOutboundDocQueryHelper {
         connectionManagerCommunityMapping = new ConnectionManagerCommunityMapping();
         try {
             this.sHomeCommunity = PropertyAccessor.getInstance().getProperty(NhincConstants.GATEWAY_PROPERTY_FILE,
-                    NhincConstants.HOME_COMMUNITY_ID_PROPERTY);
+                NhincConstants.HOME_COMMUNITY_ID_PROPERTY);
         } catch (Exception ex) {
-            LOG.error(ex.getMessage());
+            LOG.error("Error getting HCID: {}", ex.getLocalizedMessage(), ex);
         }
     }
 
     /**
+     * @param hcid
      * @param connectionManagerCommunityMapping
      */
     public StandardOutboundDocQueryHelper(String hcid, ConnectionManagerCommunityMapping connectionManagerCommunityMapping) {
@@ -72,14 +71,13 @@ public class StandardOutboundDocQueryHelper {
 
     /**
      * Return target communities to send DocQuery request.
-     * 
+     *
      * @param sAssigningAuthorityId Target AssigningAuthorityId.
      * @param sLocalAssigningAuthorityId AA Id of requesting Gateway.
-     * @param sLocalHomeCommunity communityId of requesting Gateway.
      * @return targetCommunity where request needs to be targeted.
      */
     public HomeCommunityType lookupHomeCommunityId(String sAssigningAuthorityId, String sLocalAssigningAuthorityId) {
-        HomeCommunityType targetCommunity = null;
+        HomeCommunityType targetCommunity;
         if ((sAssigningAuthorityId != null) && (sAssigningAuthorityId.equals(sLocalAssigningAuthorityId))) {
             /*
              * If the target is the local home community, the local assigning authority may not be mapped to the local
@@ -88,17 +86,17 @@ public class StandardOutboundDocQueryHelper {
             targetCommunity = new HomeCommunityType();
             targetCommunity.setHomeCommunityId(sHomeCommunity);
             LOG.debug("Assigning authority was for the local home community. "
-                    + "Set target to manual local home community id");
+                + "Set target to manual local home community id");
         } else {
             targetCommunity = connectionManagerCommunityMapping
-                    .getHomeCommunityByAssigningAuthority(sAssigningAuthorityId);
+                .getHomeCommunityByAssigningAuthority(sAssigningAuthorityId);
         }
         return targetCommunity;
     }
 
     /**
      * Returns Local AssigningAuthorityId.
-     * 
+     *
      * @param slotList slotList extracted from AdhocQuery Request message.
      * @return AssigingAuthorityId of local HomeCommunity.
      */
@@ -109,9 +107,9 @@ public class StandardOutboundDocQueryHelper {
         for (SlotType1 slot : slotList) {
             if (slot.getName().equalsIgnoreCase(NhincConstants.DOC_QUERY_XDS_PATIENT_ID_SLOT_NAME)) {
                 if (slot.getValueList() != null && NullChecker.isNotNullish(slot.getValueList().getValue())
-                        && NullChecker.isNotNullish(slot.getValueList().getValue().get(0))) {
+                    && NullChecker.isNotNullish(slot.getValueList().getValue().get(0))) {
                     localAssigningAuthorityId = PatientIdFormatUtil.parseCommunityId(slot.getValueList().getValue()
-                            .get(0));
+                        .get(0));
                 }
                 break;
             }
@@ -122,7 +120,7 @@ public class StandardOutboundDocQueryHelper {
 
     /**
      * This method returns uniquePatientId from slot list.
-     * 
+     *
      * @param slotList The slotList from AdhocQuery Request message.
      * @return uniquePatientId extracted form slotList.
      */
@@ -133,9 +131,9 @@ public class StandardOutboundDocQueryHelper {
         for (SlotType1 slot : slotList) {
             if (NhincConstants.DOC_QUERY_XDS_PATIENT_ID_SLOT_NAME.equalsIgnoreCase(slot.getName())) {
                 if (slot.getValueList() != null && NullChecker.isNotNullish(slot.getValueList().getValue())
-                        && NullChecker.isNotNullish(slot.getValueList().getValue().get(0))) {
-                    uniquePatientId = PatientIdFormatUtil.parsePatientId(slot.getValueList().getValue()
-                            .get(0));
+                    && NullChecker.isNotNullish(slot.getValueList().getValue().get(0))) {
+
+                    uniquePatientId = PatientIdFormatUtil.parsePatientId(slot.getValueList().getValue().get(0));
                 }
                 break;
             }
@@ -143,7 +141,7 @@ public class StandardOutboundDocQueryHelper {
 
         return uniquePatientId;
     }
- 
+
     /**
      * @param slotList The slotList from AdhocQueryRequest message.
      * @return true if patientId slot id present or false if not present.

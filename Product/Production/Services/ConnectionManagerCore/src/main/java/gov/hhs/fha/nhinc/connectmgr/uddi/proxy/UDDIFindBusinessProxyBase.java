@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,12 +26,6 @@
  */
 package gov.hhs.fha.nhinc.connectmgr.uddi.proxy;
 
-import org.apache.log4j.Logger;
-
-import org.uddi.api_v3.BusinessDetail;
-import org.uddi.api_v3.BusinessList;
-import org.uddi.api_v3.GetBusinessDetail;
-
 import gov.hhs.fha.nhinc.common.nhinccommon.AssertionType;
 import gov.hhs.fha.nhinc.messaging.client.CONNECTClient;
 import gov.hhs.fha.nhinc.messaging.client.UDDIBaseClient;
@@ -41,6 +35,11 @@ import gov.hhs.fha.nhinc.nhinclib.NhincConstants;
 import gov.hhs.fha.nhinc.nhinclib.NullChecker;
 import gov.hhs.fha.nhinc.properties.PropertyAccessException;
 import gov.hhs.fha.nhinc.properties.PropertyAccessor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.uddi.api_v3.BusinessDetail;
+import org.uddi.api_v3.BusinessList;
+import org.uddi.api_v3.GetBusinessDetail;
 
 /**
  *
@@ -48,7 +47,7 @@ import gov.hhs.fha.nhinc.properties.PropertyAccessor;
  */
 public abstract class UDDIFindBusinessProxyBase implements UDDIFindBusinessProxy {
 
-    private static final Logger LOG = Logger.getLogger(UDDIFindBusinessProxyBase.class);
+    private static final Logger LOG = LoggerFactory.getLogger(UDDIFindBusinessProxyBase.class);
 
     // URL for the UDDI Server.
     protected String uddiInquiryUrl = "";
@@ -68,7 +67,7 @@ public abstract class UDDIFindBusinessProxyBase implements UDDIFindBusinessProxy
     @Override
     public BusinessDetail getBusinessDetail(GetBusinessDetail searchParams) throws UDDIFindBusinessException {
 
-        BusinessDetail businessDetail = null;
+        BusinessDetail businessDetail;
         try {
             loadProperties();
             ServicePortDescriptor<UDDIInquiryPortType> portDescriptor = new UDDIFindBusinessProxyServicePortDescriptor();
@@ -108,14 +107,14 @@ public abstract class UDDIFindBusinessProxyBase implements UDDIFindBusinessProxy
     protected CONNECTClient<UDDIInquiryPortType> getCONNECTClientUnsecured(
         ServicePortDescriptor<UDDIInquiryPortType> portDescriptor, String url, AssertionType assertion) {
 
-        return new UDDIBaseClient<UDDIInquiryPortType>(portDescriptor, url);
+        return new UDDIBaseClient<>(portDescriptor, url);
     }
-    
+
     protected int getMaxResults(){
         int maxResults; //default value
         try {
-            String resultEntry = 
-                PropertyAccessor.getInstance(NhincConstants.GATEWAY_PROPERTY_FILE).getProperty(NhincConstants.MAX_UDDI_RESULTS_PROPERTY);
+            String resultEntry =
+                PropertyAccessor.getInstance().getProperty(NhincConstants.GATEWAY_PROPERTY_FILE, NhincConstants.MAX_UDDI_RESULTS_PROPERTY);
             if(NullChecker.isNotNullish(resultEntry)){
                 maxResults = Integer.parseInt(resultEntry);
             }else {

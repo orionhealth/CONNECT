@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -34,14 +34,15 @@ import javax.mail.MessagingException;
 import javax.mail.NoSuchProviderException;
 import javax.mail.Store;
 import javax.mail.internet.MimeMessage;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Uses Imap to receive Javamail messages.
  */
 public class ImapMailReceiver extends AbstractMailClient implements MailReceiver {
 
-    private static final Logger LOG = Logger.getLogger(ImapMailReceiver.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ImapMailReceiver.class);
 
     private static final int IMAP_MSG_INDEX_START = 1;
     private static final String DEF_NUM_MSGS_TO_HANDLE = "25";
@@ -58,8 +59,8 @@ public class ImapMailReceiver extends AbstractMailClient implements MailReceiver
     public ImapMailReceiver(Properties mailServerProps) {
         super(mailServerProps);
         deleteUnhandledMsgs = Boolean.parseBoolean(mailServerProps.getProperty("connect.delete.unhandled.msgs"));
-        maxNumberOfMsgsToHandle = Integer.parseInt(mailServerProps.getProperty("connect.max.msgs.in.batch",
-                DEF_NUM_MSGS_TO_HANDLE));
+        maxNumberOfMsgsToHandle = Integer
+                .parseInt(mailServerProps.getProperty("connect.max.msgs.in.batch", DEF_NUM_MSGS_TO_HANDLE));
         imapHost = mailServerProps.getProperty("mail.imaps.host");
     }
 
@@ -73,7 +74,7 @@ public class ImapMailReceiver extends AbstractMailClient implements MailReceiver
         handlerInvocations++;
 
         if (LOG.isDebugEnabled()) {
-            LOG.debug("handleMessages() invoked, (" + this.hashCode() + " : " + Thread.currentThread().getId() + "), ["
+            LOG.debug("handleMessages() invoked, (" + hashCode() + " : " + Thread.currentThread().getId() + "), ["
                     + imapHost + "], handler: " + handler.getClass().getName() + ", invocation count: "
                     + handlerInvocations);
         } else {
@@ -93,7 +94,7 @@ public class ImapMailReceiver extends AbstractMailClient implements MailReceiver
 
         MailUtils.closeQuietly(store, inbox, MailUtils.FOLDER_EXPUNGE_INBOX_TRUE);
         LOG.info("Call the message monitoring check here");
-        //call the message monitoring service
+        // call the message monitoring service
         handleMessageMonitoring();
 
         return numberOfMsgsHandled;
@@ -131,7 +132,7 @@ public class ImapMailReceiver extends AbstractMailClient implements MailReceiver
     }
 
     private Message[] getMessages(Store store, Folder inbox) throws MailClientException {
-        Message[] messages = null;
+        Message[] messages;
         try {
             messages = inbox.getMessages(IMAP_MSG_INDEX_START, getNumberOfMsgsToHandle(inbox));
         } catch (MessagingException e) {
@@ -147,14 +148,15 @@ public class ImapMailReceiver extends AbstractMailClient implements MailReceiver
     }
 
     protected Folder getInbox(Store store) throws MailClientException {
-        Folder inbox = null;
+        Folder inbox;
         try {
             store.connect();
             inbox = store.getFolder(MailUtils.FOLDER_NAME_INBOX);
             inbox.open(Folder.READ_WRITE);
         } catch (MessagingException e) {
             MailUtils.closeQuietly(store);
-            throw new MailClientException("Could not retrieve opened folder: " + MailUtils.FOLDER_NAME_INBOX + " for READ_WRITE", e);
+            throw new MailClientException(
+                    "Could not retrieve opened folder: " + MailUtils.FOLDER_NAME_INBOX + " for READ_WRITE", e);
         }
         return inbox;
     }
@@ -167,7 +169,7 @@ public class ImapMailReceiver extends AbstractMailClient implements MailReceiver
         }
     }
 
-    protected void handleMessageMonitoring(){
+    protected void handleMessageMonitoring() {
         MessageMonitoringAPI.getInstance().process();
     }
 }

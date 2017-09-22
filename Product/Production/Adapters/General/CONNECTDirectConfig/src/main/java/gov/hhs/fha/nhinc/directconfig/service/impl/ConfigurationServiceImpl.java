@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2014, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -96,14 +96,11 @@ import gov.hhs.fha.nhinc.directconfig.service.jaxws.SetAnchorStatusForOwner;
 import gov.hhs.fha.nhinc.directconfig.service.jaxws.SetAnchorStatusForOwnerResponse;
 import gov.hhs.fha.nhinc.directconfig.service.jaxws.UpdateDomain;
 import gov.hhs.fha.nhinc.directconfig.service.jaxws.UpdateDomainResponse;
-
 import java.util.Calendar;
 import java.util.Collection;
-
 import javax.annotation.PostConstruct;
 import javax.jws.WebService;
 import javax.xml.ws.FaultAction;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nhindirect.policy.PolicyLexicon;

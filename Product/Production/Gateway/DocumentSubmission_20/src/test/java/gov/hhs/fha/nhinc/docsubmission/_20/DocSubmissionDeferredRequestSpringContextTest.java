@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,8 +26,6 @@
  */
 package gov.hhs.fha.nhinc.docsubmission._20;
 
-import static org.junit.Assert.assertNotNull;
-import ihe.iti.xds_b._2007.ProvideAndRegisterDocumentSetRequestType;
 import gov.hhs.fha.nhinc.common.nhinccommonentity.RespondingGatewayProvideAndRegisterDocumentSetRequestType;
 import gov.hhs.fha.nhinc.common.nhinccommonentity.RespondingGatewayProvideAndRegisterDocumentSetSecuredRequestType;
 import gov.hhs.fha.nhinc.docsubmission._20.entity.deferred.request.EntityDocSubmissionDeferredRequestSecured_g1;
@@ -38,9 +36,9 @@ import gov.hhs.fha.nhinc.docsubmission.inbound.deferred.request.StandardInboundD
 import gov.hhs.fha.nhinc.docsubmission.outbound.deferred.request.PassthroughOutboundDocSubmissionDeferredRequest;
 import gov.hhs.fha.nhinc.docsubmission.outbound.deferred.request.StandardOutboundDocSubmissionDeferredRequest;
 import gov.hhs.healthit.nhin.XDRAcknowledgementType;
-
+import ihe.iti.xds_b._2007.ProvideAndRegisterDocumentSetRequestType;
 import oasis.names.tc.ebxml_regrep.xsd.rs._3.RegistryResponseType;
-
+import static org.junit.Assert.assertNotNull;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,7 +47,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 /**
  * @author akong
- * 
+ *
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = { "/docsubmission/_20/applicationContext.xml" })
@@ -63,19 +61,19 @@ public class DocSubmissionDeferredRequestSpringContextTest {
 
     @Autowired
     EntityDocSubmissionDeferredRequestSecured_g1 outboundDocSubmissionRequestSecuredEndpoint;
-    
+
     @Autowired
     StandardOutboundDocSubmissionDeferredRequest stdOutboundDocSubmissionDeferredRequest;
-    
+
     @Autowired
     PassthroughOutboundDocSubmissionDeferredRequest ptOutboundDocSubmissionDeferredRequest;
-    
+
     @Autowired
     StandardInboundDocSubmissionDeferredRequest stdInboundDocSubmissionDeferredRequest;
-    
+
     @Autowired
     PassthroughInboundDocSubmissionDeferredRequest ptInbounDocSubmissionDeferredRequest;
-    
+
 
     @Test
     public void inbound() {
@@ -83,7 +81,7 @@ public class DocSubmissionDeferredRequestSpringContextTest {
 
         ProvideAndRegisterDocumentSetRequestType request = new ProvideAndRegisterDocumentSetRequestType();
         RegistryResponseType response = inboundDocSubmissionRequestEndpoint.provideAndRegisterDocumentSetBDeferredRequest(request);
-                
+
         assertNotNull(response);
     }
 

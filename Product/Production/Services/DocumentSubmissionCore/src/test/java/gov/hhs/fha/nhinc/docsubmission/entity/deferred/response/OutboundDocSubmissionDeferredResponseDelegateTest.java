@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,17 +27,6 @@
 
 package gov.hhs.fha.nhinc.docsubmission.entity.deferred.response;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import oasis.names.tc.ebxml_regrep.xsd.rs._3.RegistryResponseType;
-
-import org.jmock.Expectations;
-import org.jmock.Mockery;
-import org.jmock.integration.junit4.JUnit4Mockery;
-import org.jmock.lib.legacy.ClassImposteriser;
-import org.junit.Test;
-
 import gov.hhs.fha.nhinc.common.nhinccommon.HomeCommunityType;
 import gov.hhs.fha.nhinc.common.nhinccommon.NhinTargetSystemType;
 import gov.hhs.fha.nhinc.docsubmission.orchestration.OrchestrationContextFactory;
@@ -46,6 +35,15 @@ import gov.hhs.fha.nhinc.orchestration.Orchestratable;
 import gov.hhs.fha.nhinc.orchestration.OrchestrationContext;
 import gov.hhs.fha.nhinc.orchestration.OutboundOrchestratable;
 import gov.hhs.healthit.nhin.XDRAcknowledgementType;
+import oasis.names.tc.ebxml_regrep.xsd.rs._3.RegistryResponseType;
+import org.jmock.Expectations;
+import org.jmock.Mockery;
+import org.jmock.integration.junit4.JUnit4Mockery;
+import org.jmock.lib.legacy.ClassImposteriser;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import org.junit.Test;
 
 /**
  * @author akong
@@ -160,7 +158,7 @@ public class OutboundDocSubmissionDeferredResponseDelegateTest {
     private void setMockContextFactoryToReturnG0() {
         context.checking(new Expectations() {
             {
-                oneOf(mockContextFactory).getBuilder(with(any(HomeCommunityType.class)),
+                oneOf(mockContextFactory).getBuilder(with(any(NhinTargetSystemType.class)),
                         with(equal(NhincConstants.NHIN_SERVICE_NAMES.DOCUMENT_SUBMISSION_DEFERRED_RESPONSE)));
                 will(returnValue(createOutboundDocSubmissionDeferredResponseOrchestrationContextBuilder_g0()));
             }
@@ -186,7 +184,7 @@ public class OutboundDocSubmissionDeferredResponseDelegateTest {
     private void setMockContextFactoryToReturnG1() {
         context.checking(new Expectations() {
             {
-                oneOf(mockContextFactory).getBuilder(with(any(HomeCommunityType.class)),
+                oneOf(mockContextFactory).getBuilder(with(any(NhinTargetSystemType.class)),
                         with(equal(NhincConstants.NHIN_SERVICE_NAMES.DOCUMENT_SUBMISSION_DEFERRED_RESPONSE)));
                 will(returnValue(createOutboundDocSubmissionDeferredResponseOrchestrationContextBuilder_g1()));
             }
@@ -212,7 +210,7 @@ public class OutboundDocSubmissionDeferredResponseDelegateTest {
     private void setMockContextFactoryToReturnNull() {
         context.checking(new Expectations() {
             {
-                oneOf(mockContextFactory).getBuilder(with(any(HomeCommunityType.class)),
+                oneOf(mockContextFactory).getBuilder(with(any(NhinTargetSystemType.class)),
                         with(equal(NhincConstants.NHIN_SERVICE_NAMES.DOCUMENT_SUBMISSION_DEFERRED_RESPONSE)));
                 will(returnValue(null));
             }

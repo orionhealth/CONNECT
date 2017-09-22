@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!DOCTYPE hibernate-mapping SYSTEM "classpath://org/hibernate/hibernate-configuration-3.0.dtd">
 <!--
     Document   : event.hbm.xml
     Created on : October 3, 2012
@@ -8,17 +8,17 @@
         Hibernate mapping file for event logging in the database.
 -->
 <hibernate-mapping>
-  <class name="gov.hhs.fha.nhinc.event.model.DatabaseEvent" table="event">
-    <id name="id">
-      <generator class="native"/>
-    </id>
-    <property column="name" name="eventName"/>
-    <property column="description" name="description"/>
-    <property column="messageId" name="messageID"/>
-    <property column="transactionId" name="transactionID"/>
-    <property column="serviceType" name="serviceType"/>
-    <property column="initiatingHcid" name="initiatorHcid"/>
-    <property column="respondingHcids" name="respondingHcid"/>
-    <property column="eventTime" name="eventTime"/>
-  </class>
+    <class name="gov.hhs.fha.nhinc.event.model.DatabaseEvent" table="event">
+        <id name="id">
+            <generator class="native"/>
+        </id>
+        <property column="name" name="eventName"/>
+        <property column="description" name="description"/>
+        <property column="messageId" name="messageID"/>
+        <property column="transactionId" name="transactionID"/>
+        <property column="serviceType" name="serviceType"/>
+        <property column="initiatingHcid" name="initiatorHcid"/>
+        <property column="respondingHcids" name="respondingHcid"/>
+        <property column="eventTime" name="eventTime"/>
+    </class>
 </hibernate-mapping>

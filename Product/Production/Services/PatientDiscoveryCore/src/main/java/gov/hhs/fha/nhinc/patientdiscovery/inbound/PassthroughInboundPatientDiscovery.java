@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,23 +27,21 @@
 package gov.hhs.fha.nhinc.patientdiscovery.inbound;
 
 import gov.hhs.fha.nhinc.common.nhinccommon.AssertionType;
-import gov.hhs.fha.nhinc.patientdiscovery.PatientDiscoveryAuditLogger;
-import gov.hhs.fha.nhinc.patientdiscovery.PatientDiscoveryAuditor;
 import gov.hhs.fha.nhinc.patientdiscovery.PatientDiscoveryException;
-import gov.hhs.fha.nhinc.patientdiscovery.adapter.proxy.AdapterPatientDiscoveryProxy;
 import gov.hhs.fha.nhinc.patientdiscovery.adapter.proxy.AdapterPatientDiscoveryProxyObjectFactory;
-
+import gov.hhs.fha.nhinc.patientdiscovery.audit.PatientDiscoveryAuditLogger;
+import java.util.Properties;
 import org.hl7.v3.PRPAIN201305UV02;
 import org.hl7.v3.PRPAIN201306UV02;
 
 /**
  * @author akong
- * 
+ *
  */
 public class PassthroughInboundPatientDiscovery extends AbstractInboundPatientDiscovery {
 
     private final AdapterPatientDiscoveryProxyObjectFactory adapterFactory;
-    private final PatientDiscoveryAuditor auditLogger;
+    private final PatientDiscoveryAuditLogger auditLogger;
 
     /**
      * Constructor.
@@ -55,37 +53,37 @@ public class PassthroughInboundPatientDiscovery extends AbstractInboundPatientDi
 
     /**
      * Constructor.
-     * 
+     *
      * @param adapterFactory
      * @param auditLogger
      */
     public PassthroughInboundPatientDiscovery(AdapterPatientDiscoveryProxyObjectFactory adapterFactory,
-            PatientDiscoveryAuditor auditLogger) {
+        PatientDiscoveryAuditLogger auditLogger) {
         this.adapterFactory = adapterFactory;
         this.auditLogger = auditLogger;
     }
 
     @Override
-    PRPAIN201306UV02 process(PRPAIN201305UV02 body, AssertionType assertion) throws PatientDiscoveryException {
-        PRPAIN201306UV02 response = sendToAdapter(body, assertion);
+    PRPAIN201306UV02 process(PRPAIN201305UV02 body, AssertionType assertion, Properties webContextProperties) 
+        throws PatientDiscoveryException {
 
-        return response;
+        return sendToAdapter(body, assertion);
     }
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see gov.hhs.fha.nhinc.patientdiscovery.inbound.AbstractInboundPatientDiscovery#getAuditLogger()
      */
     @Override
-    PatientDiscoveryAuditor getAuditLogger() {
+    PatientDiscoveryAuditLogger getAuditLogger() {
         return auditLogger;
     }
 
     private PRPAIN201306UV02 sendToAdapter(PRPAIN201305UV02 request, AssertionType assertion)
-            throws PatientDiscoveryException {
-        AdapterPatientDiscoveryProxy proxy = adapterFactory.create();
-        return proxy.respondingGatewayPRPAIN201305UV02(request, assertion);
-    }
+        throws PatientDiscoveryException {
 
+        return adapterFactory.create().respondingGatewayPRPAIN201305UV02(request, assertion);
+    }
 }
+

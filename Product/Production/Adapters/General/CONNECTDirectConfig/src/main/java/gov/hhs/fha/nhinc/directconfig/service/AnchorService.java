@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2014, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -67,7 +67,6 @@ import gov.hhs.fha.nhinc.directconfig.service.jaxws.RemoveAnchorsForOwnerRespons
 import gov.hhs.fha.nhinc.directconfig.service.jaxws.RemoveAnchorsResponse;
 import gov.hhs.fha.nhinc.directconfig.service.jaxws.SetAnchorStatusForOwner;
 import gov.hhs.fha.nhinc.directconfig.service.jaxws.SetAnchorStatusForOwnerResponse;
-
 import javax.jws.WebMethod;
 import javax.jws.WebParam;
 import javax.jws.WebResult;

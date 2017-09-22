@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-13, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,31 +30,29 @@ import gov.hhs.fha.nhinc.messaging.service.BaseServiceEndpoint;
 import gov.hhs.fha.nhinc.messaging.service.ServiceEndpoint;
 import gov.hhs.fha.nhinc.messaging.service.decorator.cxf.TLSClientServiceEndpointDecorator;
 import gov.hhs.fha.nhinc.messaging.service.decorator.cxf.WsSecurityServiceEndpointDecorator;
-
 import java.util.HashMap;
 import java.util.Map;
-
-import org.apache.cxf.jaxws.JaxWsProxyFactoryBean;
-import org.apache.cxf.ws.addressing.WSAddressingFeature;
 
 /**
  * @author akong
  *
  */
 public class CachingCXFSecuredServicePortBuilder<T> extends CachingCXFWSAServicePortBuilder<T> {
-    
-    private static Map<Class<?>, Object> CACHED_PORTS = new HashMap<Class<?>, Object>();
-    
+
+    private static Map<Class<?>, Object> CACHED_PORTS = new HashMap<>();
+
     /**
      * Constructor.
-     * 
+     *
      * @param portDescriptor
      */
     public CachingCXFSecuredServicePortBuilder(ServicePortDescriptor<T> portDescriptor) {
         super(portDescriptor);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see gov.hhs.fha.nhinc.messaging.service.port.CachingCXFServicePortBuilder#getCache()
      */
     @Override
@@ -62,16 +60,18 @@ public class CachingCXFSecuredServicePortBuilder<T> extends CachingCXFWSAService
         return CACHED_PORTS;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see gov.hhs.fha.nhinc.messaging.service.port.CachingCXFServicePortBuilder#configurePort(java.lang.Object)
      */
     @Override
     protected void configurePort(T port) {
         super.configurePort(port);
-        
-        ServiceEndpoint<T> serviceEndpoint = new BaseServiceEndpoint<T>(port);
-        serviceEndpoint = new TLSClientServiceEndpointDecorator<T>(serviceEndpoint);
-        serviceEndpoint = new WsSecurityServiceEndpointDecorator<T>(serviceEndpoint);
+
+        ServiceEndpoint<T> serviceEndpoint = new BaseServiceEndpoint<>(port);
+        serviceEndpoint = new TLSClientServiceEndpointDecorator<>(serviceEndpoint);
+        serviceEndpoint = new WsSecurityServiceEndpointDecorator<>(serviceEndpoint);
         serviceEndpoint.configure();
     }
 }

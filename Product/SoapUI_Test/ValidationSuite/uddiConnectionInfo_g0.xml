@@ -20,7 +20,6 @@
                     <keyedReference tModelKey="uddi:nhin:standard-servicenames" keyName="QueryForDocuments" keyValue="QueryForDocuments"/>
                 </categoryBag>
             </businessService>
- 
 
             <!--  Retrieve Documents  -->
 
@@ -39,52 +38,7 @@
                 </categoryBag>
             </businessService>
 
-            <!--  HIEM  -->
-
-            <businessService serviceKey="uddi:testnhincnode:notificationproducer">
-                <name xml:lang="en">HIEM</name>
-                <bindingTemplates>
-                    <bindingTemplate bindingKey="uddi:testnhincnode:notificationproducer" serviceKey="uddi:testnhincnode:notificationproducer">
-                        <accessPoint useType="endPoint">https://localhost:8181/Gateway/HIEM/2_0/NhinService/NotificationProducerService/HiemSubscription</accessPoint>
-                        <categoryBag>                        
-                            <keyedReference tModelKey="uddi:nhin:versionofservice" keyName="" keyValue="2.0"/>
-                        </categoryBag>
-                    </bindingTemplate>
-                </bindingTemplates>
-                <categoryBag>
-                    <keyedReference tModelKey="uddi:nhin:standard-servicenames" keyName="notificationproducer" keyValue="notificationproducer"/>
-                </categoryBag>
-            </businessService>
-            <businessService serviceKey="uddi:testnhincnode:notificationconsumer">
-                <name xml:lang="en">notificationconsumer</name>
-                <bindingTemplates>
-                    <bindingTemplate bindingKey="uddi:testnhincnode:notificationconsumer" serviceKey="uddi:testnhincnode:notificationconsumer">
-                        <accessPoint useType="endPoint">https://localhost:8181/Gateway/HIEM/2_0/NhinService/NotificationConsumerService/HiemNotify</accessPoint>
-                        <categoryBag>
-                            <keyedReference tModelKey="uddi:nhin:versionofservice" keyName="" keyValue="2.0"/>
-                        </categoryBag>
-                    </bindingTemplate>
-                </bindingTemplates>
-                <categoryBag>
-                    <keyedReference tModelKey="uddi:nhin:standard-servicenames" keyName="notificationconsumer" keyValue="notificationconsumer"/>
-                </categoryBag>
-            </businessService>
-            <businessService serviceKey="uddi:testnhincnode:subscriptionmanager">
-                <name xml:lang="en">subscriptionmanager</name>
-                <bindingTemplates>
-                    <bindingTemplate bindingKey="uddi:testnhincnode:subscriptionmanager" serviceKey="uddi:testnhincnode:subscriptionmanager">
-                        <accessPoint useType="endPoint">https://localhost:8181/Gateway/HIEM/2_0/NhinService/SubscriptionManagerService/HiemUnsubscribe</accessPoint>
-                        <categoryBag>
-                            <keyedReference tModelKey="uddi:nhin:versionofservice" keyName="" keyValue="2.0"/>
-                        </categoryBag>
-                    </bindingTemplate>
-                </bindingTemplates>
-                <categoryBag>
-                    <keyedReference tModelKey="uddi:nhin:standard-servicenames" keyName="subscriptionmanager" keyValue="subscriptionmanager"/>
-                </categoryBag>
-            </businessService>
-
-            <!--  PatientDiscovery  -->
+            <!--  Patient Discovery  -->
 
             <businessService serviceKey="uddi:testnhincnode:PatientDiscovery">
                 <name xml:lang="en">PatientDiscovery</name>
@@ -190,7 +144,58 @@
                     <keyedReference tModelKey="uddi:nhin:standard-servicenames" keyName="AdminDistribution" keyValue="AdminDistribution"/>
                 </categoryBag>
             </businessService>
+            <!--  CORE X12 Document Submission RealTime  -->
+
+            <businessService serviceKey="uddi:nhincnode:CORE_X12DSRealTime" businessKey="uddi:testnhieonenode:1.1">
+                <name xml:lang="en">CORE_X12DSRealTime</name>
+                <bindingTemplates>
+                    <bindingTemplate bindingKey="uddi:nhincnode:CORE_X12DSRealTime" serviceKey="uddi:nhincnode:CORE_X12DSRealTime">
+                        <accessPoint useType="endPoint">https://localhost:8181/Gateway/CORE_X12DocumentSubmission/1_0/X12DocumentSubmission_Service</accessPoint>
+                        <categoryBag>
+                            <keyedReference tModelKey="uddi:nhin:versionofservice" keyName="" keyValue="1.0"/>
+                        </categoryBag>
+                    </bindingTemplate>
+                </bindingTemplates>
+                <categoryBag>
+                    <keyedReference tModelKey="uddi:nhin:standard-servicenames" keyName="CORE_X12DSRealTime" keyValue="CORE_X12DSRealTime"/>
+                </categoryBag>
+            </businessService>
+
+            <!--  CORE X12 Document Submission Generic Batch Request  -->
+
+            <businessService serviceKey="uddi:nhincnode:CORE_X12DSGenericBatchRequest" businessKey="uddi:testnhieonenode:1.1">
+                <name xml:lang="en">CORE_X12DSGenericBatchRequest</name>
+                <bindingTemplates>
+                    <bindingTemplate bindingKey="uddi:nhincnode:CORE_X12DSGenericBatchRequest" serviceKey="uddi:nhincnode:CORE_X12DSGenericBatchRequest">
+                        <accessPoint useType="endPoint">https://localhost:8181/Gateway/CORE_X12DocumentSubmission/1_0/GenericBatchRequestTransaction_Service</accessPoint>
+                        <categoryBag>
+                            <keyedReference tModelKey="uddi:nhin:versionofservice" keyName="" keyValue="1.0"/>
+                        </categoryBag>
+                    </bindingTemplate>
+                </bindingTemplates>
+                <categoryBag>
+                    <keyedReference tModelKey="uddi:nhin:standard-servicenames" keyName="CORE_X12DSGenericBatchRequest" keyValue="CORE_X12DSGenericBatchRequest"/>
+                </categoryBag>
+            </businessService>
+
+            <!--  CORE X12 Document Submission Generic Batch Response  -->
+
+            <businessService serviceKey="uddi:nhincnode:CORE_X12DSGenericBatchResponse" businessKey="uddi:testnhieonenode:1.1">
+                <name xml:lang="en">CORE_X12DSGenericBatchResponse</name>
+                <bindingTemplates>
+                    <bindingTemplate bindingKey="uddi:nhincnode:CORE_X12DSGenericBatchResponse" serviceKey="uddi:nhincnode:CORE_X12DSGenericBatchResponse">
+                        <accessPoint useType="endPoint">https://localhost:8181/Gateway/CORE_X12DocumentSubmission/1_0/GenericBatchResponseTransaction_Service</accessPoint>
+                        <categoryBag>
+                            <keyedReference tModelKey="uddi:nhin:versionofservice" keyName="" keyValue="1.0"/>
+                        </categoryBag>
+                    </bindingTemplate>
+                </bindingTemplates>
+                <categoryBag>
+                    <keyedReference tModelKey="uddi:nhin:standard-servicenames" keyName="CORE_X12DSGenericBatchResponse" keyValue="CORE_X12DSGenericBatchResponse"/>
+                </categoryBag>
+            </businessService>
         </businessServices>
+
         <identifierBag>
             <keyedReference tModelKey="uddi:nhin:nhie:homecommunityid" keyName="" keyValue="urn:oid:1.1"/>
         </identifierBag>
@@ -206,7 +211,7 @@
         <name xml:lang="en">DoD</name>
         <businessServices>
 
-            <!--  Query for Documents -->
+            <!--  Query for Documents  -->
 
             <businessService serviceKey="uddi:testnhincnode:QueryForDocuments">
                 <name xml:lang="en">QueryForDocuments</name>
@@ -240,52 +245,7 @@
                 </categoryBag>
             </businessService>
 
-            <!--  HIEM  -->
-
-            <businessService serviceKey="uddi:testnhincnode:notificationproducer">
-                <name xml:lang="en">HIEM</name>
-                <bindingTemplates>
-                    <bindingTemplate bindingKey="uddi:testnhincnode:notificationproducer" serviceKey="uddi:testnhincnode:notificationproducer">
-                        <accessPoint useType="endPoint">https://localhost:8181/Gateway/HIEM/2_0/NhinService/NotificationProducerService/HiemSubscription</accessPoint>
-                        <categoryBag>                        
-                            <keyedReference tModelKey="uddi:nhin:versionofservice" keyName="" keyValue="2.0"/>
-                        </categoryBag>
-                    </bindingTemplate>
-                </bindingTemplates>
-                <categoryBag>
-                    <keyedReference tModelKey="uddi:nhin:standard-servicenames" keyName="notificationproducer" keyValue="notificationproducer"/>
-                </categoryBag>
-            </businessService>
-            <businessService serviceKey="uddi:testnhincnode:notificationconsumer">
-                <name xml:lang="en">notificationconsumer</name>
-                <bindingTemplates>
-                    <bindingTemplate bindingKey="uddi:testnhincnode:notificationconsumer" serviceKey="uddi:testnhincnode:notificationconsumer">
-                        <accessPoint useType="endPoint">https://localhost:8181/Gateway/HIEM/2_0/NhinService/NotificationConsumerService/HiemNotify</accessPoint>
-                        <categoryBag>
-                            <keyedReference tModelKey="uddi:nhin:versionofservice" keyName="" keyValue="2.0"/>
-                        </categoryBag>
-                    </bindingTemplate>
-                </bindingTemplates>
-                <categoryBag>
-                    <keyedReference tModelKey="uddi:nhin:standard-servicenames" keyName="notificationconsumer" keyValue="notificationconsumer"/>
-                </categoryBag>
-            </businessService>
-            <businessService serviceKey="uddi:testnhincnode:subscriptionmanager">
-                <name xml:lang="en">subscriptionmanager</name>
-                <bindingTemplates>
-                    <bindingTemplate bindingKey="uddi:testnhincnode:subscriptionmanager" serviceKey="uddi:testnhincnode:subscriptionmanager">
-                        <accessPoint useType="endPoint">https://localhost:8181/Gateway/HIEM/2_0/NhinService/SubscriptionManagerService/HiemUnsubscribe</accessPoint>
-                        <categoryBag>
-                            <keyedReference tModelKey="uddi:nhin:versionofservice" keyName="" keyValue="2.0"/>
-                        </categoryBag>
-                    </bindingTemplate>
-                </bindingTemplates>
-                <categoryBag>
-                    <keyedReference tModelKey="uddi:nhin:standard-servicenames" keyName="subscriptionmanager" keyValue="subscriptionmanager"/>
-                </categoryBag>
-            </businessService>
-
-            <!--  PatientDiscovery  -->
+            <!--  Patient Discovery  -->
 
             <businessService serviceKey="uddi:testnhincnode:PatientDiscovery">
                 <name xml:lang="en">PatientDiscovery</name>
@@ -372,6 +332,56 @@
                 </bindingTemplates>
                 <categoryBag>
                     <keyedReference tModelKey="uddi:nhin:standard-servicenames" keyName="DocSubmissionDeferredResp" keyValue="DocSubmissionDeferredResp"/>
+                </categoryBag>
+            </businessService>
+            <!-- CORE X12 Document Submission -->
+
+            <businessService serviceKey="uddi:nhincnode:CORE_X12DSRealTime" businessKey="uddi:testnhieonenode:2.2">
+                <name xml:lang="en">CORE_X12DSRealTime</name>
+                <bindingTemplates>
+                    <bindingTemplate bindingKey="uddi:nhincnode:CORE_X12DSRealTime" serviceKey="uddi:nhincnode:CORE_X12DSRealTime">
+                        <accessPoint useType="endPoint">https://localhost:8181/Gateway/CORE_X12DocumentSubmission/1_0/X12DocumentSubmission_Service</accessPoint>
+                        <categoryBag>
+                            <keyedReference tModelKey="uddi:nhin:versionofservice" keyName="" keyValue="1.0"/>
+                        </categoryBag>
+                    </bindingTemplate>
+                </bindingTemplates>
+                <categoryBag>
+                    <keyedReference tModelKey="uddi:nhin:standard-servicenames" keyName="CORE_X12DSRealTime" keyValue="CORE_X12DSRealTime"/>
+                </categoryBag>
+            </businessService>
+
+            <!--  CORE X12 Document Submission Generic Batch Request  -->
+
+            <businessService serviceKey="uddi:nhincnode:CORE_X12DSGenericBatchRequest" businessKey="uddi:testnhieonenode:2.2">
+                <name xml:lang="en">CORE_X12DSGenericBatchRequest</name>
+                <bindingTemplates>
+                    <bindingTemplate bindingKey="uddi:nhincnode:CORE_X12DSGenericBatchRequest" serviceKey="uddi:nhincnode:CORE_X12DSGenericBatchRequest">
+                        <accessPoint useType="endPoint">https://localhost:8181/Gateway/CORE_X12DocumentSubmission/1_0/GenericBatchRequestTransaction_Service</accessPoint>
+                        <categoryBag>
+                            <keyedReference tModelKey="uddi:nhin:versionofservice" keyName="" keyValue="1.0"/>
+                        </categoryBag>
+                    </bindingTemplate>
+                </bindingTemplates>
+                <categoryBag>
+                    <keyedReference tModelKey="uddi:nhin:standard-servicenames" keyName="CORE_X12DSGenericBatchRequest" keyValue="CORE_X12DSGenericBatchRequest"/>
+                </categoryBag>
+            </businessService>
+
+            <!--  CORE X12 Document Submission Generic Batch Response  -->
+
+            <businessService serviceKey="uddi:nhincnode:CORE_X12DSGenericBatchResponse" businessKey="uddi:testnhieonenode:2.2">
+                <name xml:lang="en">CORE_X12DSGenericBatchResponse</name>
+                <bindingTemplates>
+                    <bindingTemplate bindingKey="uddi:nhincnode:CORE_X12DSGenericBatchResponse" serviceKey="uddi:nhincnode:CORE_X12DSGenericBatchResponse">
+                        <accessPoint useType="endPoint">https://localhost:8181/Gateway/CORE_X12DocumentSubmission/1_0/GenericBatchResponseTransaction_Service</accessPoint>
+                        <categoryBag>
+                            <keyedReference tModelKey="uddi:nhin:versionofservice" keyName="" keyValue="1.0"/>
+                        </categoryBag>
+                    </bindingTemplate>
+                </bindingTemplates>
+                <categoryBag>
+                    <keyedReference tModelKey="uddi:nhin:standard-servicenames" keyName="CORE_X12DSGenericBatchResponse" keyValue="CORE_X12DSGenericBatchResponse"/>
                 </categoryBag>
             </businessService>
 

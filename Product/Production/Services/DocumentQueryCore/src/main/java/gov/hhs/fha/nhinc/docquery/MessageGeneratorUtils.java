@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -35,18 +35,18 @@ import oasis.names.tc.ebxml_regrep.xsd.rs._3.RegistryErrorList;
 
 /**
  * @author akong
- * 
+ *
  */
 public class MessageGeneratorUtils extends gov.hhs.fha.nhinc.util.MessageGeneratorUtils {
 
     private static MessageGeneratorUtils INSTANCE = new MessageGeneratorUtils();
 
     MessageGeneratorUtils() {
-    };
+    }
 
     /**
      * Returns the singleton instance of this class.
-     * 
+     *
      * @return the singleton instance
      */
     public static MessageGeneratorUtils getInstance() {
@@ -55,7 +55,7 @@ public class MessageGeneratorUtils extends gov.hhs.fha.nhinc.util.MessageGenerat
 
     /**
      * Create a AdhocQueryResponse with severity set to error.
-     * 
+     *
      * @param codeContext The codecontext defines the reason of failure of AdhocQueryRequest.
      * @param errorCode The ErrorCode that needs to be set to the AdhocQueryResponse (Errorcodes are defined in spec).
      * @param status - the status of the message
@@ -77,7 +77,7 @@ public class MessageGeneratorUtils extends gov.hhs.fha.nhinc.util.MessageGenerat
 
     /**
      * Creates a registry error with the passed in codeContext and errorCode.
-     * 
+     *
      * @param codeContext The codecontext defines the reason of failure of AdhocQueryRequest.
      * @param errorCode The ErrorCode that needs to be set to the AdhocQueryResponse (Errorcodes are defined in spec).
      * @return the generated RegistryError
@@ -92,7 +92,7 @@ public class MessageGeneratorUtils extends gov.hhs.fha.nhinc.util.MessageGenerat
 
     /**
      * Creates a Policy failed error AdhocQueryResponse.
-     * 
+     *
      * @return the generated AdhocQueryResponse message
      */
     public AdhocQueryResponse createPolicyErrorResponse() {
@@ -102,7 +102,7 @@ public class MessageGeneratorUtils extends gov.hhs.fha.nhinc.util.MessageGenerat
 
     /**
      * Create a AdhocQueryResponse failure with errorCode XDSRepositoryError.
-     * 
+     *
      * @param codeContext The codecontext defines the reason of failure of AdhocQueryRequest.
      * @return the generated AdhocQueryResponse message
      */

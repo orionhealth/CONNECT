@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,11 +27,10 @@
 package gov.hhs.fha.nhinc.mail;
 
 import java.util.Properties;
-
 import javax.mail.Session;
 
 /**
- * Base class for Mail Client 
+ * Base class for Mail Client
  */
 public abstract class AbstractMailClient implements MailClient {
 
@@ -50,6 +49,7 @@ public abstract class AbstractMailClient implements MailClient {
     /**
      * @return the mailSession
      */
+    @Override
     public Session getMailSession() {
         return mailSession;
     }

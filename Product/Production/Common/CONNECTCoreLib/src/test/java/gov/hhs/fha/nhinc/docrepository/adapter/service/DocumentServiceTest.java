@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2013, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,6 +26,13 @@
  */
 package gov.hhs.fha.nhinc.docrepository.adapter.service;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.anyLong;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import gov.hhs.fha.nhinc.docrepository.adapter.dao.DocumentDao;
 import gov.hhs.fha.nhinc.docrepository.adapter.dao.EventCodeDao;
 import gov.hhs.fha.nhinc.docrepository.adapter.model.Document;
@@ -33,23 +40,14 @@ import gov.hhs.fha.nhinc.docrepository.adapter.model.DocumentQueryParams;
 import gov.hhs.fha.nhinc.docrepository.adapter.model.EventCode;
 import gov.hhs.fha.nhinc.docrepository.adapter.model.EventCodeParam;
 import gov.hhs.fha.nhinc.util.hash.SHA1HashCode;
-
-import org.junit.Test;
-import org.mockito.Mockito;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Matchers.anyLong;
-
 import java.io.UnsupportedEncodingException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import org.junit.Test;
+import org.mockito.Mockito;
 
 public class DocumentServiceTest {
 
@@ -61,7 +59,7 @@ public class DocumentServiceTest {
         DocumentService documentService = getDocumentServiceWithMockDaos();
 
         Document mockDoc = mock(Document.class);
-        Set<EventCode> eventCodes = new HashSet<EventCode>();
+        Set<EventCode> eventCodes = new HashSet<>();
         EventCode eventCode = mock(EventCode.class);
         eventCodes.add(eventCode);
 
@@ -84,7 +82,7 @@ public class DocumentServiceTest {
 
     @Test
     public void testDeleteDocument_Success() throws DocumentServiceException {
-        final List<Document> DOC_LIST = new ArrayList<Document>();
+        final List<Document> DOC_LIST = new ArrayList<>();
         Document doc = new Document();
         String unique_id = "Doc_ID_1";
         doc.setDocumentUniqueId(unique_id);
@@ -108,7 +106,7 @@ public class DocumentServiceTest {
     @Test(expected = DocumentServiceException.class)
     public void testDeleteDocument_NoDocumentsReturned() throws DocumentServiceException {
         final DocumentDao DOCUMENT_DAO = mock(DocumentDao.class);
-        final List<Document> DOC_LIST = new ArrayList<Document>();
+        final List<Document> DOC_LIST = new ArrayList<>();
         Document doc = new Document();
         String unique_id = "Doc_ID_1";
         doc.setDocumentUniqueId(unique_id);
@@ -150,19 +148,18 @@ public class DocumentServiceTest {
         Document doc = new Document();
         doc.setDocumentid(DOC_ID);
         doc.setDocumentUniqueId(DOC_UNIQUE_ID);
-        List<Document> documents = new ArrayList<Document>();
+        List<Document> documents = new ArrayList<>();
         documents.add(doc);
 
         DocumentQueryParams dqParams = mock(DocumentQueryParams.class);
         // EventCodeParam ecParam = mock(EventCodeParam.class);
         EventCodeParam ecParam = new EventCodeParam();
-        ;
         ecParam.setEventCode("T-32000");
         ecParam.setEventCodeScheme("SNM3");
-        List<EventCodeParam> ecParamList = new ArrayList<EventCodeParam>();
+        List<EventCodeParam> ecParamList = new ArrayList<>();
         ecParamList.add(ecParam);
 
-        List<EventCode> eventCodeList = new ArrayList<EventCode>();
+        List<EventCode> eventCodeList = new ArrayList<>();
         EventCode eventcode = mock(EventCode.class);
         eventCodeList.add(eventcode);
 
@@ -183,7 +180,7 @@ public class DocumentServiceTest {
     public void testGetAllDocuments() {
         DocumentService documentService = getDocumentServiceWithMockDaos();
 
-        List<Document> documents = new ArrayList<Document>();
+        List<Document> documents = new ArrayList<>();
 
         when(DOCUMENT_DAO.findAll()).thenReturn(documents);
 

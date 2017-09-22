@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -33,15 +33,15 @@ import gov.hhs.fha.nhinc.docquery.aspect.AdhocQueryRequestDescriptionBuilder;
 import gov.hhs.fha.nhinc.docquery.aspect.AdhocQueryResponseDescriptionBuilder;
 import oasis.names.tc.ebxml_regrep.xsd.query._3.AdhocQueryRequest;
 import oasis.names.tc.ebxml_regrep.xsd.query._3.AdhocQueryResponse;
-
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
  * @author jhoppesc
  */
 public class AdapterDocQueryProxyJavaImpl implements AdapterDocQueryProxy {
-    private static final Logger LOG = Logger.getLogger(AdapterDocQueryProxyJavaImpl.class);
+    private static final Logger LOG = LoggerFactory.getLogger(AdapterDocQueryProxyJavaImpl.class);
 
     /**
      *@param msg The AdhocQueryRequest message.
@@ -51,6 +51,7 @@ public class AdapterDocQueryProxyJavaImpl implements AdapterDocQueryProxy {
     @AdapterDelegationEvent(beforeBuilder = AdhocQueryRequestDescriptionBuilder.class,
             afterReturningBuilder = AdhocQueryResponseDescriptionBuilder.class, serviceType = "Document Query",
             version = "")
+    @Override
     public AdhocQueryResponse respondingGatewayCrossGatewayQuery(AdhocQueryRequest msg, AssertionType assertion) {
         LOG.debug("Using Java Implementation for Adapter Doc Query Service");
         return new AdapterDocQueryOrchImpl().respondingGatewayCrossGatewayQuery(msg, assertion);

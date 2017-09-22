@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,16 +26,14 @@
  */
 package gov.hhs.fha.nhinc.docsubmission.nhin.deferred.request.proxy20;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import gov.hhs.fha.nhinc.aspect.NwhinInvocationEvent;
 import gov.hhs.fha.nhinc.common.nhinccommon.AssertionType;
 import gov.hhs.fha.nhinc.common.nhinccommon.NhinTargetSystemType;
 import gov.hhs.fha.nhinc.docsubmission.aspect.DocSubmissionBaseEventDescriptionBuilder;
 import ihe.iti.xds_b._2007.ProvideAndRegisterDocumentSetRequestType;
-
 import java.lang.reflect.Method;
-
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import org.junit.Test;
 
 /**
@@ -45,9 +43,9 @@ import org.junit.Test;
 public class NhinDocSubmissionDeferredRequestProxyNoOpImplTest {
     @Test
     public void hasNwhinInvocationEvent() throws Exception {
-        Class<NhinDocSubmissionDeferredRequestProxyNoOpImpl> clazz = 
+        Class<NhinDocSubmissionDeferredRequestProxyNoOpImpl> clazz =
                 NhinDocSubmissionDeferredRequestProxyNoOpImpl.class;
-        Method method = clazz.getMethod("provideAndRegisterDocumentSetBRequest20", 
+        Method method = clazz.getMethod("provideAndRegisterDocumentSetBRequest20",
                 ProvideAndRegisterDocumentSetRequestType.class, AssertionType.class,NhinTargetSystemType.class);
         NwhinInvocationEvent annotation = method.getAnnotation(NwhinInvocationEvent.class);
         assertNotNull(annotation);

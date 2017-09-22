@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,18 +29,21 @@ package gov.hhs.fha.nhinc.docsubmission._11.entity;
 import gov.hhs.fha.nhinc.common.nhinccommon.AssertionType;
 import gov.hhs.fha.nhinc.common.nhinccommonentity.RespondingGatewayProvideAndRegisterDocumentSetRequestType;
 import gov.hhs.fha.nhinc.common.nhinccommonentity.RespondingGatewayProvideAndRegisterDocumentSetSecuredRequestType;
+import gov.hhs.fha.nhinc.docsubmission.DocSubmissionUtils;
 import gov.hhs.fha.nhinc.docsubmission.outbound.OutboundDocSubmission;
 import gov.hhs.fha.nhinc.messaging.server.BaseService;
+import gov.hhs.fha.nhinc.nhinclib.NhincConstants.UDDI_SPEC_VERSION;
 
 import javax.xml.ws.WebServiceContext;
 
 import oasis.names.tc.ebxml_regrep.xsd.rs._3.RegistryResponseType;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 class EntityDocSubmissionImpl extends BaseService {
 
-    private static final Logger LOG = Logger.getLogger(EntityDocSubmissionImpl.class);
+    private static final Logger LOG = LoggerFactory.getLogger(EntityDocSubmissionImpl.class);
 
     private OutboundDocSubmission outboundDocSubmission;
 
@@ -54,6 +57,8 @@ class EntityDocSubmissionImpl extends BaseService {
         RegistryResponseType response = null;
 
         try {
+            DocSubmissionUtils.getInstance().setTargetCommunitiesVersion(request.getNhinTargetCommunities(),
+                    UDDI_SPEC_VERSION.SPEC_1_1);
             response = outboundDocSubmission.provideAndRegisterDocumentSetB(
                     request.getProvideAndRegisterDocumentSetRequest(), request.getAssertion(),
                     request.getNhinTargetCommunities(), request.getUrl());
@@ -72,6 +77,8 @@ class EntityDocSubmissionImpl extends BaseService {
 
         try {
             AssertionType assertion = getAssertion(context, null);
+            DocSubmissionUtils.getInstance().setTargetCommunitiesVersion(request.getNhinTargetCommunities(),
+                    UDDI_SPEC_VERSION.SPEC_1_1);
             response = outboundDocSubmission.provideAndRegisterDocumentSetB(
                     request.getProvideAndRegisterDocumentSetRequest(), assertion, request.getNhinTargetCommunities(),
                     request.getUrl());

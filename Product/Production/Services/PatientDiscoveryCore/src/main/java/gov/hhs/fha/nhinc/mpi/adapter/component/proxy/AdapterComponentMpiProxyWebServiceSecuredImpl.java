@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,10 +26,6 @@
  */
 package gov.hhs.fha.nhinc.mpi.adapter.component.proxy;
 
-import org.apache.log4j.Logger;
-import org.hl7.v3.PRPAIN201305UV02;
-import org.hl7.v3.PRPAIN201306UV02;
-
 import gov.hhs.fha.nhinc.adaptercomponentmpi.AdapterComponentMpiSecuredPortType;
 import gov.hhs.fha.nhinc.common.nhinccommon.AssertionType;
 import gov.hhs.fha.nhinc.messaging.client.CONNECTCXFClientFactory;
@@ -39,8 +35,11 @@ import gov.hhs.fha.nhinc.mpi.adapter.component.proxy.service.AdapterComponentMpi
 import gov.hhs.fha.nhinc.nhinclib.NhincConstants;
 import gov.hhs.fha.nhinc.nhinclib.NullChecker;
 import gov.hhs.fha.nhinc.properties.PropertyAccessException;
-import gov.hhs.fha.nhinc.properties.PropertyAccessor;
 import gov.hhs.fha.nhinc.webserviceproxy.WebServiceProxyHelper;
+import org.hl7.v3.PRPAIN201305UV02;
+import org.hl7.v3.PRPAIN201306UV02;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Proxy to call the secured AdapterComponentMPI interface.
@@ -48,7 +47,7 @@ import gov.hhs.fha.nhinc.webserviceproxy.WebServiceProxyHelper;
  */
 public class AdapterComponentMpiProxyWebServiceSecuredImpl implements AdapterComponentMpiProxy {
 
-    private static final Logger LOG = Logger.getLogger(AdapterComponentMpiProxyWebServiceSecuredImpl.class);
+    private static final Logger LOG = LoggerFactory.getLogger(AdapterComponentMpiProxyWebServiceSecuredImpl.class);
     private final WebServiceProxyHelper oProxyHelper = new WebServiceProxyHelper();
 
     /**
@@ -57,7 +56,7 @@ public class AdapterComponentMpiProxyWebServiceSecuredImpl implements AdapterCom
      * @param url the intended url
      * @param assertion the message assertion
      * @return a CONNECTClient object for AdapterComponentMpiSecuredPortType
-     * @throws PropertyAccessException 
+     * @throws PropertyAccessException
      */
     protected CONNECTClient<AdapterComponentMpiSecuredPortType> getCONNECTClientSecured(
             ServicePortDescriptor<AdapterComponentMpiSecuredPortType> portDescriptor, String url,
@@ -75,7 +74,7 @@ public class AdapterComponentMpiProxyWebServiceSecuredImpl implements AdapterCom
      */
     @Override
     public PRPAIN201306UV02 findCandidates(PRPAIN201305UV02 request, AssertionType assertion) {
-        String url = null;
+        String url;
         PRPAIN201306UV02 response = new PRPAIN201306UV02();
         String sServiceName = NhincConstants.ADAPTER_COMPONENT_MPI_SECURED_SERVICE_NAME;
 
@@ -88,7 +87,7 @@ public class AdapterComponentMpiProxyWebServiceSecuredImpl implements AdapterCom
                 if (NullChecker.isNotNullish(url)) {
                     ServicePortDescriptor<AdapterComponentMpiSecuredPortType> portDescriptor =
                             new AdapterComponentMpiSecuredServicePortDescriptor();
-                    
+
                     CONNECTClient<AdapterComponentMpiSecuredPortType> client =
                             getCONNECTClientSecured(portDescriptor, url, assertion);
 

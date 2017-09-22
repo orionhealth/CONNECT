@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,63 +26,61 @@
  */
 package gov.hhs.fha.nhinc.messaging.service.decorator.cxf;
 
+import gov.hhs.fha.nhinc.cryptostore.StoreUtil;
+import gov.hhs.fha.nhinc.properties.PropertyAccessorFileUtilities;
+import java.util.Map;
+import java.util.Properties;
+import org.apache.ws.security.handler.WSHandlerConstants;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-import gov.hhs.fha.nhinc.cryptostore.StoreUtil;
-import gov.hhs.fha.nhinc.properties.PropertyAccessorFileUtilities;
-
-import java.util.Map;
-import java.util.Properties;
-
-import org.apache.ws.security.handler.WSHandlerConstants;
 import org.junit.Before;
 import org.junit.Test;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * @author akong
  *
  */
 public class WsSecurityConfigFactoryTest {
-    
+
     Properties sigProperties;
     PropertyAccessorFileUtilities propFileUtil;
     StoreUtil cryptoStoreUtil;
-    
+
     @Before
     public void setup() {
-        sigProperties = new Properties();        
+        sigProperties = new Properties();
         propFileUtil = mock(PropertyAccessorFileUtilities.class);
         cryptoStoreUtil = mock(StoreUtil.class);
-        
+
         when(propFileUtil.loadPropertyFile("signature")).thenReturn(sigProperties);
         when(cryptoStoreUtil.getPrivateKeyAlias()).thenReturn("gateway");
     }
-    
+
     @Test
     public void verifyProperties() {
         WsSecurityConfigFactory configFactory = new WsSecurityConfigFactory(propFileUtil, cryptoStoreUtil);
-        
+
         Map<String, Object> configMap = configFactory.getConfiguration();
-        
+
         verifyWsSecurityProperties(configMap);
     }
-    
+
     @Test
-    public void verifyClone() {        
+    public void verifyClone() {
         WsSecurityConfigFactory configFactory = new WsSecurityConfigFactory(propFileUtil, cryptoStoreUtil);
-        
+
         Map<String, Object> configMap1 = configFactory.getConfiguration();
         configMap1.remove(WSHandlerConstants.PASSWORD_TYPE);
         ((Properties) configMap1.get("cryptoProperties")).put("keyTest", "valueTest");
-        
+
         Map<String, Object> configMap2 = configFactory.getConfiguration();
         assertEquals("PasswordDigest", configMap2.get(WSHandlerConstants.PASSWORD_TYPE));
-        assertNull(((Properties) configMap2.get("cryptoProperties")).get("keyTest"));        
+        assertNull(((Properties) configMap2.get("cryptoProperties")).get("keyTest"));
     }
-    
+
     public void verifyWsSecurityProperties(Map<String, Object> properties) {
         assertEquals("Timestamp SAMLTokenSigned", properties.get(WSHandlerConstants.ACTION));
         assertEquals("3600", properties.get(WSHandlerConstants.TTL_TIMESTAMP));

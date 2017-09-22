@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,16 +29,13 @@ package gov.hhs.fha.nhinc.admindistribution.adapter;
 import gov.hhs.fha.nhinc.common.nhinccommon.AssertionType;
 import gov.hhs.fha.nhinc.largefile.LargeFileUtils;
 import gov.hhs.fha.nhinc.nhinclib.NullChecker;
-
 import java.net.URI;
 import java.util.List;
-
 import javax.activation.DataHandler;
-
 import oasis.names.tc.emergency.edxl.de._1.ContentObjectType;
 import oasis.names.tc.emergency.edxl.de._1.EDXLDistribution;
-
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -46,7 +43,7 @@ import org.apache.log4j.Logger;
  */
 public class AdapterAdminDistributionOrchImpl {
 
-    private static final Logger LOG = Logger.getLogger(AdapterAdminDistributionOrchImpl.class);
+    private static final Logger LOG = LoggerFactory.getLogger(AdapterAdminDistributionOrchImpl.class);
 
     /**
      * @param body Emergency Message Distribution Element transaction received.

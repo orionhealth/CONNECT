@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,25 +26,22 @@
  */
 package gov.hhs.fha.nhinc.messaging.service.decorator.cxf;
 
-import static org.junit.Assert.assertEquals;
-
-import javax.xml.ws.BindingProvider;
-
-import org.apache.cxf.transports.http.configuration.HTTPClientPolicy;
-import org.apache.cxf.ws.addressing.JAXWSAConstants;
-import org.apache.cxf.ws.addressing.impl.AddressingPropertiesImpl;
-import org.junit.Test;
-
 import gov.hhs.fha.nhinc.common.nhinccommon.AssertionType;
 import gov.hhs.fha.nhinc.messaging.client.CONNECTClient;
 import gov.hhs.fha.nhinc.messaging.client.CONNECTTestClient;
 import gov.hhs.fha.nhinc.messaging.service.ServiceEndpoint;
 import gov.hhs.fha.nhinc.messaging.service.port.TestServicePortDescriptor;
 import gov.hhs.fha.nhinc.messaging.service.port.TestServicePortType;
+import javax.xml.ws.BindingProvider;
+import org.apache.cxf.transports.http.configuration.HTTPClientPolicy;
+import org.apache.cxf.ws.addressing.JAXWSAConstants;
+import org.apache.cxf.ws.addressing.impl.AddressingPropertiesImpl;
+import static org.junit.Assert.assertEquals;
+import org.junit.Test;
 
 /**
  * @author akong
- * 
+ *
  */
 public class WsAddressingServiceEndpointDecoratorTest {
 
@@ -79,7 +76,7 @@ public class WsAddressingServiceEndpointDecoratorTest {
 
         assertEquals(messageIdWithPrefix, addressingProps.getMessageID().getValue());
     }
-    
+
     @Test
     public void verifyNullRelatesTo() {
         String wsAddressingTo = "wsAddressingTo";
@@ -100,7 +97,7 @@ public class WsAddressingServiceEndpointDecoratorTest {
         assertEquals(messageId, addressingProps.getMessageID().getValue());
         assertEquals(null, addressingProps.getRelatesTo());
     }
-    
+
     @Test
     public void verifyEmptyRelatesTo() {
         String wsAddressingTo = "wsAddressingTo";
@@ -125,7 +122,7 @@ public class WsAddressingServiceEndpointDecoratorTest {
     /**
      * This method will verify the client is configured with the passed in WS-Addressing values. Note that the messageId
      * will need to have the proper "urn:uuid" prefix or else this verification will always fail.
-     * 
+     *
      * @param client
      * @param wsAddressingTo
      * @param wsAddressingAction
@@ -150,11 +147,11 @@ public class WsAddressingServiceEndpointDecoratorTest {
 
     private CONNECTClient<TestServicePortType> createClient(String wsAddressingTo, String wsAddressingAction,
             AssertionType assertion) {
-        CONNECTTestClient<TestServicePortType> testClient = new CONNECTTestClient<TestServicePortType>(
+        CONNECTTestClient<TestServicePortType> testClient = new CONNECTTestClient<>(
                 new TestServicePortDescriptor());
 
         ServiceEndpoint<TestServicePortType> serviceEndpoint = testClient.getServiceEndpoint();
-        serviceEndpoint = new WsAddressingServiceEndpointDecorator<TestServicePortType>(serviceEndpoint,
+        serviceEndpoint = new WsAddressingServiceEndpointDecorator<>(serviceEndpoint,
                 wsAddressingTo, wsAddressingAction, assertion);
         serviceEndpoint.configure();
 

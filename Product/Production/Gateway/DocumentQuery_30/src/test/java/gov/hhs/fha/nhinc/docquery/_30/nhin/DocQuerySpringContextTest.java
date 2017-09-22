@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,7 +26,6 @@
  */
 package gov.hhs.fha.nhinc.docquery._30.nhin;
 
-import static org.junit.Assert.assertNotNull;
 import gov.hhs.fha.nhinc.common.nhinccommonentity.RespondingGatewayCrossGatewayQueryRequestType;
 import gov.hhs.fha.nhinc.common.nhinccommonentity.RespondingGatewayCrossGatewayQuerySecuredRequestType;
 import gov.hhs.fha.nhinc.docquery._30.entity.EntityDocQuerySecured;
@@ -35,10 +34,9 @@ import gov.hhs.fha.nhinc.docquery.inbound.PassthroughInboundDocQuery;
 import gov.hhs.fha.nhinc.docquery.inbound.StandardInboundDocQuery;
 import gov.hhs.fha.nhinc.docquery.outbound.PassthroughOutboundDocQuery;
 import gov.hhs.fha.nhinc.docquery.outbound.StandardOutboundDocQuery;
-
 import oasis.names.tc.ebxml_regrep.xsd.query._3.AdhocQueryRequest;
 import oasis.names.tc.ebxml_regrep.xsd.query._3.AdhocQueryResponse;
-
+import static org.junit.Assert.assertNotNull;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,7 +45,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 /**
  * @author akong
- * 
+ *
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = { "/docquery/_30/applicationContext.xml" })
@@ -61,16 +59,16 @@ public class DocQuerySpringContextTest {
 
     @Autowired
     EntityDocQuerySecured outboundDocQuerySecured;
-    
+
     @Autowired
     StandardOutboundDocQuery stdOutboundDocQuery;
-    
+
     @Autowired
     PassthroughOutboundDocQuery ptOutboundDocQuery;
-    
+
     @Autowired
     StandardInboundDocQuery stdInboundDocQuery;
-    
+
     @Autowired
     PassthroughInboundDocQuery ptInboundDocQuery;
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,20 +26,13 @@
  */
 package gov.hhs.fha.nhinc.patientdiscovery.entity.proxy;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.fail;
-
 import gov.hhs.fha.nhinc.common.nhinccommon.AssertionType;
 import gov.hhs.fha.nhinc.common.nhinccommon.NhinTargetCommunitiesType;
 import gov.hhs.fha.nhinc.connectmgr.ConnectionManagerException;
 import gov.hhs.fha.nhinc.entitypatientdiscovery.EntityPatientDiscoveryPortType;
 import gov.hhs.fha.nhinc.messaging.client.CONNECTClient;
 import gov.hhs.fha.nhinc.webserviceproxy.WebServiceProxyHelper;
-
 import javax.xml.ws.Service;
-
 import org.hl7.v3.PRPAIN201305UV02;
 import org.hl7.v3.RespondingGatewayPRPAIN201306UV02ResponseType;
 import org.jmock.Expectations;
@@ -47,6 +40,10 @@ import org.jmock.Mockery;
 import org.jmock.integration.junit4.JMock;
 import org.jmock.integration.junit4.JUnit4Mockery;
 import org.jmock.lib.legacy.ClassImposteriser;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.fail;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -172,7 +169,7 @@ public class EntityPatientDiscoveryProxyWebServiceUnsecuredImplTest {
                     throw new ConnectionManagerException();
                 }
             };
-           
+
             String endpointURL = webProxy.getEndpointURL();
             assertNull("EndpointURL was not null", endpointURL);
         } catch (Throwable t) {
@@ -197,7 +194,7 @@ public class EntityPatientDiscoveryProxyWebServiceUnsecuredImplTest {
             });
             final WebServiceProxyHelper wsProxyHelper = new WebServiceProxyHelper();
             EntityPatientDiscoveryProxyWebServiceUnsecuredImpl webProxy = new EntityPatientDiscoveryProxyWebServiceUnsecuredImpl() {
-                
+
                 @Override
                 protected WebServiceProxyHelper createWebServiceProxyHelper() {
                     return wsProxyHelper;
@@ -213,7 +210,7 @@ public class EntityPatientDiscoveryProxyWebServiceUnsecuredImplTest {
                     return mockCONNECTClient;
                 }
             };
-          
+
             RespondingGatewayPRPAIN201306UV02ResponseType response = webProxy.respondingGatewayPRPAIN201305UV02(
                     mockPdRequest, mockAssertion, mockTargetCommunities);
             assertNotNull("RespondingGatewayPRPAIN201306UV02ResponseType was null", response);

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,31 +26,28 @@
  */
 package gov.hhs.fha.nhinc.direct.transform;
 
-import static org.junit.Assert.assertEquals;
 import gov.hhs.fha.nhinc.direct.DirectUnitTestUtil;
 import gov.hhs.fha.nhinc.direct.MimeMessageBuilder;
 import ihe.iti.xds_b._2007.ProvideAndRegisterDocumentSetRequestType;
-
 import java.io.IOException;
-
 import javax.mail.MessagingException;
 import javax.mail.Session;
 import javax.mail.internet.MimeMessage;
 import javax.xml.namespace.QName;
-
 import org.apache.commons.io.IOUtils;
+import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 import org.nhindirect.xd.transform.util.XmlUtils;
 
 /**
  * @author mweaver
- * 
+ *
  */
 public class MimeMessageTransformerTest {
 
     /**
      * Test the transformation of a MimeMessage with a simple S/MIME attachment.
-     * 
+     *
      * @throws MessagingException on failure.
      */
     @Test
@@ -63,7 +60,7 @@ public class MimeMessageTransformerTest {
 
     /**
      * Test the transformation of a MimeMessage with a simple S/MIME attachment.
-     * 
+     *
      * @throws MessagingException on failure.
      */
     @Test
@@ -76,7 +73,7 @@ public class MimeMessageTransformerTest {
 
     /**
      * Test the transformation of a MimeMessage with an XDM S/MIME attachment.
-     * @throws IOException 
+     * @throws IOException
      */
     @Test
     public void usingRFC5322PlusXdm() throws IOException {
@@ -98,14 +95,14 @@ public class MimeMessageTransformerTest {
      * @throws MessagingException
      */
     private MimeMessage buildMimeMessage(String fileName) throws MessagingException {
-        MimeMessage message = new MimeMessage(null, 
+        MimeMessage message = new MimeMessage(null,
                 IOUtils.toInputStream(DirectUnitTestUtil.getFileAsString(fileName)));
         return message;
     }
 
     /**
      * @return a MimeMessage with an XDM attachment
-     * @throws IOException 
+     * @throws IOException
      */
     private MimeMessage buildXdmMessage() throws IOException {
         Session session = Session.getInstance(DirectUnitTestUtil.getMailServerProps("toaddress@localhost",
@@ -119,7 +116,7 @@ public class MimeMessageTransformerTest {
     /**
      * Verify that a transformation of a MimeMessage with a simple S/MIME attachemnt can be transformered into a reduced
      * metadata set XDR object.
-     * 
+     *
      * @param prdsrt result of a transformation to be verified
      */
     private void verifyMime(ProvideAndRegisterDocumentSetRequestType prdsrt, int expectedDocuments) {
@@ -135,7 +132,7 @@ public class MimeMessageTransformerTest {
     /**
      * Verify that a transformation of a MimeMessage with an XDM S/MIME attachment can be transformed into a full
      * metadata set XDR object.
-     * 
+     *
      * @param prdsrt result of a transformation to be verified
      */
     private void verifyXdm(ProvideAndRegisterDocumentSetRequestType prdsrt, int expectedDocuments) {
@@ -151,7 +148,7 @@ public class MimeMessageTransformerTest {
     /**
      * Verify the data elements from the set of minimal required metadata are present. The minimal required metadata is
      * defined as follows:
-     * 
+     *
      * Metadata Attribute           XDS     Minimal Metadata
      * -----------------------------------------------------
      * author                       R2      R2
@@ -168,7 +165,7 @@ public class MimeMessageTransformerTest {
      * sourcePatientId              R       R2
      * typeCode                     R       R2
      * uniqueId                     R       R
-     * 
+     *
      * @param prdsrt request to verify for minimum required metadata
      */
     private void verifyMinimalMetadata(ProvideAndRegisterDocumentSetRequestType prdsrt) {
@@ -181,7 +178,7 @@ public class MimeMessageTransformerTest {
     /**
      * Verify the data elements from the set of XDS required metadata are present. The XDS required metadata is defined
      * as follows:
-     * 
+     *
      * Metadata Attribute           XDS     Minimal Metadata
      * -----------------------------------------------------
      * author                       R2      R2
@@ -198,7 +195,7 @@ public class MimeMessageTransformerTest {
      * sourcePatientId              R       R2
      * typeCode                     R       R2
      * uniqueId                     R       R
-     * 
+     *
      * @param prdsrt request to verify for minimum required metadata
      */
     private void verifyXDSMetadata(ProvideAndRegisterDocumentSetRequestType prdsrt) {

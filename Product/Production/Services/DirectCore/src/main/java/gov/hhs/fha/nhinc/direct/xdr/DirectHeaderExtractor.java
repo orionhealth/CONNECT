@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,15 +27,14 @@
 package gov.hhs.fha.nhinc.direct.xdr;
 
 import gov.hhs.fha.nhinc.direct.DirectException;
-
 import javax.servlet.ServletRequest;
 import javax.xml.ws.WebServiceContext;
 import javax.xml.ws.handler.MessageContext;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.cxf.jaxws.context.WrappedMessageContext;
 import org.apache.cxf.message.Message;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
@@ -44,11 +43,11 @@ import org.w3c.dom.NodeList;
  */
 public class DirectHeaderExtractor {
 
-    private static final Logger LOG = Logger.getLogger(DirectHeaderExtractor.class);
+    private static final Logger LOG = LoggerFactory.getLogger(DirectHeaderExtractor.class);
 
     /**
      * Gets the header properties.
-     * 
+     *
      * @param context the context
      * @return the header properties
      */
@@ -125,7 +124,7 @@ public class DirectHeaderExtractor {
 
     /**
      * Gets the header properties.
-     * 
+     *
      * @param sh the sh
      * @return the header properties
      */

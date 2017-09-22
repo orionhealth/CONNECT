@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -28,37 +28,61 @@ package gov.hhs.fha.nhinc.asyncmsgs.persistence;
 
 import gov.hhs.fha.nhinc.nhinclib.NhincConstants;
 import gov.hhs.fha.nhinc.properties.HibernateAccessor;
-
+import gov.hhs.fha.nhinc.properties.PropertyAccessException;
 import java.io.File;
-
-import org.apache.log4j.Logger;
+import org.hibernate.HibernateException;
 import org.hibernate.SessionFactory;
+import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
  * @author JHOPPESC
  */
 public class HibernateUtil {
-    private static final SessionFactory sessionFactory;
-    private static final Logger LOG = Logger.getLogger(HibernateUtil.class);
-    static {
+
+    private SessionFactory sessionFactory;
+    private static final Logger LOG = LoggerFactory.getLogger(HibernateUtil.class);
+
+    /**
+     * Create the SessionFactory
+     */
+    public void buildSessionFactory() {
         try {
             // Create the SessionFactory from hibernate.cfg.xml
-            sessionFactory = new Configuration().configure(getConfigFile()).buildSessionFactory();
-        } catch (Throwable ex) {
+            LOG.debug("Building the session factory in HibernateUtil in CONNECTCoreLib");
+            if (sessionFactory == null || sessionFactory.isClosed()) {
+                sessionFactory = new Configuration().configure()
+                        .buildSessionFactory(new StandardServiceRegistryBuilder().configure(getConfigFile()).build());
+            }
+        } catch (HibernateException he) {
             // Make sure you log the exception, as it might be swallowed
-            LOG.error("Initial SessionFactory creation failed." + ex);
-            throw new ExceptionInInitializerError(ex);
+            LOG.error("Initial SessionFactory creation failed. {}", he);
+            throw new ExceptionInInitializerError(he);
         }
     }
 
     /**
-     * Method returns an instance of Hibernate SessionFactory.
+     * Method closes the Hibernate SessionFactory
+     */
+    public void closeSessionFactory() {
+        try {
+            if (sessionFactory != null && !sessionFactory.isClosed()) {
+                sessionFactory.close();
+            }
+        } catch (HibernateException he) {
+            LOG.error("Error while closing the sessionFactory: {}", he.getLocalizedMessage(), he);
+        }
+    }
+
+    /**
+     * Method returns this utility's SessionFactory.
      *
      * @return SessionFactory
      */
-    public static SessionFactory getSessionFactory() {
+    public SessionFactory getSessionFactory() {
         return sessionFactory;
     }
 
@@ -67,8 +91,8 @@ public class HibernateUtil {
 
         try {
             result = HibernateAccessor.getInstance().getHibernateFile(NhincConstants.HIBERNATE_ASYNCMSGS_REPOSITORY);
-        } catch (Exception ex) {
-            LOG.error("Unable to load " + NhincConstants.HIBERNATE_ASYNCMSGS_REPOSITORY + " " + ex.getMessage(), ex);
+        } catch (PropertyAccessException ex) {
+            LOG.error("Unable to load {} {}", NhincConstants.HIBERNATE_ASYNCMSGS_REPOSITORY, ex.getMessage(), ex);
         }
 
         return result;

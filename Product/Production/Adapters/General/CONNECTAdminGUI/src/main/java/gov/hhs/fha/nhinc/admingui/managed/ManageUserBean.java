@@ -1,5 +1,5 @@
-  /*
- * Copyright (c) 2009-2014, United States Government, as represented by the Secretary of Health and Human Services.
+/*
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,20 +27,22 @@
 package gov.hhs.fha.nhinc.admingui.managed;
 
 import gov.hhs.fha.nhinc.admingui.constant.NavigationConstant;
+import gov.hhs.fha.nhinc.admingui.jee.jsf.UserAuthorizationListener;
 import gov.hhs.fha.nhinc.admingui.model.Login;
 import gov.hhs.fha.nhinc.admingui.services.LoginService;
 import gov.hhs.fha.nhinc.admingui.services.exception.UserLoginException;
 import gov.hhs.fha.nhinc.admingui.services.persistence.jpa.entity.UserLogin;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
+import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
 import javax.servlet.http.HttpSession;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -53,14 +55,14 @@ import org.springframework.stereotype.Component;
 @Component
 public class ManageUserBean {
 
-    private static Logger log = Logger.getLogger(ManageUserBean.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ManageUserBean.class);
     private String userName = null;
     private String password = null;
     private String role;
-    
+
     private UserLogin selectedUser;
-    
-    private List<UserLogin> users = new ArrayList<UserLogin>();
+
+    private List<UserLogin> users = new ArrayList<>();
 
     /**
      * The login service.
@@ -79,7 +81,7 @@ public class ManageUserBean {
      * @param loginservice
      */
     ManageUserBean(LoginService loginservice) {
-        this.loginService = loginservice;
+        loginService = loginservice;
     }
 
     /**
@@ -110,7 +112,7 @@ public class ManageUserBean {
             FacesContext.getCurrentInstance().validationFailed();
             FacesContext.getCurrentInstance().addMessage("userAddErrors",
                     new FacesMessage(FacesMessage.SEVERITY_ERROR, "Can not add user: " + e.getLocalizedMessage(), ""));
-            log.error("Error creating user: " + e.getMessage());
+            LOG.error("Error creating user: {}", e.getLocalizedMessage(), e);
         }
         userName = null;
         password = null;
@@ -123,8 +125,7 @@ public class ManageUserBean {
      * @return
      */
     protected HttpSession getHttpSession() {
-        HttpSession session = (HttpSession) FacesContext.getCurrentInstance().getExternalContext().getSession(false);
-        return session;
+        return (HttpSession) FacesContext.getCurrentInstance().getExternalContext().getSession(false);
     }
 
     /**
@@ -181,14 +182,28 @@ public class ManageUserBean {
         return loginService.getAllUsers();
     }
 
-    public void deleteUser(ActionEvent event){
-        if(selectedUser != null){
+    public void deleteUser(ActionEvent event) {
+        if (selectedUser != null) {
             try {
                 loginService.deleteUser(selectedUser);
             } catch (UserLoginException ex) {
-               FacesContext.getCurrentInstance().addMessage("userDeleteMessages", new FacesMessage(FacesMessage.SEVERITY_WARN,
-                ex.getLocalizedMessage(), "")); 
-            }           
+                FacesContext.getCurrentInstance().addMessage("userDeleteMessages",
+                        new FacesMessage(FacesMessage.SEVERITY_WARN, ex.getLocalizedMessage(), ""));
+                LOG.error("Error deleting user: {}", ex.getLocalizedMessage(), ex);
+            }
         }
+    }
+
+    /**
+     * Returns the user name in the current session.
+     *
+     * @return
+     */
+    public String getCurrentUser() {
+        FacesContext facesContext = FacesContext.getCurrentInstance();
+        ExternalContext externalContext = facesContext.getExternalContext();
+        HttpSession session = (HttpSession) externalContext.getSession(true);
+        UserLogin currentUser = (UserLogin) session.getAttribute(UserAuthorizationListener.USER_INFO_SESSION_ATTRIBUTE);
+        return currentUser.getUserName();
     }
 }

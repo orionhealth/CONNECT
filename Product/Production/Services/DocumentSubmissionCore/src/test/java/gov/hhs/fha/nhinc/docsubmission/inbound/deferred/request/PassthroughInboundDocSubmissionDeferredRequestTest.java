@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,11 +26,23 @@
  */
 package gov.hhs.fha.nhinc.docsubmission.inbound.deferred.request;
 
+import gov.hhs.fha.nhinc.audit.ejb.AuditEJBLogger;
+import gov.hhs.fha.nhinc.common.nhinccommon.AssertionType;
+import gov.hhs.fha.nhinc.common.nhinccommon.NhinTargetSystemType;
+import gov.hhs.fha.nhinc.docsubmission.DocSubmissionUtils;
+import gov.hhs.fha.nhinc.docsubmission.adapter.deferred.request.proxy.AdapterDocSubmissionDeferredRequestProxy;
+import gov.hhs.fha.nhinc.docsubmission.adapter.deferred.request.proxy.AdapterDocSubmissionDeferredRequestProxyObjectFactory;
+import gov.hhs.fha.nhinc.docsubmission.audit.DocSubmissionDeferredRequestAuditLogger;
+import gov.hhs.fha.nhinc.docsubmission.audit.transform.DocSubmissionDeferredRequestAuditTransforms;
+import gov.hhs.fha.nhinc.largefile.LargePayloadException;
+import gov.hhs.fha.nhinc.nhinclib.NhincConstants;
+import gov.hhs.healthit.nhin.XDRAcknowledgementType;
+import ihe.iti.xds_b._2007.ProvideAndRegisterDocumentSetRequestType;
+import java.util.Properties;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
+import org.junit.Test;
 import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Matchers.isNull;
 import static org.mockito.Mockito.doThrow;
@@ -39,29 +51,18 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.lang.reflect.Method;
-
-import gov.hhs.fha.nhinc.aspect.InboundProcessingEvent;
-import gov.hhs.fha.nhinc.common.nhinccommon.AssertionType;
-import gov.hhs.fha.nhinc.common.nhinccommon.NhinTargetSystemType;
-import gov.hhs.fha.nhinc.docsubmission.DocSubmissionUtils;
-import gov.hhs.fha.nhinc.docsubmission.XDRAuditLogger;
-import gov.hhs.fha.nhinc.docsubmission.adapter.deferred.request.proxy.AdapterDocSubmissionDeferredRequestProxy;
-import gov.hhs.fha.nhinc.docsubmission.adapter.deferred.request.proxy.AdapterDocSubmissionDeferredRequestProxyObjectFactory;
-import gov.hhs.fha.nhinc.docsubmission.aspect.DocSubmissionArgTransformerBuilder;
-import gov.hhs.fha.nhinc.docsubmission.aspect.DocSubmissionBaseEventDescriptionBuilder;
-import gov.hhs.fha.nhinc.largefile.LargePayloadException;
-import gov.hhs.fha.nhinc.nhinclib.NhincConstants;
-import gov.hhs.healthit.nhin.XDRAcknowledgementType;
-import ihe.iti.xds_b._2007.ProvideAndRegisterDocumentSetRequestType;
-
-import org.junit.Test;
-
 /**
  * @author akong
- * 
+ *
  */
 public class PassthroughInboundDocSubmissionDeferredRequestTest {
+
+    private final AdapterDocSubmissionDeferredRequestProxyObjectFactory adapterFactory
+        = mock(AdapterDocSubmissionDeferredRequestProxyObjectFactory.class);
+    private final AdapterDocSubmissionDeferredRequestProxy adapterProxy
+        = mock(AdapterDocSubmissionDeferredRequestProxy.class);
+    private final AuditEJBLogger mockEJBLogger = mock(AuditEJBLogger.class);
+    private final DocSubmissionUtils dsUtils = mock(DocSubmissionUtils.class);
 
     @Test
     public void passthroughInboundDocSubmissionDeferredRequest() {
@@ -69,63 +70,85 @@ public class PassthroughInboundDocSubmissionDeferredRequestTest {
         AssertionType assertion = new AssertionType();
         XDRAcknowledgementType expectedResponse = new XDRAcknowledgementType();
 
-        AdapterDocSubmissionDeferredRequestProxyObjectFactory adapterFactory = mock(AdapterDocSubmissionDeferredRequestProxyObjectFactory.class);
-        AdapterDocSubmissionDeferredRequestProxy adapterProxy = mock(AdapterDocSubmissionDeferredRequestProxy.class);
-        XDRAuditLogger auditLogger = mock(XDRAuditLogger.class);
-        DocSubmissionUtils dsUtils = mock(DocSubmissionUtils.class);
-
+        Properties webContextProperties = new Properties();
         when(adapterFactory.getAdapterDocSubmissionDeferredRequestProxy()).thenReturn(adapterProxy);
 
         when(adapterProxy.provideAndRegisterDocumentSetBRequest(request, assertion)).thenReturn(expectedResponse);
 
-        PassthroughInboundDocSubmissionDeferredRequest passthroughDocSubmission = new PassthroughInboundDocSubmissionDeferredRequest(
-                adapterFactory, auditLogger, dsUtils);
+        PassthroughInboundDocSubmissionDeferredRequest passthroughDocSubmission
+            = new PassthroughInboundDocSubmissionDeferredRequest(adapterFactory, getAuditLogger(true), dsUtils);
 
         XDRAcknowledgementType actualResponse = passthroughDocSubmission.provideAndRegisterDocumentSetBRequest(request,
-                assertion);
+            assertion, webContextProperties);
 
         assertSame(expectedResponse, actualResponse);
-
-        verify(auditLogger, never()).auditAdapterXDR(any(ProvideAndRegisterDocumentSetRequestType.class),
-                any(AssertionType.class), anyString());
-
-        verify(auditLogger, never()).auditAdapterAcknowledgement(any(XDRAcknowledgementType.class),
-                any(AssertionType.class), anyString(), anyString());
-
-        verify(auditLogger).auditNhinXDR(eq(request), eq(assertion), isNull(NhinTargetSystemType.class),
-                eq(NhincConstants.AUDIT_LOG_INBOUND_DIRECTION));
-
-        verify(auditLogger).auditAcknowledgement(eq(actualResponse), eq(assertion), isNull(NhinTargetSystemType.class),
-                eq(NhincConstants.AUDIT_LOG_OUTBOUND_DIRECTION), eq(NhincConstants.XDR_REQUEST_ACTION));
+        verify(mockEJBLogger).auditResponseMessage(eq(request), eq(actualResponse), eq(assertion), isNull(
+            NhinTargetSystemType.class), eq(NhincConstants.AUDIT_LOG_INBOUND_DIRECTION),
+            eq(NhincConstants.AUDIT_LOG_NHIN_INTERFACE), eq(Boolean.FALSE), eq(webContextProperties),
+            eq(NhincConstants.NHINC_XDR_REQUEST_SERVICE_NAME), any(DocSubmissionDeferredRequestAuditTransforms.class));
     }
-    
+
     @Test
     public void convertDataToFileError() throws LargePayloadException {
         ProvideAndRegisterDocumentSetRequestType request = new ProvideAndRegisterDocumentSetRequestType();
         AssertionType assertion = new AssertionType();
 
-        AdapterDocSubmissionDeferredRequestProxyObjectFactory adapterFactory = mock(AdapterDocSubmissionDeferredRequestProxyObjectFactory.class);
-        XDRAuditLogger auditLogger = mock(XDRAuditLogger.class);
-        DocSubmissionUtils dsUtils = mock(DocSubmissionUtils.class);
-
+        Properties webContextProperties = new Properties();
         doThrow(new LargePayloadException()).when(dsUtils).convertDataToFileLocationIfEnabled(request);
 
         PassthroughInboundDocSubmissionDeferredRequest passthroughDocSubmission = new PassthroughInboundDocSubmissionDeferredRequest(
-                adapterFactory, auditLogger, dsUtils);
+            adapterFactory, getAuditLogger(true), dsUtils);
 
         XDRAcknowledgementType actualResponse = passthroughDocSubmission.provideAndRegisterDocumentSetBRequest(request,
-                assertion);
+            assertion, webContextProperties);
 
-        assertEquals("XDSRegistryError", actualResponse.getMessage().getRegistryErrorList().getRegistryError().get(0).getErrorCode());
+        assertEquals("XDSRegistryError", actualResponse.getMessage().getRegistryErrorList().getRegistryError().get(0
+        ).getErrorCode());
         assertEquals("urn:oasis:names:tc:ebxml-regrep:ResponseStatusType:Failure", actualResponse.getMessage().getStatus());
-        assertEquals("urn:oasis:names:tc:ebxml-regrep:ErrorSeverityType:Error", actualResponse.getMessage().getRegistryErrorList()
-                .getRegistryError().get(0).getSeverity());
+        assertEquals("urn:oasis:names:tc:ebxml-regrep:ErrorSeverityType:Error", actualResponse.getMessage().
+            getRegistryErrorList().getRegistryError().get(0).getSeverity());
 
-        verify(auditLogger).auditNhinXDR(eq(request), eq(assertion), isNull(NhinTargetSystemType.class),
-                eq(NhincConstants.AUDIT_LOG_INBOUND_DIRECTION));
-
-        verify(auditLogger).auditAcknowledgement(eq(actualResponse), eq(assertion), isNull(NhinTargetSystemType.class),
-                eq(NhincConstants.AUDIT_LOG_OUTBOUND_DIRECTION), eq(NhincConstants.XDR_REQUEST_ACTION));
+        verify(mockEJBLogger).auditResponseMessage(eq(request), eq(actualResponse), eq(assertion), isNull(
+            NhinTargetSystemType.class), eq(NhincConstants.AUDIT_LOG_INBOUND_DIRECTION),
+            eq(NhincConstants.AUDIT_LOG_NHIN_INTERFACE), eq(Boolean.FALSE), eq(webContextProperties),
+            eq(NhincConstants.NHINC_XDR_REQUEST_SERVICE_NAME), any(DocSubmissionDeferredRequestAuditTransforms.class));
     }
-    
+
+    @Test
+    public void testAuditLoggingOffForDSDeferredRequest() {
+        ProvideAndRegisterDocumentSetRequestType request = new ProvideAndRegisterDocumentSetRequestType();
+        AssertionType assertion = new AssertionType();
+        XDRAcknowledgementType expectedResponse = new XDRAcknowledgementType();
+
+        Properties webContextProperties = new Properties();
+        when(adapterFactory.getAdapterDocSubmissionDeferredRequestProxy()).thenReturn(adapterProxy);
+
+        when(adapterProxy.provideAndRegisterDocumentSetBRequest(request, assertion)).thenReturn(expectedResponse);
+
+        PassthroughInboundDocSubmissionDeferredRequest passthroughDocSubmission
+            = new PassthroughInboundDocSubmissionDeferredRequest(adapterFactory, getAuditLogger(false), dsUtils);
+
+        XDRAcknowledgementType actualResponse = passthroughDocSubmission.provideAndRegisterDocumentSetBRequest(request,
+            assertion, webContextProperties);
+
+        assertSame(expectedResponse, actualResponse);
+        verify(mockEJBLogger, never()).auditResponseMessage(eq(request), eq(actualResponse), eq(assertion), isNull(
+            NhinTargetSystemType.class), eq(NhincConstants.AUDIT_LOG_INBOUND_DIRECTION),
+            eq(NhincConstants.AUDIT_LOG_NHIN_INTERFACE), eq(Boolean.FALSE), eq(webContextProperties),
+            eq(NhincConstants.NHINC_XDR_REQUEST_SERVICE_NAME), any(DocSubmissionDeferredRequestAuditTransforms.class));
+    }
+
+    private DocSubmissionDeferredRequestAuditLogger getAuditLogger(final boolean isAuditOn) {
+        return new DocSubmissionDeferredRequestAuditLogger() {
+            @Override
+            protected AuditEJBLogger getAuditLogger() {
+                return mockEJBLogger;
+            }
+
+            @Override
+            protected boolean isAuditLoggingOn(String serviceName) {
+                return isAuditOn;
+            }
+        };
+    }
 }

@@ -1,7 +1,5 @@
-/**
- * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
- *
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services.
+/*
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,28 +28,25 @@ package gov.hhs.fha.nhinc.admindistribution.inbound;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+
 import gov.hhs.fha.nhinc.admindistribution.aspect.EDXLDistributionEventDescriptionBuilder;
 import gov.hhs.fha.nhinc.aspect.InboundProcessingEvent;
 import gov.hhs.fha.nhinc.common.nhinccommon.AssertionType;
-import gov.hhs.fha.nhinc.event.DefaultEventDescriptionBuilder;
-
 import java.lang.reflect.Method;
-
 import oasis.names.tc.emergency.edxl.de._1.EDXLDistribution;
-
 import org.junit.Test;
 
 public class InboundAdminDistributionTest {
 
     @Test
     public void hasEventAnnotation() throws Exception {
-        Class<?>[] classes = { StandardInboundAdminDistribution.class };
+        Class<?>[] classes = {StandardInboundAdminDistribution.class};
         for (Class<?> clazz : classes) {
             Method method = clazz.getMethod("sendAlertMessage", EDXLDistribution.class, AssertionType.class);
             InboundProcessingEvent annotation = method.getAnnotation(InboundProcessingEvent.class);
             assertNotNull(annotation);
             assertEquals(EDXLDistributionEventDescriptionBuilder.class, annotation.beforeBuilder());
-            assertEquals(DefaultEventDescriptionBuilder.class, annotation.afterReturningBuilder());
+            assertEquals(EDXLDistributionEventDescriptionBuilder.class, annotation.afterReturningBuilder());
             assertEquals("Admin Distribution", annotation.serviceType());
             assertEquals("", annotation.version());
         }

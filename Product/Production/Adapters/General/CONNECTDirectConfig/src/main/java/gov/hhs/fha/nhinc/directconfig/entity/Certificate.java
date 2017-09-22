@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2014, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -44,14 +44,15 @@
  STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
  THE POSSIBILITY OF SUCH DAMAGE.
  */
-
 package gov.hhs.fha.nhinc.directconfig.entity;
 
 import gov.hhs.fha.nhinc.directconfig.entity.helpers.EntityStatus;
 import gov.hhs.fha.nhinc.directconfig.entity.helpers.Thumbprint;
 import gov.hhs.fha.nhinc.directconfig.exception.CertificateException;
-
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.security.Key;
 import java.security.KeyStore;
@@ -62,7 +63,6 @@ import java.security.cert.X509Certificate;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Enumeration;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -70,6 +70,7 @@ import org.apache.commons.logging.LogFactory;
  * The JPA Certificate class
  */
 public class Certificate {
+
     private static final String DEFAULT_JCE_PROVIDER_STRING = "BC";
     private static final String JCE_PROVIDER_STRING_SYS_PARAM = "org.nhindirect.config.JCEProviderName";
 
@@ -81,7 +82,7 @@ public class Certificate {
      * Gets the configured JCE crypto provider string for crypto operations. This is configured using the
      * -Dorg.nhindirect.config.JCEProviderName JVM parameters. If the parameter is not set or is empty, then the default
      * string "BC" (BouncyCastle provider) is returned. By default the agent installs the BouncyCastle provider.
-     * 
+     *
      * @return The name of the JCE provider string.
      */
     public static String getJCEProviderName() {
@@ -97,7 +98,7 @@ public class Certificate {
     /**
      * Overrides the configured JCE crypto provider string. If the name is empty or null, the default string "BC"
      * (BouncyCastle provider) is used.
-     * 
+     *
      * @param name The name of the JCE provider.
      */
     public static void setJCEProviderName(String name) {
@@ -108,9 +109,18 @@ public class Certificate {
         }
     }
 
-    private static final Log log = LogFactory.getLog(Certificate.class);
+    private static final Log LOG = LogFactory.getLog(Certificate.class);
 
-    public static final byte[] NULL_CERT = new byte[] {};
+    private static final byte[] NULL_CERT = new byte[] {};
+
+    /**
+     * Getter to encapsulate NULL_CERT constant array
+     *
+     * @return null cert (empty byte array)
+     */
+    public static byte[] getNullCert() {
+        return NULL_CERT;
+    }
 
     private String owner;
     private String thumbprint;
@@ -130,7 +140,7 @@ public class Certificate {
 
     /**
      * Get the value of owner.
-     * 
+     *
      * @return the value of owner.
      */
     public String getOwner() {
@@ -139,7 +149,7 @@ public class Certificate {
 
     /**
      * Set the value of owner.
-     * 
+     *
      * @param owner The value of owner.
      */
     public void setOwner(String owner) {
@@ -148,7 +158,7 @@ public class Certificate {
 
     /**
      * Get the value of data.
-     * 
+     *
      * @return the value of data.
      */
     public byte[] getData() {
@@ -157,7 +167,7 @@ public class Certificate {
 
     /**
      * Set the value of data.
-     * 
+     *
      * @param data The value of data.
      * @throws CertificateException
      */
@@ -173,7 +183,7 @@ public class Certificate {
 
     /**
      * Indicates if the certificate has a private key
-     * 
+     *
      * @return
      */
     public boolean isPrivateKey() {
@@ -182,13 +192,13 @@ public class Certificate {
 
     /**
      * Indicates if the certificate has a private key
-     * 
+     *
      * @param data
-     * 
+     *
      * @throws CertificateException
      */
     public void setPrivateKey(boolean b) throws CertificateException {
-        this.privateKey = b;
+        privateKey = b;
     }
 
     private void setThumbprint(String aThumbprint) {
@@ -197,7 +207,7 @@ public class Certificate {
 
     /**
      * Get the value of thumbprint.
-     * 
+     *
      * @return the value of thumbprint.
      */
     public String getThumbprint() {
@@ -206,7 +216,7 @@ public class Certificate {
 
     /**
      * Get the value of id.
-     * 
+     *
      * @return the value of id.
      */
     public Long getId() {
@@ -215,7 +225,7 @@ public class Certificate {
 
     /**
      * Set the value of id.
-     * 
+     *
      * @param id The value of id.
      */
     public void setId(Long id) {
@@ -224,7 +234,7 @@ public class Certificate {
 
     /**
      * Get the value of createTime.
-     * 
+     *
      * @return the value of createTime.
      */
     public Calendar getCreateTime() {
@@ -233,7 +243,7 @@ public class Certificate {
 
     /**
      * Set the value of createTime.
-     * 
+     *
      * @param timestamp The value of createTime.
      */
     public void setCreateTime(Calendar timestamp) {
@@ -242,7 +252,7 @@ public class Certificate {
 
     /**
      * Get the value of status.
-     * 
+     *
      * @return the value of status.
      */
     public EntityStatus getStatus() {
@@ -251,7 +261,7 @@ public class Certificate {
 
     /**
      * Set the value of status.
-     * 
+     *
      * @param status The value of status.
      */
     public void setStatus(EntityStatus status) {
@@ -260,7 +270,7 @@ public class Certificate {
 
     /**
      * Get the value of validStartDate.
-     * 
+     *
      * @return the value of validStartDate.
      */
     public Calendar getValidStartDate() {
@@ -269,7 +279,7 @@ public class Certificate {
 
     /**
      * Set the value of validStartDate.
-     * 
+     *
      * @param validStartDate The value of validStartDate.
      */
     public void setValidStartDate(Calendar validStartDate) {
@@ -278,7 +288,7 @@ public class Certificate {
 
     /**
      * Get the value of validEndDate.
-     * 
+     *
      * @return the value of validEndDate.
      */
     public Calendar getValidEndDate() {
@@ -287,7 +297,7 @@ public class Certificate {
 
     /**
      * Set the value of validEndDate.
-     * 
+     *
      * @param validEndDate The value of validEndDate.
      */
     public void setValidEndDate(Calendar validEndDate) {
@@ -296,7 +306,7 @@ public class Certificate {
 
     /**
      * Validate the Certificate for the existance of data.
-     * 
+     *
      * @throws CertificateException
      */
     public void validate() throws CertificateException {
@@ -306,7 +316,7 @@ public class Certificate {
     }
 
     private boolean hasData() {
-        return (data != null && !Arrays.equals(data, Certificate.NULL_CERT));
+        return data != null && !Arrays.equals(data, Certificate.NULL_CERT);
     }
 
     /**
@@ -316,13 +326,14 @@ public class Certificate {
         try {
             setData(NULL_CERT);
         } catch (CertificateException e) {
-            log.warn("Could not clear certificate data: " + e.getMessage(), e);
+            LOG.warn("Could not clear certificate data: " + e.getLocalizedMessage(), e);
         }
     }
 
     private void loadCertFromData() throws CertificateException {
         X509Certificate cert = null;
         CertContainer container = null;
+        Key key = null;
 
         try {
             validate();
@@ -330,8 +341,9 @@ public class Certificate {
             try {
                 container = toCredential();
                 cert = container.getCert();
+                key = container.getKey();
             } catch (CertificateException e) {
-                log.debug("Cert Container conversion failed: ", e);
+                LOG.warn("Cert Container conversion failed: " + e.getLocalizedMessage(), e);
             }
 
             if (cert == null) {
@@ -339,15 +351,16 @@ public class Certificate {
                 try {
                     @SuppressWarnings("unused")
                     final URL url = new URL(new String(data, "ASCII"));
-                } catch (Exception e) {
+                } catch (UnsupportedEncodingException | MalformedURLException e) {
                     // may not be a URL.. may be an encrypted stream that can't be accessed
                     // set the thumbprint to empty because the cert must be decrtyped
+                    LOG.warn("Not an IPKIX URL: " + e.getLocalizedMessage(), e);
                 }
 
                 setThumbprint("");
             } else {
                 setThumbprint(Thumbprint.toThumbprint(cert).toString());
-                setPrivateKey(container != null && container.getKey() != null);
+                setPrivateKey(key != null);
             }
         } catch (Exception e) {
             setData(NULL_CERT);
@@ -382,6 +395,7 @@ public class Certificate {
                 }
             } catch (Exception e) {
                 // must not be a PKCS12 stream, go on to next step
+                LOG.warn("Not a PKCS12 stream: " + e.getLocalizedMessage(), e);
             }
 
             if (certContainer == null) {
@@ -389,12 +403,12 @@ public class Certificate {
                 bais.reset();
                 bais = new ByteArrayInputStream(data);
 
-                X509Certificate cert = (X509Certificate) CertificateFactory.getInstance("X.509").generateCertificate(
-                        bais);
+                X509Certificate cert = (X509Certificate) CertificateFactory.getInstance("X.509")
+                        .generateCertificate(bais);
                 certContainer = new CertContainer(cert, null);
             }
             bais.close();
-        } catch (Exception e) {
+        } catch (CertificateException | java.security.cert.CertificateException | IOException e) {
             throw new CertificateException("Data cannot be converted to a valid X.509 Certificate", e);
         }
 
@@ -402,12 +416,13 @@ public class Certificate {
     }
 
     public static class CertContainer {
+
         private final X509Certificate cert;
         private final Key key;
 
         public CertContainer() {
-            this.cert = null;
-            this.key = null;
+            cert = null;
+            key = null;
         }
 
         public CertContainer(X509Certificate cert, Key key) {

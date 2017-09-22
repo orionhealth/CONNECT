@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,16 +26,15 @@
  */
 package gov.hhs.fha.nhinc.patientdiscovery._10.gateway.ws;
 
-import static org.junit.Assert.assertNotNull;
 import gov.hhs.fha.nhinc.patientdiscovery.inbound.deferred.request.PassthroughInboundPatientDiscoveryDeferredRequest;
 import gov.hhs.fha.nhinc.patientdiscovery.inbound.deferred.request.StandardInboundPatientDiscoveryDeferredRequest;
 import gov.hhs.fha.nhinc.patientdiscovery.outbound.deferred.request.PassthroughOutboundPatientDiscoveryDeferredRequest;
 import gov.hhs.fha.nhinc.patientdiscovery.outbound.deferred.request.StandardOutboundPatientDiscoveryDeferredRequest;
-
 import org.hl7.v3.MCCIIN000002UV01;
 import org.hl7.v3.PRPAIN201305UV02;
 import org.hl7.v3.RespondingGatewayPRPAIN201305UV02RequestType;
 import org.hl7.v3.RespondingGatewayPRPAIN201305UV02SecuredRequestType;
+import static org.junit.Assert.assertNotNull;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,7 +43,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 /**
  * @author akong
- * 
+ *
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = { "/patientdiscovery/_10/applicationContext.xml" })
@@ -52,25 +51,25 @@ public class PatientDiscoveryDeferredRequestSpringContextTest {
 
     @Autowired
     NhinPatientDiscoveryDeferredRequest inboundPatientDiscoveryEndpoint;
-    
+
     @Autowired
     EntityPatientDiscoveryDeferredRequestUnsecured outboundPatientDiscoveryUnsecuredEndpoint;
-    
+
     @Autowired
     EntityPatientDiscoveryDeferredRequestSecured outboundPatientDiscoverySecuredEndpoint;
-    
+
     @Autowired
     StandardOutboundPatientDiscoveryDeferredRequest stdOutboundReqOrchImpl;
-    
+
     @Autowired
     StandardInboundPatientDiscoveryDeferredRequest stdInboundReqOrchImpl;
-    
+
     @Autowired
     PassthroughOutboundPatientDiscoveryDeferredRequest ptOutboundPDResqOrchImpl;
-    
+
     @Autowired
     PassthroughInboundPatientDiscoveryDeferredRequest ptInboundPDReqOrchImpl;
-   
+
 
     @Test
     public void inbound() {
@@ -81,24 +80,24 @@ public class PatientDiscoveryDeferredRequestSpringContextTest {
 
         assertNotNull(response);
     }
-    
+
     @Test
     public void outboundUnsecured() {
         assertNotNull(outboundPatientDiscoveryUnsecuredEndpoint);
-        
+
         RespondingGatewayPRPAIN201305UV02RequestType request = new RespondingGatewayPRPAIN201305UV02RequestType();
         MCCIIN000002UV01 response = outboundPatientDiscoveryUnsecuredEndpoint.processPatientDiscoveryAsyncReq(request);
-        
+
         assertNotNull(response);
     }
-    
+
     @Test
     public void outboundSecured() {
         assertNotNull(outboundPatientDiscoverySecuredEndpoint);
-        
+
         RespondingGatewayPRPAIN201305UV02SecuredRequestType request = new RespondingGatewayPRPAIN201305UV02SecuredRequestType();
         MCCIIN000002UV01 response = outboundPatientDiscoverySecuredEndpoint.processPatientDiscoveryAsyncReq(request);
-        
+
         assertNotNull(response);
     }
 }

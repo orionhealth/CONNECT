@@ -1,7 +1,5 @@
-/**
- * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
- *
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services.
+/*
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -28,12 +26,6 @@
  */
 package gov.hhs.fha.nhinc.docretrieve.aspect;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 import gov.hhs.fha.nhinc.common.nhinccommon.AssertionType;
 import gov.hhs.fha.nhinc.event.BaseDescriptionBuilderTest;
 import gov.hhs.fha.nhinc.event.EventDescription;
@@ -41,11 +33,15 @@ import gov.hhs.fha.nhinc.event.builder.AssertionDescriptionExtractor;
 import gov.hhs.fha.nhinc.properties.PropertyAccessException;
 import gov.hhs.fha.nhinc.properties.PropertyAccessor;
 import ihe.iti.xds_b._2007.RetrieveDocumentSetRequestType;
-import javax.xml.ws.WebServiceContext;
-
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.Test;
 import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 import org.springframework.util.CollectionUtils;
 
 public class RetrieveDocumentSetRequestTypeDescriptionBuilderTest extends BaseDescriptionBuilderTest {
@@ -58,16 +54,17 @@ public class RetrieveDocumentSetRequestTypeDescriptionBuilderTest extends BaseDe
     @Before
     public void before() throws PropertyAccessException {
         final PropertyAccessor mockProperties = mock(PropertyAccessor.class);
-        builder = new RetrieveDocumentSetRequestTypeDescriptionBuilder(){
+        builder = new RetrieveDocumentSetRequestTypeDescriptionBuilder() {
             @Override
-            protected PropertyAccessor getPropertyAccessor(String fileName){
+            protected PropertyAccessor getPropertyAccessor() {
                 return mockProperties;
             }
         };
         request = new RetrieveDocumentSetRequestType();
         assertion = new AssertionType();
         assertionExtractor = mock(AssertionDescriptionExtractor.class);
-        when(mockProperties.getProperty(anyString())).thenReturn(null);
+        when(assertionExtractor.getAssertion(assertion)).thenReturn(assertion);
+        when(mockProperties.getProperty(anyString(), anyString())).thenReturn(null);
         when(assertionExtractor.getInitiatingHCID(assertion)).thenReturn("hcid");
         when(assertionExtractor.getNPI(assertion)).thenReturn("npi");
     }
@@ -89,7 +86,7 @@ public class RetrieveDocumentSetRequestTypeDescriptionBuilderTest extends BaseDe
     @Test
     public void withAssertion() {
         builder.setAssertionExtractor(assertionExtractor);
-        Object[] arguments = { request, assertion };
+        Object[] arguments = {request, assertion};
         builder.setArguments(arguments);
         EventDescription eventDescription = assertBasicBuild();
         assertEquals("hcid", eventDescription.getInitiatingHCID());

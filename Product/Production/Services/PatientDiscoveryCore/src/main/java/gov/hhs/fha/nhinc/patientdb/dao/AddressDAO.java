@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,25 +26,29 @@
  */
 package gov.hhs.fha.nhinc.patientdb.dao;
 
+import gov.hhs.fha.nhinc.patientdb.model.Address;
+import gov.hhs.fha.nhinc.patientdb.persistence.HibernateUtil;
+import gov.hhs.fha.nhinc.patientdb.persistence.HibernateUtilFactory;
+import java.util.ArrayList;
 import java.util.List;
-
-import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
+import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.hibernate.criterion.Expression;
-
-import gov.hhs.fha.nhinc.patientdb.model.Address;
-import gov.hhs.fha.nhinc.patientdb.persistence.HibernateUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
  * AddressDAO Class provides methods to query and update Address Data to/from MySQL Database using Hibernate.
+ *
  * @author richard.ettema
  */
 public class AddressDAO {
-    private static final Logger LOG = Logger.getLogger(AddressDAO.class);
+
+    private static final Logger LOG = LoggerFactory.getLogger(AddressDAO.class);
     private static AddressDAO addressDAO = new AddressDAO();
 
     /**
@@ -56,6 +60,7 @@ public class AddressDAO {
 
     /**
      * Singleton instance returned...
+     *
      * @return AddressDAO
      */
     public static AddressDAO getAddressDAOInstance() {
@@ -66,10 +71,9 @@ public class AddressDAO {
     // =========================
     // Standard CRUD DML Methods
     // =========================
-
     /**
-     * Create a single <code>Address</code> record. The generated id
-     * will be available in the addressRecord.
+     * Create a single <code>Address</code> record. The generated id will be available in the addressRecord.
+     *
      * @param addressRecord
      * @return boolean
      */
@@ -87,7 +91,7 @@ public class AddressDAO {
 
             try {
 
-                SessionFactory sessionFactory = HibernateUtil.getSessionFactory();
+                SessionFactory sessionFactory = getSessionFactory();
 
                 session = sessionFactory.openSession();
 
@@ -101,28 +105,27 @@ public class AddressDAO {
 
                 tx.commit();
 
-            } catch (Exception e) {
+            } catch (HibernateException | NullPointerException e) {
 
                 result = false;
 
                 if (tx != null) {
-
                     tx.rollback();
-
                 }
 
-                LOG.error("Exception during insertion caused by :" + e.getMessage(), e);
+                LOG.error("Exception during insertion caused by : {}", e.getMessage(), e);
 
             } finally {
 
                 // Actual Address insertion will happen at this step
-
                 if (session != null) {
-
-                    session.close();
+                    try {
+                        session.close();
+                    } catch (HibernateException e) {
+                        LOG.error("Exception while closing the session: {}", e.getMessage(), e);
+                    }
 
                 }
-
             }
 
         }
@@ -143,7 +146,6 @@ public class AddressDAO {
      *
      * @return Address
      */
-
     public Address read(Long id) {
 
         LOG.debug("AddressDAO.read() - Begin");
@@ -160,48 +162,48 @@ public class AddressDAO {
 
         Session session = null;
 
-        List<Address> queryList = null;
+        List<Address> queryList;
 
         Address foundRecord = null;
 
         try {
 
-            SessionFactory sessionFactory = HibernateUtil.getSessionFactory();
+            SessionFactory sessionFactory = getSessionFactory();
 
             session = sessionFactory.openSession();
 
             LOG.info("Reading Record...");
 
             // Build the criteria
-
             Criteria aCriteria = session.createCriteria(Address.class);
 
             aCriteria.add(Expression.eq("id", id));
 
             queryList = aCriteria.list();
 
-            if (queryList != null && queryList.size() > 0) {
+            if (queryList != null && !queryList.isEmpty()) {
 
                 foundRecord = queryList.get(0);
 
             }
 
-        } catch (Exception e) {
+        } catch (HibernateException | NullPointerException e) {
 
-            LOG.error("Exception during read occured due to :" + e.getMessage(), e);
+            LOG.error("Exception during read occured due to : {}", e.getMessage(), e);
 
         } finally {
 
             // Flush and close session
-
             if (session != null) {
 
-                session.flush();
-
-                session.close();
+                try {
+                    session.flush();
+                    session.close();
+                } catch (HibernateException e) {
+                    LOG.error("Exception while closing the session after a read: {}", e.getMessage(), e);
+                }
 
             }
-
         }
 
         LOG.debug("AddressDAO.read() - End");
@@ -218,7 +220,6 @@ public class AddressDAO {
      *
      * @return boolean
      */
-
     public boolean update(Address addressRecord) {
 
         LOG.debug("AddressDAO.update() - Begin");
@@ -233,7 +234,7 @@ public class AddressDAO {
 
             try {
 
-                SessionFactory sessionFactory = HibernateUtil.getSessionFactory();
+                SessionFactory sessionFactory = getSessionFactory();
 
                 session = sessionFactory.openSession();
 
@@ -247,7 +248,7 @@ public class AddressDAO {
 
                 tx.commit();
 
-            } catch (Exception e) {
+            } catch (HibernateException | NullPointerException e) {
 
                 result = false;
 
@@ -257,18 +258,19 @@ public class AddressDAO {
 
                 }
 
-                LOG.error("Exception during update caused by :" + e.getMessage(), e);
+                LOG.error("Exception during update caused by : {}", e.getMessage(), e);
 
             } finally {
 
                 // Actual Address update will happen at this step
-
                 if (session != null) {
-
-                    session.close();
+                    try {
+                        session.close();
+                    } catch (HibernateException e) {
+                        LOG.error("Exception while closing the session after update: {}", e.getMessage(), e);
+                    }
 
                 }
-
             }
 
         }
@@ -285,7 +287,6 @@ public class AddressDAO {
      *
      * @param addressRecord
      */
-
     public void delete(Address addressRecord) {
 
         LOG.debug("AddressDAO.delete() - Begin");
@@ -294,32 +295,32 @@ public class AddressDAO {
 
         try {
 
-            SessionFactory sessionFactory = HibernateUtil.getSessionFactory();
+            SessionFactory sessionFactory = getSessionFactory();
 
             session = sessionFactory.openSession();
 
             LOG.info("Deleting Record...");
 
             // Delete the Address record
-
             session.delete(addressRecord);
 
-        } catch (Exception e) {
+        } catch (HibernateException | NullPointerException e) {
 
-            LOG.error("Exception during delete occured due to :" + e.getMessage(), e);
+            LOG.error("Exception during delete occured due to : {}", e.getMessage(), e);
 
         } finally {
 
             // Flush and close session
-
             if (session != null) {
 
-                session.flush();
-
-                session.close();
+                try {
+                    session.flush();
+                    session.close();
+                } catch (HibernateException e) {
+                    LOG.error("Exception while closing the session after a delete: {}", e.getMessage(), e);
+                }
 
             }
-
         }
 
         LOG.debug("AddressDAO.delete() - End");
@@ -327,11 +328,8 @@ public class AddressDAO {
     }
 
     // =========================
-
     // Find DML Methods
-
     // =========================
-
     /**
      *
      * Read (Query) the database to get all <code>Address</code> records based
@@ -342,10 +340,12 @@ public class AddressDAO {
      *
      * @return List<Address>
      */
-
     public List<Address> findPatientAddresses(Long patientId) {
 
         LOG.debug("AddressDAO.readPatientAddresses() - Begin");
+
+        List<Address> queryList = new ArrayList<>();
+        Session session = null;
 
         if (patientId == null) {
 
@@ -353,43 +353,40 @@ public class AddressDAO {
 
             LOG.debug("AddressDAO.readPatientAddresses() - End");
 
-            return null;
-
+            return queryList;
         }
-
-        Session session = null;
-
-        List<Address> queryList = null;
 
         try {
 
-            SessionFactory sessionFactory = HibernateUtil.getSessionFactory();
+            SessionFactory sessionFactory = getSessionFactory();
 
             session = sessionFactory.openSession();
 
             LOG.info("Reading Record...");
 
             // Build the criteria
-
             Criteria aCriteria = session.createCriteria(Address.class);
 
             aCriteria.add(Expression.eq("patient.patientId", patientId));
 
             queryList = aCriteria.list();
 
-        } catch (Exception e) {
+        } catch (HibernateException | NullPointerException e) {
 
-            LOG.error("Exception during read occured due to :" + e.getMessage(), e);
+            LOG.error("Exception during read occured due to : {}", e.getMessage(), e);
 
         } finally {
 
             // Flush and close session
-
             if (session != null) {
 
-                session.flush();
-
-                session.close();
+                try {
+                    session.flush();
+                    session.close();
+                } catch (HibernateException e) {
+                    LOG.error("Exception while closing the session after looking for patient address: {}",
+                            e.getMessage(), e);
+                }
 
             }
 
@@ -399,6 +396,15 @@ public class AddressDAO {
 
         return queryList;
 
+    }
+
+    protected SessionFactory getSessionFactory() {
+        SessionFactory fact = null;
+        HibernateUtil util = HibernateUtilFactory.getPatientDiscHibernateUtil();
+        if (util != null) {
+            fact = util.getSessionFactory();
+        }
+        return fact;
     }
 
 }

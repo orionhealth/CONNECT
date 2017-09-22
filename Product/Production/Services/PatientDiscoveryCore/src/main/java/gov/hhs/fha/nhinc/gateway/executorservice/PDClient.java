@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,8 +30,6 @@ import gov.hhs.fha.nhinc.common.nhinccommon.AssertionType;
 import gov.hhs.fha.nhinc.connectmgr.UrlInfo;
 import gov.hhs.fha.nhinc.nhinclib.NhincConstants;
 import gov.hhs.fha.nhinc.patientdiscovery.PatientDiscovery201305Processor;
-import gov.hhs.fha.nhinc.patientdiscovery.PatientDiscoveryAuditLogger;
-import gov.hhs.fha.nhinc.patientdiscovery.PatientDiscoveryAuditor;
 import gov.hhs.fha.nhinc.patientdiscovery.PatientDiscoveryPolicyChecker;
 import gov.hhs.fha.nhinc.saml.extraction.SamlTokenCreator;
 import gov.hhs.fha.nhinc.transform.subdisc.HL7PRPA201306Transforms;
@@ -40,7 +38,6 @@ import ihe.iti.xcpd._2009.RespondingGatewayPortType;
 import ihe.iti.xcpd._2009.RespondingGatewayService;
 import java.util.Map;
 import javax.xml.ws.BindingProvider;
-import org.apache.log4j.Logger;
 import org.hl7.v3.CS;
 import org.hl7.v3.EDExplicit;
 import org.hl7.v3.II;
@@ -50,6 +47,8 @@ import org.hl7.v3.MCCIMT000100UV01RespondTo;
 import org.hl7.v3.PRPAIN201305UV02;
 import org.hl7.v3.PRPAIN201306UV02;
 import org.hl7.v3.RespondingGatewayPRPAIN201305UV02RequestType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Implements the Nhin PatientDiscovery web service client that calls this web service Defines the specific generics to
@@ -66,7 +65,7 @@ import org.hl7.v3.RespondingGatewayPRPAIN201305UV02RequestType;
 public class PDClient<Target extends UrlInfo, Request extends RespondingGatewayPRPAIN201305UV02RequestType, Response extends ResponseWrapper>
     implements WebServiceClient<Target, Request, Response> {
 
-    private static final Logger LOG = Logger.getLogger(PDClient.class);
+    private static final Logger LOG = LoggerFactory.getLogger(PDClient.class);
     private static RespondingGatewayService serviceInstance = null;
     private static final Object PDSYNC = new Object();
     private AssertionType assertion = null;
@@ -118,7 +117,7 @@ public class PDClient<Target extends UrlInfo, Request extends RespondingGatewayP
     @SuppressWarnings("static-access")
     @Override
     public Response callWebService(Target target, Request request) throws Exception {
-        ResponseWrapper resp = null;
+        ResponseWrapper resp;
         PRPAIN201306UV02 discoveryResponse = null;
         RespondingGatewayPRPAIN201305UV02RequestType newRequest = null;
         try {
@@ -128,17 +127,15 @@ public class PDClient<Target extends UrlInfo, Request extends RespondingGatewayP
             // check the policy for the outgoing request to the target community
             boolean bIsPolicyOk = checkPolicy(newRequest, assertion);
             if (bIsPolicyOk) {
-                // Audit the patientDiscovery Request Message sent on the Nhin Interface
-                PatientDiscoveryAuditor auditLog = new PatientDiscoveryAuditLogger();
-                auditLog.auditEntity201305(newRequest, assertion, NhincConstants.AUDIT_LOG_OUTBOUND_DIRECTION);
+                //Removed the old PatientDiscoveryAuditLogger.
                 String serviceAddress = target.getUrl();
 
                 RespondingGatewayPortType servicePort = getWebServiceInstance().getRespondingGatewayPortSoap();
                 Map requestContext = ((BindingProvider) servicePort).getRequestContext();
                 requestContext.put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, serviceAddress);
-                Map samlMap =
-                    (new SamlTokenCreator()).createRequestContext(assertion, serviceAddress,
-                    NhincConstants.PATIENT_DISCOVERY_ACTION);
+                Map samlMap
+                    = (new SamlTokenCreator()).createRequestContext(assertion, serviceAddress,
+                        NhincConstants.PATIENT_DISCOVERY_ACTION);
                 requestContext.putAll(samlMap);
 
                 // ensure target hcid is set on request
@@ -159,9 +156,9 @@ public class PDClient<Target extends UrlInfo, Request extends RespondingGatewayP
                 discoveryResponse = servicePort.respondingGatewayPRPAIN201305UV02(newRequest.getPRPAIN201305UV02());
             } else {
                 LOG.debug(Thread.currentThread().getName() + " has validPolicy=false");
-                discoveryResponse =
-                    (new HL7PRPA201306Transforms()).createPRPA201306ForErrors(newRequest.getPRPAIN201305UV02(),
-                    NhincConstants.PATIENT_DISCOVERY_POLICY_FAILED_ACK_MSG);
+                discoveryResponse
+                    = (new HL7PRPA201306Transforms()).createPRPA201306ForErrors(newRequest.getPRPAIN201305UV02(),
+                        NhincConstants.PATIENT_DISCOVERY_POLICY_FAILED_ACK_MSG);
             }
         } catch (Exception e) {
             ExecutorServiceHelper.getInstance().outputCompleteException(e);
@@ -199,9 +196,9 @@ public class PDClient<Target extends UrlInfo, Request extends RespondingGatewayP
         RespondingGatewayPRPAIN201305UV02RequestType request, AssertionType assertion, UrlInfo urlInfo) {
         RespondingGatewayPRPAIN201305UV02RequestType newRequest = new RespondingGatewayPRPAIN201305UV02RequestType();
 
-        PRPAIN201305UV02 new201305 =
-            new PatientDiscovery201305Processor().createNewRequest(cloneRequest(request.getPRPAIN201305UV02()),
-            urlInfo.getHcid());
+        PRPAIN201305UV02 new201305
+            = new PatientDiscovery201305Processor().createNewRequest(cloneRequest(request.getPRPAIN201305UV02()),
+                urlInfo.getHcid());
 
         newRequest.setAssertion(assertion);
         newRequest.setPRPAIN201305UV02(new201305);

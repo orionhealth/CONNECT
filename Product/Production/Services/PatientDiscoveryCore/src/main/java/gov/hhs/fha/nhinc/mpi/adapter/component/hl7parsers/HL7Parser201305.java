@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,13 +26,16 @@
  */
 package gov.hhs.fha.nhinc.mpi.adapter.component.hl7parsers;
 
+import gov.hhs.fha.nhinc.mpilib.Address;
+import gov.hhs.fha.nhinc.mpilib.Identifier;
+import gov.hhs.fha.nhinc.mpilib.Identifiers;
+import gov.hhs.fha.nhinc.mpilib.Patient;
+import gov.hhs.fha.nhinc.mpilib.PersonName;
+import gov.hhs.fha.nhinc.mpilib.PhoneNumber;
 import java.io.Serializable;
 import java.util.Iterator;
 import java.util.List;
-
 import javax.xml.bind.JAXBElement;
-
-import org.apache.log4j.Logger;
 import org.hl7.v3.ADExplicit;
 import org.hl7.v3.AdxpExplicitCity;
 import org.hl7.v3.AdxpExplicitPostalCode;
@@ -54,13 +57,8 @@ import org.hl7.v3.PRPAMT201306UV02PatientAddress;
 import org.hl7.v3.PRPAMT201306UV02PatientTelecom;
 import org.hl7.v3.PRPAMT201306UV02QueryByParameter;
 import org.hl7.v3.TELExplicit;
-
-import gov.hhs.fha.nhinc.mpilib.Address;
-import gov.hhs.fha.nhinc.mpilib.Identifier;
-import gov.hhs.fha.nhinc.mpilib.Identifiers;
-import gov.hhs.fha.nhinc.mpilib.Patient;
-import gov.hhs.fha.nhinc.mpilib.PersonName;
-import gov.hhs.fha.nhinc.mpilib.PhoneNumber;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -68,7 +66,7 @@ import gov.hhs.fha.nhinc.mpilib.PhoneNumber;
  */
 public class HL7Parser201305 {
 
-    private static final Logger LOG = Logger.getLogger(HL7Parser201305.class);
+    private static final Logger LOG = LoggerFactory.getLogger(HL7Parser201305.class);
 
     /**
      * Method to extract Gender Code from a PRPAMT201306UV02ParameterList.
@@ -298,11 +296,11 @@ public class HL7Parser201305 {
                 Iterator<Serializable> iterSerialObjects = choice.iterator();
 
                 int addressLineCounter = 0;
-                AdxpExplicitStreetAddressLine addressLine1 = null;
-                AdxpExplicitStreetAddressLine addressLine2 = null;
-                AdxpExplicitCity city = null;
-                AdxpExplicitState state = null;
-                AdxpExplicitPostalCode postalCode = null;
+                AdxpExplicitStreetAddressLine addressLine1;
+                AdxpExplicitStreetAddressLine addressLine2;
+                AdxpExplicitCity city;
+                AdxpExplicitState state;
+                AdxpExplicitPostalCode postalCode;
 
                 while (iterSerialObjects.hasNext()) {
                     LOG.info("in iterSerialObjects.hasNext() loop");

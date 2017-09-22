@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-13, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,16 +30,15 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+
 import gov.hhs.fha.nhinc.logging.transaction.dao.TransactionDAO;
 import gov.hhs.fha.nhinc.logging.transaction.model.TransactionRepo;
-
 import java.util.UUID;
-
 import org.junit.Test;
 
 /**
  * The Class TransactionStoreDatabaseTest.
- * 
+ *
  * @author msw
  */
 public class TransactionStoreDatabaseTest {
@@ -165,7 +164,6 @@ public class TransactionStoreDatabaseTest {
     @Test
     public void testWithNullDao() {
         transactionDAO = mock(TransactionDAO.class);
-        ;
         TransactionStoreDatabase store = getMockTransactionStoreDb();
 
         assertEquals(false, store.insertIntoTransactionRepo(null));
@@ -173,7 +171,7 @@ public class TransactionStoreDatabaseTest {
 
     /**
      * Gets the mock transaction store db.
-     * 
+     *
      * @return the mock transaction store db
      */
     private TransactionStoreDatabase getMockTransactionStoreDb() {
@@ -181,7 +179,7 @@ public class TransactionStoreDatabaseTest {
             @Override
             protected TransactionDAO getTransactionDAO() {
                 return transactionDAO;
-            };
+            }
         };
     }
 

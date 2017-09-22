@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -33,23 +33,21 @@ import gov.hhs.fha.nhinc.common.nhinccommonentity.RespondingGatewayCrossGatewayQ
 import gov.hhs.fha.nhinc.common.nhinccommonentity.RespondingGatewayCrossGatewayQuerySecuredRequestType;
 import gov.hhs.fha.nhinc.docquery.outbound.OutboundDocQuery;
 import gov.hhs.fha.nhinc.messaging.server.BaseService;
-
 import javax.xml.ws.WebServiceContext;
-
 import oasis.names.tc.ebxml_regrep.xsd.query._3.AdhocQueryRequest;
 import oasis.names.tc.ebxml_regrep.xsd.query._3.AdhocQueryResponse;
-
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class EntityDocQueryImpl extends BaseService {
 
-    private static final Logger LOG = Logger.getLogger(EntityDocQueryImpl.class);
+    private static final Logger LOG = LoggerFactory.getLogger(EntityDocQueryImpl.class);
     private OutboundDocQuery outboundDocQuery;
 
     /**
      * Constructor.
-     * 
+     *
      * @param outboundDocQuery
      */
     public EntityDocQueryImpl(OutboundDocQuery outboundDocQuery) {
@@ -59,7 +57,7 @@ public class EntityDocQueryImpl extends BaseService {
     /**
      * Sends  the request  to the Nwhin. This method is invoked by the secured  outbound interface and the assertion object
      * is read from the webservice context.
-     * 
+     *
      * @param request
      * @param context
      * @return AdhocQueryResponse
@@ -76,7 +74,7 @@ public class EntityDocQueryImpl extends BaseService {
     /**
      * Sends the request to the Nwhin. This method is invoked by the unsecured outbound interface and the assertion
      * object is read from the request object itself.
-     * 
+     *
      * @param request
      * @param context
      * @return AdhocQueryResponse
@@ -97,7 +95,7 @@ public class EntityDocQueryImpl extends BaseService {
             if (targets == null) {
                 targets = new ObjectFactory().createNhinTargetCommunitiesType();
             }
-            
+
             if (StringUtils.isBlank(targets.getUseSpecVersion())) {
                 targets.setUseSpecVersion("2.0");
             }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,24 +26,23 @@
  */
 package gov.hhs.fha.nhinc.messaging.service.decorator.cxf;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import gov.hhs.fha.nhinc.messaging.client.CONNECTClient;
 import gov.hhs.fha.nhinc.messaging.client.CONNECTTestClient;
 import gov.hhs.fha.nhinc.messaging.client.interceptor.SoapResponseInInterceptor;
 import gov.hhs.fha.nhinc.messaging.service.ServiceEndpoint;
 import gov.hhs.fha.nhinc.messaging.service.port.TestServicePortDescriptor;
 import gov.hhs.fha.nhinc.messaging.service.port.TestServicePortType;
-
 import org.apache.cxf.endpoint.Client;
 import org.apache.cxf.frontend.ClientProxy;
 import org.apache.cxf.interceptor.Interceptor;
 import org.apache.cxf.message.Message;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import org.junit.Test;
 
 /**
  * @author akong
- * 
+ *
  */
 public class SoapResponseServiceEndpointDecoratorTest {
 
@@ -75,7 +74,7 @@ public class SoapResponseServiceEndpointDecoratorTest {
 
     /**
      * Verifies that the SoapResponseInInterceptor is in the interceptor chain of the client.
-     * 
+     *
      * @param client
      */
     public void verifySoapResponseInInterceptor(CONNECTClient<?> client) {
@@ -93,11 +92,11 @@ public class SoapResponseServiceEndpointDecoratorTest {
     }
 
     private CONNECTClient<TestServicePortType> createClient() {
-        CONNECTTestClient<TestServicePortType> testClient = new CONNECTTestClient<TestServicePortType>(
+        CONNECTTestClient<TestServicePortType> testClient = new CONNECTTestClient<>(
                 new TestServicePortDescriptor());
 
         ServiceEndpoint<TestServicePortType> serviceEndpoint = testClient.getServiceEndpoint();
-        serviceEndpoint = new SoapResponseServiceEndpointDecorator<TestServicePortType>(serviceEndpoint);
+        serviceEndpoint = new SoapResponseServiceEndpointDecorator<>(serviceEndpoint);
         serviceEndpoint.configure();
 
         return testClient;

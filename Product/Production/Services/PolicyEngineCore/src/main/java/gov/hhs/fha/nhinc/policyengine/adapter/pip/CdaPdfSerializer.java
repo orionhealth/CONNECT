@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,7 +30,6 @@ import gov.hhs.fha.nhinc.transform.marshallers.JAXBContextHandler;
 import gov.hhs.fha.nhinc.util.JAXBUnmarshallingUtil;
 import gov.hhs.fha.nhinc.util.StreamUtils;
 import java.io.ByteArrayInputStream;
-import org.hl7.v3.POCDMT000040ClinicalDocument;
 import java.io.StringWriter;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
@@ -38,8 +37,9 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.stream.XMLStreamException;
-
-import org.apache.log4j.Logger;
+import org.hl7.v3.POCDMT000040ClinicalDocument;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This class is used to serialize/deserialize the Patient Preferences documents.
@@ -48,7 +48,7 @@ import org.apache.log4j.Logger;
  */
 public class CdaPdfSerializer {
 
-    private static final Logger LOG = Logger.getLogger(CdaPdfSerializer.class);
+    private static final Logger LOG = LoggerFactory.getLogger(CdaPdfSerializer.class);
 
     /**
      * This method takes in an object representation of the HL7 Clinical Document and serializes it to a text string
@@ -60,7 +60,7 @@ public class CdaPdfSerializer {
      * occurs.
      */
     public String serialize(POCDMT000040ClinicalDocument oCda) throws AdapterPIPException {
-        String sCda = "";
+        String sCda;
 
         try {
             JAXBContextHandler oHandler = new JAXBContextHandler();

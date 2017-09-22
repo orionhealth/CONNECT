@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -40,7 +40,8 @@ import gov.hhs.fha.nhinc.nhinclib.NhincConstants;
 import gov.hhs.fha.nhinc.nhinclib.NullChecker;
 import oasis.names.tc.ebxml_regrep.xsd.query._3.AdhocQueryRequest;
 import oasis.names.tc.ebxml_regrep.xsd.query._3.AdhocQueryResponse;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -48,7 +49,7 @@ import org.apache.log4j.Logger;
  */
 public class AdapterDocQueryProxyWebServiceUnsecuredImpl extends BaseAdapterDocQueryProxy {
 
-    private static final Logger LOG = Logger.getLogger(AdapterDocQueryProxyWebServiceUnsecuredImpl.class);
+    private static final Logger LOG = LoggerFactory.getLogger(AdapterDocQueryProxyWebServiceUnsecuredImpl.class);
 
     /**
      * @param apiLevel Adapter ApiLevel Param.
@@ -56,12 +57,7 @@ public class AdapterDocQueryProxyWebServiceUnsecuredImpl extends BaseAdapterDocQ
      */
     public ServicePortDescriptor<AdapterDocQueryPortType> getServicePortDescriptor(
         NhincConstants.ADAPTER_API_LEVEL apiLevel) {
-        switch (apiLevel) {
-            case LEVEL_a0:
-                return new AdapterDocQueryServicePortDescriptor();
-            default:
-                return new AdapterDocQueryServicePortDescriptor();
-        }
+        return new AdapterDocQueryServicePortDescriptor();
     }
 
     /**
@@ -78,7 +74,7 @@ public class AdapterDocQueryProxyWebServiceUnsecuredImpl extends BaseAdapterDocQ
     public AdhocQueryResponse respondingGatewayCrossGatewayQuery(AdhocQueryRequest msg, AssertionType assertion) {
         LOG.debug("Begin respondingGatewayCrossGatewayQuery");
         AdhocQueryResponse response = null;
-        String url = null;
+        String url;
         try {
             //get the Adopter Endpoint URL
             url = getEndPointFromConnectionManagerByAdapterAPILevel(assertion, NhincConstants.ADAPTER_DOC_QUERY_SERVICE_NAME);

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,27 +26,25 @@
  */
 package gov.hhs.fha.nhinc.messaging.service.decorator.cxf;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 import gov.hhs.fha.nhinc.messaging.client.CONNECTClient;
 import gov.hhs.fha.nhinc.messaging.client.CONNECTTestClient;
 import gov.hhs.fha.nhinc.messaging.service.ServiceEndpoint;
 import gov.hhs.fha.nhinc.messaging.service.port.TestServicePortDescriptor;
 import gov.hhs.fha.nhinc.messaging.service.port.TestServicePortType;
-
 import java.util.Map;
-
 import org.apache.cxf.endpoint.Client;
 import org.apache.cxf.frontend.ClientProxy;
 import org.apache.cxf.interceptor.Interceptor;
 import org.apache.cxf.message.Message;
 import org.apache.cxf.ws.security.wss4j.WSS4JOutInterceptor;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 
 /**
  * @author akong
- * 
+ *
  */
 public class WsSecurityServiceEndpointDecoratorTest {
 
@@ -81,7 +79,7 @@ public class WsSecurityServiceEndpointDecoratorTest {
 
     /**
      * This method verifies that the passed in client is configured for Ws-Security properly.
-     * 
+     *
      * @param client
      */
     public void verifyWsSecurityProperties(CONNECTClient<?> client) {
@@ -97,18 +95,18 @@ public class WsSecurityServiceEndpointDecoratorTest {
 
         assertNotNull(wss4jInterceptor);
         assertTrue(wss4jInterceptor.isAllowMTOM());
-        
-        Map<String, Object> properties = wss4jInterceptor.getProperties();        
+
+        Map<String, Object> properties = wss4jInterceptor.getProperties();
         new WsSecurityConfigFactoryTest().verifyWsSecurityProperties(properties);
     }
 
     private CONNECTClient<TestServicePortType> createClient() {
-        CONNECTTestClient<TestServicePortType> testClient = new CONNECTTestClient<TestServicePortType>(
+        CONNECTTestClient<TestServicePortType> testClient = new CONNECTTestClient<>(
                 new TestServicePortDescriptor());
 
         ServiceEndpoint<TestServicePortType> serviceEndpoint = testClient.getServiceEndpoint();
 
-        serviceEndpoint = new WsSecurityServiceEndpointDecorator<TestServicePortType>(serviceEndpoint);
+        serviceEndpoint = new WsSecurityServiceEndpointDecorator<>(serviceEndpoint);
         serviceEndpoint.configure();
 
         return testClient;

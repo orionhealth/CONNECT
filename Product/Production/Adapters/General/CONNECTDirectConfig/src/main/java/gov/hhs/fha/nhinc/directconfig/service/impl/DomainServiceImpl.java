@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2014, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -127,7 +127,7 @@ public class DomainServiceImpl extends SpringBeanAutowiringSupport implements Do
     public Collection<Domain> getDomains(Collection<String> domainNames, EntityStatus status)
             throws ConfigurationServiceException {
 
-        return dao.getDomains(new ArrayList<String>(domainNames), status);
+        return dao.getDomains(new ArrayList<>(domainNames), status);
     }
 
     /**

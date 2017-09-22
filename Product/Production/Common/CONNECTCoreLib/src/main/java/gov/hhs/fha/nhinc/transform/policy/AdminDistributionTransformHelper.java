@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -34,7 +34,8 @@ import oasis.names.tc.emergency.edxl.de._1.EDXLDistribution;
 import oasis.names.tc.xacml._2_0.context.schema.os.RequestType;
 import oasis.names.tc.xacml._2_0.context.schema.os.ResourceType;
 import oasis.names.tc.xacml._2_0.context.schema.os.SubjectType;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -44,7 +45,7 @@ public class AdminDistributionTransformHelper {
 
     private static final String ActionInValue = "AdminDistIn";
     private static final String ActionOutValue = "AdminDistOut";
-    private static final Logger LOG = Logger.getLogger(AdminDistributionTransformHelper.class);
+    private static final Logger LOG = LoggerFactory.getLogger(AdminDistributionTransformHelper.class);
 
     public CheckPolicyRequestType transformNhinAlertToCheckPolicy(EDXLDistribution message, AssertionType assertion) {
         CheckPolicyRequestType result = new CheckPolicyRequestType();
@@ -72,7 +73,7 @@ public class AdminDistributionTransformHelper {
     }
 
     public CheckPolicyRequestType transformEntityAlertToCheckPolicy(RespondingGatewaySendAlertMessageType message,
-        String target) {
+            String target) {
 
         CheckPolicyRequestType result = new CheckPolicyRequestType();
         if (message == null) {
@@ -106,9 +107,8 @@ public class AdminDistributionTransformHelper {
         request.getSubject().add(subject);
 
         ResourceType resource = new ResourceType();
-        resource.getAttribute().add(
-            attrHelper.attributeFactory(Constants.HomeCommunityAttributeId, Constants.DataTypeString, message
-            .getAssertion().getHomeCommunity().getHomeCommunityId()));
+        resource.getAttribute().add(attrHelper.attributeFactory(Constants.HomeCommunityAttributeId,
+                Constants.DataTypeString, message.getAssertion().getHomeCommunity().getHomeCommunityId()));
 
         request.getResource().add(resource);
 

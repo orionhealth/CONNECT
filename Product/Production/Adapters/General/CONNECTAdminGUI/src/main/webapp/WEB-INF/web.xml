@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<web-app xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xmlns:web="http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" xsi:schemaLocation="
-             http://java.sun.com/xml/ns/javaee  http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
+<web-app
+    xmlns="http://java.sun.com/xml/ns/javaee"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:web="http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
+    xsi:schemaLocation="http://java.sun.com/xml/ns/javaee  http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
     version="2.5">
 
     <!-- Add Support for Spring -->
@@ -16,10 +18,16 @@
     <listener>
         <listener-class>org.apache.myfaces.webapp.StartupServletContextListener</listener-class>
     </listener>
-    
+
     <listener>
         <listener-class>gov.hhs.fha.nhinc.admingui.application.listener.ApplicationListener</listener-class>
     </listener>
+
+    <servlet>
+        <servlet-name>init</servlet-name>
+        <servlet-class>gov.hhs.fha.nhinc.admingui.servlet.InitServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
 
     <context-param>
         <param-name>org.apache.myfaces.SUPPORT_JSP_AND_FACES_EL</param-name>
@@ -40,13 +48,20 @@
     <welcome-file-list>
         <welcome-file>login.xhtml</welcome-file>
     </welcome-file-list>
-    
-    <!-- Error page -->
-    <error-page>
-        <exception-type>javax.faces.application.ViewExpiredException</exception-type>
-        <location>/login.xhtml</location>
-    </error-page>
 
+   <!-- Error page -->
+   <error-page>
+     <exception-type>javax.faces.application.ViewExpiredException</exception-type>
+     <location>/login.xhtml</location>
+   </error-page>
+  <error-page>
+    <error-code>500</error-code>
+    <location>/customerror.xhtml</location>
+   </error-page>
+  <error-page>
+    <error-code>400</error-code>
+    <location>/customerror.xhtml</location>
+   </error-page>
     <context-param>
         <param-name>org.jboss.jbossfaces.WAR_BUNDLES_JSF_IMPL</param-name>
         <param-value>true</param-value>
@@ -61,6 +76,12 @@
     <context-param>
         <param-name>javax.faces.PROJECT_STAGE</param-name>
         <param-value>Production</param-value>
+    </context-param>
+
+    <!-- Change to "false" when modifying / debugging -->
+    <context-param>
+        <param-name>javax.faces.FACELETS_SKIP_COMMENTS</param-name>
+        <param-value>true</param-value>
     </context-param>
 
     <context-param>
@@ -95,7 +116,7 @@
         <res-auth>Container</res-auth>
         <res-sharing-scope>Shareable</res-sharing-scope>
     </resource-ref>
-    
+
     <filter>
         <filter-name>PrimeFaces FileUpload Filter</filter-name>
         <filter-class>
@@ -106,4 +127,13 @@
         <filter-name>PrimeFaces FileUpload Filter</filter-name>
         <servlet-name>facesServlet</servlet-name>
     </filter-mapping>
+
+  <filter>
+    <filter-name>sanitizationFilter</filter-name>
+    <filter-class>gov.hhs.fha.nhinc.admingui.servlet.SanitizationFilter</filter-class>
+   </filter>
+  <filter-mapping>
+    <filter-name>sanitizationFilter</filter-name>
+    <servlet-name>facesServlet</servlet-name>
+   </filter-mapping>
 </web-app>

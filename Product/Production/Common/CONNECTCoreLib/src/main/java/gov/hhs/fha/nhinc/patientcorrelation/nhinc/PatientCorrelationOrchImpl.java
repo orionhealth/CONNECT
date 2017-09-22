@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -42,7 +42,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import org.apache.log4j.Logger;
 import org.hl7.v3.AddPatientCorrelationResponseType;
 import org.hl7.v3.II;
 import org.hl7.v3.PRPAIN201301UV02;
@@ -53,6 +52,8 @@ import org.hl7.v3.PRPAMT201307UV02DataSource;
 import org.hl7.v3.PRPAMT201307UV02ParameterList;
 import org.hl7.v3.PRPAMT201307UV02PatientIdentifier;
 import org.hl7.v3.RetrievePatientCorrelationsResponseType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -62,7 +63,7 @@ import org.hl7.v3.RetrievePatientCorrelationsResponseType;
  */
 public class PatientCorrelationOrchImpl implements PatientCorrelationOrch {
 
-    private static final Logger LOG = Logger.getLogger(PatientCorrelationOrchImpl.class);
+    private static final Logger LOG = LoggerFactory.getLogger(PatientCorrelationOrchImpl.class);
     private final CorrelatedIdentifiersDao dao;
 
     public PatientCorrelationOrchImpl(CorrelatedIdentifiersDao dao) {
@@ -71,9 +72,9 @@ public class PatientCorrelationOrchImpl implements PatientCorrelationOrch {
 
     @Override
     public RetrievePatientCorrelationsResponseType retrievePatientCorrelations(
-        PRPAIN201309UV02 retrievePatientCorrelationsRequest, AssertionType assertion) {
+            PRPAIN201309UV02 retrievePatientCorrelationsRequest, AssertionType assertion) {
         PRPAMT201307UV02PatientIdentifier patIdentifier = PRPAIN201309UVParser
-            .parseHL7PatientPersonFrom201309Message(retrievePatientCorrelationsRequest);
+                .parseHL7PatientPersonFrom201309Message(retrievePatientCorrelationsRequest);
         if (patIdentifier == null) {
             return null;
         }
@@ -82,38 +83,37 @@ public class PatientCorrelationOrchImpl implements PatientCorrelationOrch {
             LOG.warn("patient identifier was null");
             return null;
         }
-        
+
         II inputPatientId = listII.get(0);
         List<String> dataSourceList = extractDataSourceList(retrievePatientCorrelationsRequest);
         QualifiedPatientIdentifier inputQualifiedPatientIdentifier = qualifiedPatientIdentifierFactory(inputPatientId);
         // only non-expired patient correlation records will be returned
         // expired correlation records will be removed by the following call.
-        List<QualifiedPatientIdentifier> qualifiedPatientIdentifiers = retrieveQualifiedPatientIdentifiers(inputQualifiedPatientIdentifier,
-                dataSourceList);
+        List<QualifiedPatientIdentifier> qualifiedPatientIdentifiers = retrieveQualifiedPatientIdentifiers(
+                inputQualifiedPatientIdentifier, dataSourceList);
         List<II> iiList = buildList(qualifiedPatientIdentifiers);
-        PRPAIN201310UV02 IN201310 = PixRetrieveResponseBuilder.createPixRetrieveResponse(
-            retrievePatientCorrelationsRequest, iiList);
+        PRPAIN201310UV02 IN201310 = PixRetrieveResponseBuilder
+                .createPixRetrieveResponse(retrievePatientCorrelationsRequest, iiList);
         RetrievePatientCorrelationsResponseType result = new RetrievePatientCorrelationsResponseType();
         result.setPRPAIN201310UV02(IN201310);
         return result;
     }
-    
-    protected List<QualifiedPatientIdentifier> retrieveQualifiedPatientIdentifiers(QualifiedPatientIdentifier inputQualifiedPatientIdentifier,
-            List<String> dataSourceList) {
-        List<QualifiedPatientIdentifier> qualifiedPatientIdentifiers = dao.retrievePatientCorrelation(
-                inputQualifiedPatientIdentifier, dataSourceList);
-        return qualifiedPatientIdentifiers;
+
+    protected List<QualifiedPatientIdentifier> retrieveQualifiedPatientIdentifiers(
+            QualifiedPatientIdentifier inputQualifiedPatientIdentifier, List<String> dataSourceList) {
+
+        return dao.retrievePatientCorrelation(inputQualifiedPatientIdentifier, dataSourceList);
     }
 
     @Override
     public AddPatientCorrelationResponseType addPatientCorrelation(PRPAIN201301UV02 addPatientCorrelationRequest,
-        AssertionType assertion) {
+            AssertionType assertion) {
         PRPAMT201301UV02Patient patient = PRPAIN201301UVParser
-            .parseHL7PatientPersonFrom201301Message(addPatientCorrelationRequest);
-        String patientId = "";
-        String patientAssigningAuthId = "";
-        String correlatedPatientId = "";
-        String correlatedPatientAssigningAuthId = "";
+                .parseHL7PatientPersonFrom201301Message(addPatientCorrelationRequest);
+        String patientId;
+        String patientAssigningAuthId;
+        String correlatedPatientId;
+        String correlatedPatientAssigningAuthId;
         if (patient == null) {
             LOG.warn("Patient was null");
             return null;
@@ -129,25 +129,25 @@ public class PatientCorrelationOrchImpl implements PatientCorrelationOrch {
             return null;
         }
         patientId = ids.get(0).getExtension();
-        if (patientId != null && !patientId.equals("")) {
+        if (patientId != null && !patientId.isEmpty()) {
         } else {
             LOG.warn("patient id was not supplied");
             return null;
         }
         patientAssigningAuthId = ids.get(0).getRoot();
-        if (patientAssigningAuthId != null && !patientAssigningAuthId.equals("")) {
+        if (patientAssigningAuthId != null && !patientAssigningAuthId.isEmpty()) {
             LOG.warn("patientAssigningAuthId: " + patientAssigningAuthId);
         } else {
             LOG.warn("patient assigning authority was not supplied");
             return null;
         }
         correlatedPatientId = ids.get(1).getExtension();
-        if ((correlatedPatientId == null) || (correlatedPatientId.equals(""))) {
+        if (correlatedPatientId == null || correlatedPatientId.isEmpty()) {
             LOG.warn("correlatedPatientId was not supplied");
             return null;
         }
         correlatedPatientAssigningAuthId = ids.get(1).getRoot();
-        if (correlatedPatientAssigningAuthId != null && !correlatedPatientAssigningAuthId.equals("")) {
+        if (correlatedPatientAssigningAuthId != null && !correlatedPatientAssigningAuthId.isEmpty()) {
             LOG.warn("correlatedPatientAssigningAuthId: " + correlatedPatientAssigningAuthId);
         } else {
             LOG.warn("correlatedPatientId assigning authority was not supplied");
@@ -169,9 +169,9 @@ public class PatientCorrelationOrchImpl implements PatientCorrelationOrch {
     }
 
     private static List<String> extractDataSourceList(PRPAIN201309UV02 IN201309) {
-        List<String> dataSourceStringList = new ArrayList<String>();
+        List<String> dataSourceStringList = new ArrayList<>();
         PRPAMT201307UV02ParameterList parameterList = PRPAIN201309UVParser
-            .parseHL7ParameterListFrom201309Message(IN201309);
+                .parseHL7ParameterListFrom201309Message(IN201309);
 
         List<PRPAMT201307UV02DataSource> dataSources = parameterList.getDataSource();
         if (!dataSources.isEmpty()) {
@@ -188,7 +188,7 @@ public class PatientCorrelationOrchImpl implements PatientCorrelationOrch {
         if (qualifiedPatientIdentifiers == null) {
             return null;
         }
-        List<II> iiList = new ArrayList<II>();
+        List<II> iiList = new ArrayList<>();
         for (QualifiedPatientIdentifier qualifiedPatientIdentifier : qualifiedPatientIdentifiers) {
             iiList.add(iiFactory(qualifiedPatientIdentifier));
         }
@@ -228,7 +228,7 @@ public class PatientCorrelationOrchImpl implements PatientCorrelationOrch {
                 result = null;
             }
         }
-        LOG.debug("Expiration Date = " + result);
+        LOG.debug("Expiration Date = {}", result);
         return result;
     }
 

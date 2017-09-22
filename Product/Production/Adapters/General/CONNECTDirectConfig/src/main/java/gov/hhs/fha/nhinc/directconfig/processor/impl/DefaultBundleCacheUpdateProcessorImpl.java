@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2014, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -50,12 +50,9 @@ import gov.hhs.fha.nhinc.directconfig.dao.TrustBundleDao;
 import gov.hhs.fha.nhinc.directconfig.entity.TrustBundle;
 import gov.hhs.fha.nhinc.directconfig.processor.BundleCacheUpdateProcessor;
 import gov.hhs.fha.nhinc.directconfig.processor.BundleRefreshProcessor;
-
 import java.util.Calendar;
 import java.util.Collection;
-
 import javax.annotation.PostConstruct;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -68,7 +65,7 @@ import org.springframework.web.context.support.SpringBeanAutowiringSupport;
  * implementation iterates through the entire list of configured trust bundles in the system checking each bundle's last
  * refresh time. If a bundles refresh interval has not been exceeded since its last update, then it will not checked for
  * updates.
- * 
+ *
  * @author Greg Meyer
  * @since 1.3
  */
@@ -102,7 +99,7 @@ public class DefaultBundleCacheUpdateProcessorImpl implements BundleCacheUpdateP
 
     /**
      * Sets the {@link BundleRefreshProcessor} used to refresh a bundle the bundle's refresh interval has been exceeded.
-     * 
+     *
      * @param refreshProcessor The {@link BundleRefreshProcessor}.
      */
     public void setRefreshProcessor(BundleRefreshProcessor refreshProcessor) {

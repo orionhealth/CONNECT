@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2013, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -28,7 +28,6 @@ package gov.hhs.fha.nhinc.docquery.entity.proxy;
 
 import gov.hhs.fha.nhinc.docquery.AdhocQueryResponseAsserter;
 import oasis.names.tc.ebxml_regrep.xsd.query._3.AdhocQueryResponse;
-
 import org.junit.Test;
 
 public class EntityDocQueryProxyNoOpImplTest {

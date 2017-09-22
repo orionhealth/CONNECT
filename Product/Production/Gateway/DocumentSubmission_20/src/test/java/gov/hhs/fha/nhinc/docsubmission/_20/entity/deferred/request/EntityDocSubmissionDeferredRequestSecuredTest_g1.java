@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,16 +26,13 @@
  */
 package gov.hhs.fha.nhinc.docsubmission._20.entity.deferred.request;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-
-import java.lang.reflect.Method;
-
-import org.junit.Test;
-
 import gov.hhs.fha.nhinc.aspect.OutboundMessageEvent;
 import gov.hhs.fha.nhinc.common.nhinccommonentity.RespondingGatewayProvideAndRegisterDocumentSetSecuredRequestType;
 import gov.hhs.fha.nhinc.docsubmission.aspect.DocSubmissionArgTransformerBuilder;
+import java.lang.reflect.Method;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import org.junit.Test;
 
 /**
  * @author achidamb
@@ -45,7 +42,7 @@ public class EntityDocSubmissionDeferredRequestSecuredTest_g1 {
     @Test
     public void hasOutboundMessageEvent() throws Exception {
         Class<EntityDocSubmissionDeferredRequestSecured_g1> clazz = EntityDocSubmissionDeferredRequestSecured_g1.class;
-        Method method = clazz.getMethod("provideAndRegisterDocumentSetBAsyncRequest", 
+        Method method = clazz.getMethod("provideAndRegisterDocumentSetBAsyncRequest",
                 RespondingGatewayProvideAndRegisterDocumentSetSecuredRequestType.class);
         OutboundMessageEvent annotation = method.getAnnotation(OutboundMessageEvent.class);
         assertNotNull(annotation);

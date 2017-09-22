@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,17 +29,15 @@ package gov.hhs.fha.nhinc.callback.cxf.wss;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+
 import gov.hhs.fha.nhinc.callback.SamlConstants;
 import gov.hhs.fha.nhinc.largefile.LargeFileUtils;
-
 import java.util.ArrayList;
 import java.util.Collection;
-
 import javax.activation.DataHandler;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-
 import org.apache.cxf.binding.soap.SoapMessage;
 import org.apache.cxf.message.Attachment;
 import org.apache.ws.security.WSSecurityException;
@@ -50,12 +48,12 @@ import org.w3c.dom.NodeList;
 
 /**
  * @author akong
- * 
+ *
  */
 public class CONNECTSignatureProcessorTest {
 
     private static final LargeFileUtils FILE_UTILS = LargeFileUtils.getInstance();
-    
+
     private static final String XML_SIGNATURE_NS = "http://www.w3.org/2000/09/xmldsig#";
     private static final String XOP_NS = "http://www.w3.org/2004/08/xop/include";
     private static final String DIG_REF_ID = "digRefId";
@@ -69,7 +67,7 @@ public class CONNECTSignatureProcessorTest {
     public void inlineIncludes() throws ParserConfigurationException, WSSecurityException {
         SoapMessage msg = mock(SoapMessage.class);
 
-        Collection<Attachment> attachmentList = new ArrayList<Attachment>();
+        Collection<Attachment> attachmentList = new ArrayList<>();
         attachmentList.add(createMockAttachment(DIG_REF_ID, DIG_BINARY_DATA));
         attachmentList.add(createMockAttachment(SIG_REF_ID, SIG_BINARY_DATA));
 
@@ -83,12 +81,12 @@ public class CONNECTSignatureProcessorTest {
         assertDigitalValueIsInline(signatureElem, DIG_BASE64_DATA);
         assertSignatureValueIsInline(signatureElem, SIG_BASE64_DATA);
     }
-    
+
     @Test
     public void inlineIncludesWithPrefixRefId() throws ParserConfigurationException, WSSecurityException {
         SoapMessage msg = mock(SoapMessage.class);
 
-        Collection<Attachment> attachmentList = new ArrayList<Attachment>();
+        Collection<Attachment> attachmentList = new ArrayList<>();
         attachmentList.add(createMockAttachment(DIG_REF_ID, DIG_BINARY_DATA));
         attachmentList.add(createMockAttachment(SIG_REF_ID, SIG_BINARY_DATA));
 

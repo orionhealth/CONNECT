@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,9 +27,7 @@
 package gov.hhs.fha.nhinc.docsubmission.aspect;
 
 import gov.hhs.fha.nhinc.event.ArgTransformerEventDescriptionBuilder;
-
 import javax.xml.ws.Holder;
-
 import oasis.names.tc.ebxml_regrep.xsd.rs._3.RegistryResponseType;
 
 public class RegistryResponseTypeHolderBuilder extends ArgTransformerEventDescriptionBuilder {

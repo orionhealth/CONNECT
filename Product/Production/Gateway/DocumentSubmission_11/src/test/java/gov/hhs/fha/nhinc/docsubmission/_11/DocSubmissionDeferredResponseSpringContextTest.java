@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,7 +26,6 @@
  */
 package gov.hhs.fha.nhinc.docsubmission._11;
 
-import static org.junit.Assert.assertNotNull;
 import gov.hhs.fha.nhinc.common.nhinccommonentity.RespondingGatewayProvideAndRegisterDocumentSetResponseRequestType;
 import gov.hhs.fha.nhinc.common.nhinccommonentity.RespondingGatewayProvideAndRegisterDocumentSetSecuredResponseRequestType;
 import gov.hhs.fha.nhinc.docsubmission._11.entity.deferred.response.EntityDocSubmissionDeferredResponseSecured;
@@ -38,7 +37,7 @@ import gov.hhs.fha.nhinc.docsubmission.outbound.deferred.response.PassthroughOut
 import gov.hhs.fha.nhinc.docsubmission.outbound.deferred.response.StandardOutboundDocSubmissionDeferredResponse;
 import gov.hhs.healthit.nhin.XDRAcknowledgementType;
 import oasis.names.tc.ebxml_regrep.xsd.rs._3.RegistryResponseType;
-
+import static org.junit.Assert.assertNotNull;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,7 +46,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 /**
  * @author akong
- * 
+ *
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = { "/docsubmission/_11/applicationContext.xml" })
@@ -61,16 +60,16 @@ public class DocSubmissionDeferredResponseSpringContextTest {
 
     @Autowired
     EntityDocSubmissionDeferredResponseSecured outboundDocSubmissionResponseSecuredEndpoint;
-    
+
     @Autowired
     StandardOutboundDocSubmissionDeferredResponse stdOutboundDocSubmissionDeferredResponse;
-    
+
     @Autowired
     PassthroughOutboundDocSubmissionDeferredResponse ptOutboundDocSubmissionDeferredResponse;
-    
+
     @Autowired
     StandardInboundDocSubmissionDeferredResponse stdInboundDocSubmissionDeferredResponse;
-    
+
     @Autowired
     PassthroughInboundDocSubmissionDeferredResponse ptInbounDocSubmissionDeferredResponse;
 

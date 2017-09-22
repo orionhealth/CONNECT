@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -31,13 +31,15 @@ import gov.hhs.fha.nhinc.direct.messagemonitoring.dao.MessageMonitoringDAOExcept
 import gov.hhs.fha.nhinc.direct.messagemonitoring.domain.MonitoredMessage;
 import gov.hhs.fha.nhinc.direct.messagemonitoring.domain.MonitoredMessageNotification;
 import gov.hhs.fha.nhinc.direct.messagemonitoring.persistence.HibernateUtil;
+import gov.hhs.fha.nhinc.persistence.HibernateUtilFactory;
 import java.util.ArrayList;
 import java.util.List;
-import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Class provides MessageMonitoringDb database interface services
@@ -46,11 +48,13 @@ import org.hibernate.Transaction;
  */
 public class MessageMonitoringDAOImpl implements MessageMonitoringDAO {
 
-    private static final Logger LOG = Logger.getLogger(MessageMonitoringDAOImpl.class);
+    private static final Logger LOG = LoggerFactory.getLogger(MessageMonitoringDAOImpl.class);
 
     private static class SingletonHolder {
-
         public static final MessageMonitoringDAO INSTANCE = new MessageMonitoringDAOImpl();
+
+        private SingletonHolder() {
+        }
     }
 
     /**
@@ -73,7 +77,7 @@ public class MessageMonitoringDAOImpl implements MessageMonitoringDAO {
      * @return true if successful else false
      */
     @Override
-    public boolean addOutgoingMessage(MonitoredMessage trackMessage) throws MessageMonitoringDAOException {
+    public boolean addOutgoingMessage(final MonitoredMessage trackMessage) throws MessageMonitoringDAOException {
         Session session = null;
         Transaction tx = null;
         boolean result = true;
@@ -81,16 +85,18 @@ public class MessageMonitoringDAOImpl implements MessageMonitoringDAO {
         try {
             LOG.debug("Inside addOutgoingMessage()");
             session = getSession();
-            tx = session.beginTransaction();
-            session.persist(trackMessage);
-            tx.commit();
+            if (session != null) {
+                tx = session.beginTransaction();
+                session.persist(trackMessage);
+                tx.commit();
+            }
 
-        } catch (HibernateException e) {
+        } catch (final HibernateException e) {
             result = false;
             transactionRollback(tx);
-            LOG.error("Exception during insertion caused by :" + e.getMessage(), e);
+            LOG.error("Exception during insertion caused by : {}", e.getMessage(), e);
         } finally {
-            closeSession(session, false);
+            closeSession(session);
         }
 
         return result;
@@ -107,7 +113,7 @@ public class MessageMonitoringDAOImpl implements MessageMonitoringDAO {
      * @return true if successful else false
      */
     @Override
-    public boolean updateOutgoingMessage(MonitoredMessage trackMessage) throws MessageMonitoringDAOException {
+    public boolean updateOutgoingMessage(final MonitoredMessage trackMessage) throws MessageMonitoringDAOException {
         Session session = null;
         Transaction tx = null;
         boolean result = true;
@@ -115,15 +121,17 @@ public class MessageMonitoringDAOImpl implements MessageMonitoringDAO {
         try {
             LOG.debug("Inside addOutgoingMessage()");
             session = getSession();
-            tx = session.beginTransaction();
-            session.update(trackMessage);
-            tx.commit();
-        } catch (HibernateException e) {
+            if (session != null) {
+                tx = session.beginTransaction();
+                session.update(trackMessage);
+                tx.commit();
+            }
+        } catch (final HibernateException e) {
             result = false;
             transactionRollback(tx);
-            LOG.error("Exception during insertion caused by :" + e.getMessage(), e);
+            LOG.error("Exception during insertion caused by : {}", e.getMessage(), e);
         } finally {
-            closeSession(session, false);
+            closeSession(session);
         }
         return result;
     }
@@ -138,7 +146,8 @@ public class MessageMonitoringDAOImpl implements MessageMonitoringDAO {
      * @return true if successful else false
      */
     @Override
-    public boolean updateMessageNotification(MonitoredMessageNotification trackMessageNotification) throws MessageMonitoringDAOException {
+    public boolean updateMessageNotification(final MonitoredMessageNotification trackMessageNotification)
+            throws MessageMonitoringDAOException {
         Session session = null;
         Transaction tx = null;
         boolean result = true;
@@ -146,15 +155,17 @@ public class MessageMonitoringDAOImpl implements MessageMonitoringDAO {
         try {
             LOG.debug("Inside addOutgoingMessage()");
             session = getSession();
-            tx = session.beginTransaction();
-            session.update(trackMessageNotification);
-            tx.commit();
-        } catch (HibernateException e) {
+            if (session != null) {
+                tx = session.beginTransaction();
+                session.update(trackMessageNotification);
+                tx.commit();
+            }
+        } catch (final HibernateException e) {
             result = false;
             transactionRollback(tx);
-            LOG.error("Exception during insertion caused by :" + e.getMessage(), e);
+            LOG.error("Exception during insertion caused by : {}", e.getMessage(), e);
         } finally {
-            closeSession(session, false);
+            closeSession(session);
         }
         return result;
     }
@@ -169,7 +180,7 @@ public class MessageMonitoringDAOImpl implements MessageMonitoringDAO {
      * @return true if successful else false
      */
     @Override
-    public boolean deleteCompletedMessages(MonitoredMessage trackMessage) throws MessageMonitoringDAOException {
+    public boolean deleteCompletedMessages(final MonitoredMessage trackMessage) throws MessageMonitoringDAOException {
         Session session = null;
         Transaction tx = null;
         boolean result = true;
@@ -177,15 +188,17 @@ public class MessageMonitoringDAOImpl implements MessageMonitoringDAO {
         try {
             LOG.debug("Inside addOutgoingMessage()");
             session = getSession();
-            tx = session.beginTransaction();
-            session.delete(trackMessage);
-            tx.commit();
-        } catch (HibernateException e) {
+            if (session != null) {
+                tx = session.beginTransaction();
+                session.delete(trackMessage);
+                tx.commit();
+            }
+        } catch (final HibernateException e) {
             result = false;
             transactionRollback(tx);
-            LOG.error("Exception during insertion caused by :" + e.getMessage(), e);
+            LOG.error("Exception during insertion caused by : {}", e.getMessage(), e);
         } finally {
-            closeSession(session, false);
+            closeSession(session);
         }
         return result;
     }
@@ -193,22 +206,23 @@ public class MessageMonitoringDAOImpl implements MessageMonitoringDAO {
     /**
      * Get all pending Outgoing messages
      *
-     * @return 
+     * @return
      */
     @Override
     public List<MonitoredMessage> getAllPendingMessages() {
         Session session = null;
-        Transaction tx = null;
-        List<MonitoredMessage> pendingList = new ArrayList<MonitoredMessage>();
+        List<MonitoredMessage> pendingList = new ArrayList<>();
 
         try {
             LOG.debug("Inside addOutgoingMessage()");
             session = getSession();
-            pendingList = session.createCriteria(MonitoredMessage.class).list();
-        } catch (HibernateException e) {
-            LOG.error("Exception during insertion caused by :" + e.getMessage(), e);
+            if (session != null) {
+                pendingList = session.createCriteria(MonitoredMessage.class).list();
+            }
+        } catch (final HibernateException e) {
+            LOG.error("Exception during insertion caused by : {}", e.getMessage(), e);
         } finally {
-            closeSession(session, false);
+            closeSession(session);
         }
         return pendingList;
     }
@@ -220,11 +234,8 @@ public class MessageMonitoringDAOImpl implements MessageMonitoringDAO {
      * @param flush
      *
      */
-    private void closeSession(Session session, boolean flush) {
+    private void closeSession(final Session session) {
         if (session != null) {
-            if (flush) {
-                session.flush();
-            }
             session.close();
         }
     }
@@ -236,7 +247,7 @@ public class MessageMonitoringDAOImpl implements MessageMonitoringDAO {
      * @param flush
      *
      */
-    private void transactionRollback(Transaction tx) {
+    private void transactionRollback(final Transaction tx) {
         if (tx != null) {
             tx.rollback();
         }
@@ -250,7 +261,8 @@ public class MessageMonitoringDAOImpl implements MessageMonitoringDAO {
      */
     protected Session getSession() {
         Session session = null;
-        SessionFactory fact = HibernateUtil.getSessionFactory();
+        HibernateUtil util = HibernateUtilFactory.getMsgMonitorHibernateUtil();
+        SessionFactory fact = util.getSessionFactory();
         if (fact != null) {
             session = fact.openSession();
         } else {
@@ -258,4 +270,5 @@ public class MessageMonitoringDAOImpl implements MessageMonitoringDAO {
         }
         return session;
     }
+
 }

@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services.
+/*
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -28,17 +28,17 @@
 package gov.hhs.fha.nhinc.docsubmission.entity.deferred.response;
 
 import gov.hhs.fha.nhinc.orchestration.OrchestrationContext;
-
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
- * 
+ *
  * @author akong
  */
 public class OutboundDocSubmissionDeferredResponseOrchestrationContextBuilder_g0 extends
         OutboundDocSubmissionDeferredResponseOrchestrationContextBuilder {
 
-    private static final Logger LOG = Logger.getLogger(OutboundDocSubmissionDeferredResponseOrchestrationContextBuilder_g0.class);
+    private static final Logger LOG = LoggerFactory.getLogger(OutboundDocSubmissionDeferredResponseOrchestrationContextBuilder_g0.class);
 
     @Override
     public OrchestrationContext build() {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -39,16 +39,17 @@ import java.util.List;
 import java.util.Locale;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
-import org.apache.log4j.Logger;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * {@link Event} Implementation for Direct.
  */
 public class DirectEvent extends BaseEvent {
 
-    private static final Logger LOG = Logger.getLogger(DirectEvent.class);
+    private static final Logger LOG = LoggerFactory.getLogger(DirectEvent.class);
 
     private static final String XML_DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSSZ";
 
@@ -141,7 +142,7 @@ public class DirectEvent extends BaseEvent {
                     addToJSON(jsonDescription, SENDER, message.getSender());
                     addToJSON(jsonDescription, RECIPIENT, message.getAllRecipients());
                     String parentMessageID = getParentMessageId(message);
-                    //set the parent message ID in the JSON string if its 
+                    //set the parent message ID in the JSON string if its
                     //also set it in the transaction id
                     if (NullChecker.isNotNullish(parentMessageID)) {
                         addToJSON(jsonDescription, PARENT_MESSAGE_ID, parentMessageID);
@@ -186,6 +187,7 @@ public class DirectEvent extends BaseEvent {
         try {
             return MessageMonitoringUtil.getParentMessageId(msg);
         } catch (Exception e) {
+            LOG.error("Unable to getParentMessageId {}", e.getLocalizedMessage(), e);
             return null;
         }
 

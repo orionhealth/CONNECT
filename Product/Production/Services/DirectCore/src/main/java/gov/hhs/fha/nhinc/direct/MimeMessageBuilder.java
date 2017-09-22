@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,10 +29,8 @@ package gov.hhs.fha.nhinc.direct;
 import gov.hhs.fha.nhinc.nhinclib.NhincConstants;
 import gov.hhs.fha.nhinc.util.StreamUtils;
 import ihe.iti.xds_b._2007.ProvideAndRegisterDocumentSetRequestType.Document;
-
 import java.io.IOException;
 import java.io.InputStream;
-
 import javax.activation.DataHandler;
 import javax.activation.DataSource;
 import javax.mail.Address;
@@ -45,7 +43,6 @@ import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 import javax.mail.util.ByteArrayDataSource;
-
 import org.apache.commons.lang.StringUtils;
 import org.nhindirect.xd.common.DirectDocuments;
 
@@ -67,7 +64,7 @@ public class MimeMessageBuilder {
 
     /**
      * Construct the Mime Message builder with required fields.
-     * 
+     *
      * @param session used to build the message.
      * @param fromAddress sender of the message.
      * @param recipients - list of recipients of the message.
@@ -104,7 +101,7 @@ public class MimeMessageBuilder {
         this.documents = directDocuments;
         return this;
     }
-    
+
     /**
      * @param str messageId for message
      * @return builder of mime messages.
@@ -134,7 +131,7 @@ public class MimeMessageBuilder {
 
     /**
      * Build the Mime Message.
-     * 
+     *
      * @return the Mime message.
      */
     public MimeMessage build() {
@@ -166,7 +163,7 @@ public class MimeMessageBuilder {
             throw new DirectException("Exception setting mime message part text: " + text, e);
         }
 
-        MimeBodyPart attachmentPart = null;
+        MimeBodyPart attachmentPart;
         try {
             if (documents != null && !StringUtils.isBlank(messageId)) {
                 attachmentPart = getMimeBodyPart();
@@ -177,7 +174,7 @@ public class MimeMessageBuilder {
                 attachmentPart = createAttachmentFromSOAPRequest(attachment, attachmentName);
             } else {
                 throw new Exception(
-                        "Could not create attachment. Need documents and messageId or attachment and attachmentName.");
+                    "Could not create attachment. Need documents and messageId or attachment and attachmentName.");
             }
         } catch (Exception e) {
             throw new DirectException("Exception creating attachment: " + attachmentName, e);
@@ -209,11 +206,11 @@ public class MimeMessageBuilder {
     }
 
     private MimeBodyPart createAttachmentFromSOAPRequest(Document data, String name) throws MessagingException,
-            IOException {
+        IOException {
 
         InputStream is = null;
-        DataSource source = null;
-        DataHandler dhnew = null;
+        DataSource source;
+        DataHandler dhnew;
         MimeBodyPart bodypart = null;
 
         try {

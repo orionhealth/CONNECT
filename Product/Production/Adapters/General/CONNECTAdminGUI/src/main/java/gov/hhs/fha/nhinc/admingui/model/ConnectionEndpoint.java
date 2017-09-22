@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2014, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,24 +24,22 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-
 package gov.hhs.fha.nhinc.admingui.model;
-
-import java.util.Date;
 
 /**
  *
  * @author jassmit
  */
 public class ConnectionEndpoint {
-    
+
     private String name;
     private String serviceSpec;
     private String serviceUrl;
     private String pingStatus;
     private String pingTimestamp;
 
-    public ConnectionEndpoint(String name, String serviceUrl, String serviceSpec, String pingStatus, String pingTimestamp) {
+    public ConnectionEndpoint(String name, String serviceUrl, String serviceSpec, String pingStatus,
+            String pingTimestamp) {
         this.name = name;
         this.serviceSpec = serviceSpec;
         this.serviceUrl = serviceUrl;
@@ -88,5 +86,5 @@ public class ConnectionEndpoint {
     public void setPingTimestamp(String pingTimestamp) {
         this.pingTimestamp = pingTimestamp;
     }
-    
+
 }

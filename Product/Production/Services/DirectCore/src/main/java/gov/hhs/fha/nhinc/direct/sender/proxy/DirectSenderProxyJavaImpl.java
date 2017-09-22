@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2014, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,12 +27,11 @@
 package gov.hhs.fha.nhinc.direct.sender.proxy;
 
 import gov.hhs.fha.nhinc.direct.DirectSender;
-
 import javax.mail.Address;
 import javax.mail.internet.MimeMessage;
-
-import org.apache.log4j.Logger;
 import org.nhindirect.xd.common.DirectDocuments;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -43,7 +42,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class DirectSenderProxyJavaImpl {
 
     /** The Constant LOG. */
-    private static final Logger LOG = Logger.getLogger(DirectSenderProxyJavaImpl.class);
+    private static final Logger LOG = LoggerFactory.getLogger(DirectSenderProxyJavaImpl.class);
 
     /** The direct sender. */
     @Autowired
@@ -53,7 +52,7 @@ public class DirectSenderProxyJavaImpl {
      * Send outbound direct.
      *
      * @param message the message
-     */    
+     */
     public void sendOutboundDirect(MimeMessage message) {
         LOG.debug("Begin DirectSenderProxyJavaImpl.sendOutboundDirect(MimeMessage)");
         directSender.sendOutboundDirect(message);

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,22 +26,21 @@
  */
 package gov.hhs.fha.nhinc.docsubmission.adapter.component;
 
+import gov.hhs.fha.nhinc.properties.PropertyAccessor;
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
+import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-
-import org.apache.log4j.Logger;
+import javax.xml.parsers.ParserConfigurationException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-
-import gov.hhs.fha.nhinc.properties.PropertyAccessor;
-import java.io.IOException;
-import javax.xml.parsers.ParserConfigurationException;
 import org.xml.sax.SAXException;
 
 /**
@@ -49,8 +48,9 @@ import org.xml.sax.SAXException;
  * @author dunnek
  */
 public class ConfigurationManager {
+
     public static final String XDR_CONFIG_FILE = "XDRConfiguration.xml";
-    private static final Logger LOG = Logger.getLogger(ConfigurationManager.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ConfigurationManager.class);
 
     public Config loadConfiguration() {
         Config result;
@@ -69,7 +69,7 @@ public class ConfigurationManager {
             File file = new File(path, fileName);
             result = loadConfiguration(file);
         } catch (Exception e) {
-            e.printStackTrace();
+            LOG.error(e.getLocalizedMessage(), e);
         }
 
         return result;
@@ -80,14 +80,16 @@ public class ConfigurationManager {
 
         try {
             DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+
+            dbf.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
             
-            final String FEATURE = "http://xml.org/sax/features/external-general-entities";
-            dbf.setFeature(FEATURE, false);
-            
-            //For Xerces 2
-            final String FEATURE_2 = "http://apache.org/xml/features/disallow-doctype-decl";
-            dbf.setFeature(FEATURE_2, true);
-            
+            final String feature = "http://xml.org/sax/features/external-general-entities";
+            dbf.setFeature(feature, false);
+
+            // For Xerces 2
+            final String feature2 = "http://apache.org/xml/features/disallow-doctype-decl";
+            dbf.setFeature(feature2, true);
+
             DocumentBuilder db = dbf.newDocumentBuilder();
             Document doc = db.parse(file);
             doc.getDocumentElement().normalize();
@@ -107,7 +109,7 @@ public class ConfigurationManager {
     }
 
     private List<RoutingConfig> loadRoutingInfo(NodeList list) {
-        ArrayList<RoutingConfig> result = new ArrayList<RoutingConfig>();
+        ArrayList<RoutingConfig> result = new ArrayList<>();
         Node channels = list.item(0);
 
         LOG.debug("loading " + channels.getChildNodes().getLength() + " channels");
@@ -116,16 +118,16 @@ public class ConfigurationManager {
             Node node = channels.getChildNodes().item(s);
             if (node.getNodeType() == Node.ELEMENT_NODE) {
                 Element element = (Element) node;
-                System.out.println(element.getNodeName());
-                if (element.getNodeName().equalsIgnoreCase("RoutingConfig")) {
+
+                if ("RoutingConfig".equalsIgnoreCase(element.getNodeName())) {
                     RoutingConfig item = new RoutingConfig();
                     for (int x = 0; x < element.getChildNodes().getLength(); x++) {
                         String nodeName = element.getChildNodes().item(x).getNodeName();
                         String nodeValue = element.getChildNodes().item(x).getTextContent();
 
-                        if (nodeName.equalsIgnoreCase("Recipient")) {
+                        if ("Recipient".equalsIgnoreCase(nodeName)) {
                             item.setRecepient(nodeValue);
-                        } else if (nodeName.equalsIgnoreCase("Bean")) {
+                        } else if ("Bean".equalsIgnoreCase(nodeName)) {
                             item.setBean(nodeValue);
                         }
                     }

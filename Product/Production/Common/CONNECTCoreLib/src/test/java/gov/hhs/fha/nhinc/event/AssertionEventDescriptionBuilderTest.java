@@ -1,7 +1,5 @@
-/**
- * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
- *
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services.
+/*
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -34,9 +32,9 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+
 import gov.hhs.fha.nhinc.common.nhinccommon.AssertionType;
 import gov.hhs.fha.nhinc.event.builder.AssertionDescriptionExtractor;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -52,6 +50,7 @@ public class AssertionEventDescriptionBuilderTest extends BaseDescriptionBuilder
         assertion = mock(AssertionType.class);
 
         assertionExtractor = mock(AssertionDescriptionExtractor.class);
+        when(assertionExtractor.getAssertion(assertion)).thenReturn(assertion);
         when(assertionExtractor.getInitiatingHCID(assertion)).thenReturn("hcid");
         when(assertionExtractor.getNPI(assertion)).thenReturn("npi");
 
@@ -72,7 +71,7 @@ public class AssertionEventDescriptionBuilderTest extends BaseDescriptionBuilder
     @Test
     public void extractsAssertion() {
         builder.setAssertionExtractor(assertionExtractor);
-        Object[] params = new Object[] { new Object(), new Object(), assertion };
+        Object[] params = new Object[]{new Object(), new Object(), assertion};
         builder.extractAssertion(params);
 
         EventDescription eventDescription = getEventDescription(builder);
@@ -83,7 +82,7 @@ public class AssertionEventDescriptionBuilderTest extends BaseDescriptionBuilder
     @Test
     public void worksWithNoAssertion() {
         builder.setAssertionExtractor(assertionExtractor);
-        Object[] params = new Object[] {};
+        Object[] params = new Object[]{};
         builder.extractAssertion(params);
 
         EventDescription eventDescription = getEventDescription(builder);

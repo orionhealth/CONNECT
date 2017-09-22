@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2014, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,12 +30,9 @@ import gov.hhs.fha.nhinc.admingui.application.EndpointManagerCache;
 import gov.hhs.fha.nhinc.admingui.model.ConnectionEndpoint;
 import gov.hhs.fha.nhinc.admingui.services.PingService;
 import gov.hhs.fha.nhinc.admingui.services.impl.PingServiceImpl;
+import gov.hhs.fha.nhinc.admingui.util.ConnectionHelper;
 import gov.hhs.fha.nhinc.connectmgr.ConnectionManagerCache;
 import gov.hhs.fha.nhinc.connectmgr.ConnectionManagerCacheHelper;
-import gov.hhs.fha.nhinc.connectmgr.ConnectionManagerException;
-import gov.hhs.fha.nhinc.nhinclib.NhincConstants;
-import gov.hhs.fha.nhinc.properties.PropertyAccessException;
-import gov.hhs.fha.nhinc.properties.PropertyAccessor;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -44,7 +41,8 @@ import javax.annotation.PostConstruct;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
 import org.apache.http.impl.cookie.DateUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.uddi.api_v3.BindingTemplate;
 import org.uddi.api_v3.BusinessEntity;
 import org.uddi.api_v3.BusinessService;
@@ -60,13 +58,11 @@ import org.uddi.api_v3.KeyedReference;
 @ViewScoped
 public class ConnectionManagerBean {
 
-    private static final Logger LOG = Logger.getLogger(ConnectionManagerBean.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ConnectionManagerBean.class);
+    private final ConnectionHelper connection = new ConnectionHelper();
 
-    private final HashMap<String, BusinessEntity> externalEntities = new HashMap<String, BusinessEntity>();
-    private final List<String> entityNames = new ArrayList<String>();
-
-    //TODO Display local entity endpoints (internal and external).
-    private BusinessEntity localEntity;
+    private HashMap<String, BusinessEntity> externalEntities = new HashMap<>();
+    private final List<String> entityNames = new ArrayList<>();
 
     private BusinessEntity selectedEntity;
     private String selectedEntityName;
@@ -90,8 +86,7 @@ public class ConnectionManagerBean {
 
     public String getSelectedEntityName() {
         String name = NULL_DISPLAY;
-        if (selectedEntity != null && selectedEntity.getName() != null
-                && !selectedEntity.getName().isEmpty()) {
+        if (selectedEntity != null && selectedEntity.getName() != null && !selectedEntity.getName().isEmpty()) {
             name = selectedEntity.getName().get(0).getValue();
         }
         return name;
@@ -111,7 +106,8 @@ public class ConnectionManagerBean {
     public String getSelectedEntityDescription() {
         String description = NULL_DISPLAY;
 
-        if (selectedEntity != null && selectedEntity.getDescription() != null && !selectedEntity.getDescription().isEmpty()) {
+        if (selectedEntity != null && selectedEntity.getDescription() != null
+                && !selectedEntity.getDescription().isEmpty()) {
             description = selectedEntity.getDescription().get(0).getValue();
         }
 
@@ -123,6 +119,7 @@ public class ConnectionManagerBean {
         if (selectedEntity != null && selectedEntity.getCategoryBag() != null
                 && selectedEntity.getCategoryBag().getKeyedReference() != null
                 && !selectedEntity.getCategoryBag().getKeyedReference().isEmpty()) {
+
             StringBuilder regionBuilder = new StringBuilder();
             for (KeyedReference ref : selectedEntity.getCategoryBag().getKeyedReference()) {
                 if (ref.getTModelKey().equals(ConnectionManagerCacheHelper.UDDI_STATE_KEY)) {
@@ -139,7 +136,8 @@ public class ConnectionManagerBean {
     public String getSelectedEntityContact() {
         String contactValue = NULL_DISPLAY;
 
-        if (selectedEntity != null && selectedEntity.getContacts() != null && selectedEntity.getContacts().getContact() != null
+        if (selectedEntity != null && selectedEntity.getContacts() != null
+                && selectedEntity.getContacts().getContact() != null
                 && !selectedEntity.getContacts().getContact().isEmpty()) {
             Contact contact = selectedEntity.getContacts().getContact().get(0);
 
@@ -168,21 +166,24 @@ public class ConnectionManagerBean {
     public void ping() {
         if (selectedEndpoint != null) {
             boolean status = pingService.ping(selectedEndpoint.getServiceUrl());
-            EndpointManagerCache.getInstance().addOrUpdateEndpoint(selectedEndpoint.getServiceUrl(), new Date(), status);
+            EndpointManagerCache.getInstance().addOrUpdateEndpoint(selectedEndpoint.getServiceUrl(), new Date(),
+                    status);
         }
     }
 
     public List<ConnectionEndpoint> getEndpoints() {
-        endpoints = new ArrayList<ConnectionEndpoint>();
+        endpoints = new ArrayList<>();
         if (selectedEntity != null && selectedEntity.getBusinessKey() != null
                 && selectedEntity.getBusinessServices().getBusinessService() != null
                 && !selectedEntity.getBusinessServices().getBusinessService().isEmpty()) {
             for (BusinessService bService : selectedEntity.getBusinessServices().getBusinessService()) {
-                if (bService.getBindingTemplates() != null && bService.getBindingTemplates().getBindingTemplate() != null) {
+                if (bService.getBindingTemplates() != null
+                        && bService.getBindingTemplates().getBindingTemplate() != null) {
                     for (BindingTemplate template : bService.getBindingTemplates().getBindingTemplate()) {
                         String url = template.getAccessPoint().getValue();
                         String version = getSpecVersion(template.getCategoryBag());
-                        EndpointManagerCache.EndpointCacheInfo info = EndpointManagerCache.getInstance().getEndpointInfo(url);
+                        EndpointManagerCache.EndpointCacheInfo info = EndpointManagerCache.getInstance()
+                                .getEndpointInfo(url);
 
                         String timestamp = null;
                         String status = "None";
@@ -191,7 +192,8 @@ public class ConnectionManagerBean {
                             timestamp = DateUtils.formatDate(info.getTimestamp(), DATE_FORMAT);
                             status = info.isSuccessfulPing() ? "Pass" : "Fail";
                         }
-                        endpoints.add(new ConnectionEndpoint(bService.getName().get(0).getValue(), url, version, status, timestamp));
+                        endpoints.add(new ConnectionEndpoint(bService.getName().get(0).getValue(), url, version, status,
+                                timestamp));
                     }
                 }
             }
@@ -204,49 +206,12 @@ public class ConnectionManagerBean {
     }
 
     private void refresh() {
-        try {
-            List<BusinessEntity> externalEntityList = ConnectionManagerCache.getInstance().getAllBusinessEntities();
-            String localHcid = PropertyAccessor.getInstance().getProperty(NhincConstants.HOME_COMMUNITY_ID_PROPERTY);
 
-            for (int i = 0; i < externalEntityList.size(); i++) {
-                BusinessEntity entity = externalEntityList.get(i);
-                if (entity.getIdentifierBag() != null && entity.getIdentifierBag().getKeyedReference() != null
-                        && !entity.getIdentifierBag().getKeyedReference().isEmpty()) {
-                    if (isLocalEntity(entity.getIdentifierBag().getKeyedReference(), localHcid)) {
-                        localEntity = entity;
-                    } else if (entity.getName() != null && !entity.getName().isEmpty()) {
-                        externalEntities.put(entity.getName().get(0).getValue(), entity);
-                    }
-                }
-            }
-        } catch (ConnectionManagerException ex) {
-            LOG.error(ex, ex);
-        } catch (PropertyAccessException ex) {
-            LOG.error(ex, ex);
-        }
-
+        externalEntities = connection.getExternalEntitiesMap();
         entityNames.addAll(externalEntities.keySet());
         if (!entityNames.isEmpty()) {
             selectedEntity = externalEntities.get(entityNames.get(0));
         }
-    }
-
-    private boolean isLocalEntity(List<KeyedReference> references, String localHcid) {
-        for (KeyedReference ref : references) {
-            if (ref.getTModelKey().equalsIgnoreCase(ConnectionManagerCacheHelper.UDDI_HOME_COMMUNITY_ID_KEY)
-                    && formatHcid(localHcid).equals(formatHcid(ref.getKeyValue()))) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private String formatHcid(String hcid) {
-        String formattedHcid = hcid;
-        if (hcid.startsWith(NhincConstants.HCID_PREFIX)) {
-            formattedHcid = hcid.substring(NhincConstants.HCID_PREFIX.length(), hcid.length());
-        }
-        return formattedHcid;
     }
 
     public ConnectionEndpoint getSelectedEndpoint() {
@@ -260,13 +225,16 @@ public class ConnectionManagerBean {
     private String getSpecVersion(CategoryBag categoryBag) {
         if (categoryBag != null && categoryBag.getKeyedReference() != null
                 && !categoryBag.getKeyedReference().isEmpty()) {
+
             for (KeyedReference kRef : categoryBag.getKeyedReference()) {
-                if (kRef.getTModelKey() != null && kRef.getTModelKey().equals(ConnectionManagerCache.UDDI_SPEC_VERSION_KEY)) {
+                if (kRef.getTModelKey() != null
+                        && kRef.getTModelKey().equals(ConnectionManagerCache.UDDI_SPEC_VERSION_KEY)) {
+
                     return kRef.getKeyValue();
                 }
             }
         }
+
         return NULL_DISPLAY;
     }
-
 }

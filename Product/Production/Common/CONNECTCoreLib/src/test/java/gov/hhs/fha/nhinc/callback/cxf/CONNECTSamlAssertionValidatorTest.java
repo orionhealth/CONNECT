@@ -1,3 +1,29 @@
+/*
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *     * Redistributions of source code must retain the above
+ *       copyright notice, this list of conditions and the following disclaimer.
+ *     * Redistributions in binary form must reproduce the above copyright
+ *       notice, this list of conditions and the following disclaimer in the documentation
+ *       and/or other materials provided with the distribution.
+ *     * Neither the name of the United States Government nor the
+ *       names of its contributors may be used to endorse or promote products
+ *       derived from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE UNITED STATES GOVERNMENT BE LIABLE FOR ANY
+ * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
 package gov.hhs.fha.nhinc.callback.cxf;
 
 import static org.junit.Assert.assertEquals;
@@ -9,19 +35,16 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
 import gov.hhs.fha.nhinc.nhinclib.NhincConstants;
 import gov.hhs.fha.nhinc.properties.PropertyAccessException;
 import gov.hhs.fha.nhinc.properties.PropertyAccessor;
-
 import java.io.InputStream;
 import java.security.PublicKey;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
-
 import javax.xml.namespace.QName;
-
 import org.apache.ws.security.WSSecurityException;
 import org.apache.ws.security.components.crypto.Crypto;
 import org.apache.ws.security.handler.RequestData;
@@ -34,13 +57,8 @@ import org.opensaml.Configuration;
 import org.opensaml.DefaultBootstrap;
 import org.opensaml.common.SAMLVersion;
 import org.opensaml.saml1.core.Statement;
-import org.opensaml.saml2.core.Action;
-import org.opensaml.saml2.core.AuthzDecisionStatement;
-import org.opensaml.saml2.core.DecisionTypeEnumeration;
-import org.opensaml.saml2.core.Evidence;
 import org.opensaml.saml2.core.NameID;
 import org.opensaml.saml2.core.Subject;
-import org.opensaml.saml2.metadata.EntitiesDescriptor;
 import org.opensaml.xml.ConfigurationException;
 import org.opensaml.xml.io.Unmarshaller;
 import org.opensaml.xml.io.UnmarshallerFactory;
@@ -68,7 +86,7 @@ public class CONNECTSamlAssertionValidatorTest {
         DateTime dateTime = new DateTime();
         when(saml1Assertion.getIssueInstant()).thenReturn(dateTime);
         Statement statement = mock(Statement.class);
-        List<Statement> statementList = new ArrayList<Statement>();
+        List<Statement> statementList = new ArrayList<>();
         statementList.add(statement);
         when(saml1Assertion.getStatements()).thenReturn(statementList);
 
@@ -130,7 +148,8 @@ public class CONNECTSamlAssertionValidatorTest {
     }
 
     @Test
-    public void testValidateAssertionSaml2_blankResource() throws WSSecurityException, XMLParserException, UnmarshallingException, ConfigurationException {
+    public void testValidateAssertionSaml2_blankResource()
+            throws WSSecurityException, XMLParserException, UnmarshallingException, ConfigurationException {
 
         /*
          * when(saml2Assertion.getElementQName()).thenReturn(assertionQName); org.opensaml.saml2.core.Issuer issuer =
@@ -161,8 +180,8 @@ public class CONNECTSamlAssertionValidatorTest {
         String inCommonMDFile = "authFrameworkAssertion.xml";
 
         // Initialize the library
-        DefaultBootstrap.bootstrap(); 
-        
+        DefaultBootstrap.bootstrap();
+
         // Get parser pool manager
         BasicParserPool ppMgr = new BasicParserPool();
         ppMgr.setNamespaceAware(true);
@@ -174,11 +193,13 @@ public class CONNECTSamlAssertionValidatorTest {
 
         // Get apropriate unmarshaller
         UnmarshallerFactory unmarshallerFactory = Configuration.getUnmarshallerFactory();
-        Unmarshaller unmarshaller = unmarshallerFactory.getUnmarshaller(new QName("urn:oasis:names:tc:SAML:2.0:assertion", "Assertion"));
+        Unmarshaller unmarshaller = unmarshallerFactory
+                .getUnmarshaller(new QName("urn:oasis:names:tc:SAML:2.0:assertion", "Assertion"));
 
         // Unmarshall using the document root element, an EntitiesDescriptor in this case
-        org.opensaml.saml2.core.Assertion saml2Assertion = (org.opensaml.saml2.core.Assertion) unmarshaller.unmarshall(metadataRoot);
-        
+        org.opensaml.saml2.core.Assertion saml2Assertion = (org.opensaml.saml2.core.Assertion) unmarshaller
+                .unmarshall(metadataRoot);
+
         AssertionWrapper assertion = new AssertionWrapper(saml2Assertion);
 
         CONNECTSamlAssertionValidator validator = new CONNECTSamlAssertionValidator() {
@@ -200,7 +221,8 @@ public class CONNECTSamlAssertionValidatorTest {
 
         when(saml2Assertion.getElementQName()).thenReturn(assertionQName);
         when(saml2Assertion.getIssuer()).thenReturn(issuer);
-        when(saml2Assertion.getIssuer().getFormat()).thenReturn("urn:oasis:names:tc:SAML:1.1:nameid-format:X509SubjectName");
+        when(saml2Assertion.getIssuer().getFormat())
+                .thenReturn("urn:oasis:names:tc:SAML:1.1:nameid-format:X509SubjectName");
 
         CONNECTSamlAssertionValidator validator = new CONNECTSamlAssertionValidator() {
             @Override
@@ -211,7 +233,7 @@ public class CONNECTSamlAssertionValidatorTest {
 
         validator.validateAssertion(assertion);
     }
-    
+
     @Test(expected = WSSecurityException.class)
     public void ValidateAssertionSaml2WhenSPProviderID() throws WSSecurityException {
         org.opensaml.saml2.core.Assertion saml2Assertion = mock(org.opensaml.saml2.core.Assertion.class);
@@ -273,7 +295,7 @@ public class CONNECTSamlAssertionValidatorTest {
 
     @Test
     public void testValidate() throws WSSecurityException {
-        final List<Boolean> checkedSignedAssertion = new ArrayList<Boolean>();
+        final List<Boolean> checkedSignedAssertion = new ArrayList<>();
         Credential credential = new Credential();
         final String SECRET_KEY = "secret";
         credential.setSecretKey(SECRET_KEY.getBytes());
@@ -281,7 +303,7 @@ public class CONNECTSamlAssertionValidatorTest {
         AssertionWrapper assertion = mock(AssertionWrapper.class);
         credential.setAssertion(assertion);
 
-        List<String> methods = new ArrayList<String>();
+        List<String> methods = new ArrayList<>();
         final String METHOD_NAME = "urn:oasis:names:tc:SAML:" + "TESTING" + ":cm:holder-of-key";
         methods.add(METHOD_NAME);
 
@@ -312,7 +334,7 @@ public class CONNECTSamlAssertionValidatorTest {
         Credential resultCredential = validator.validate(credential, data);
 
         assertFalse(checkedSignedAssertion.isEmpty());
-        assertTrue(checkedSignedAssertion.get(0).booleanValue());
+        assertTrue(checkedSignedAssertion.get(0));
         String resultSecretKey = new String(resultCredential.getSecretKey());
         assertEquals(resultSecretKey, SECRET_KEY);
 

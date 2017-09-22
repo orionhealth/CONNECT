@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -34,19 +34,19 @@ import ihe.iti.xds_b._2007.RetrieveDocumentSetResponseType;
 
 /**
  * @author akong
- * 
+ *
  */
 public interface OutboundDocRetrieve {
 
     /**
-     * Processes the document retrieve message.  On success, will return a response from the NwHIN.
-     * 
+     * Processes the document retrieve message. On success, will return a response from the NwHIN.
+     *
      * @param body
      * @param assertion
      * @param targets
      * @return response message to be sent back to the requester
      */
     public RetrieveDocumentSetResponseType respondingGatewayCrossGatewayRetrieve(RetrieveDocumentSetRequestType body,
-            AssertionType assertion, NhinTargetCommunitiesType targets, ADAPTER_API_LEVEL entityAPILevel);
+        AssertionType assertion, NhinTargetCommunitiesType targets, ADAPTER_API_LEVEL entityAPILevel);
 
 }

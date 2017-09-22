@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2014, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -49,7 +49,6 @@ THE POSSIBILITY OF SUCH DAMAGE.
 package gov.hhs.fha.nhinc.directconfig.entity.helpers;
 
 import gov.hhs.fha.nhinc.directconfig.exception.CertificateException;
-
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateEncodingException;
@@ -81,12 +80,14 @@ public class Thumbprint {
         if (cert == null) {
             throw new IllegalArgumentException();
         }
-        
+
         try {
             final Thumbprint retVal = new Thumbprint(cert);
             return retVal;
-        } catch (Throwable e) {
-            throw new CertificateException(e);
+        } catch (NoSuchAlgorithmException nsae) {
+            throw new CertificateException(nsae);
+        } catch (CertificateEncodingException cee) {
+            throw new CertificateException(cee);
         }
     }
 
@@ -125,6 +126,7 @@ public class Thumbprint {
 
     /**
      * {@inheritDoc}
+     * @return
      */
     @Override
     public String toString() {
@@ -133,16 +135,24 @@ public class Thumbprint {
 
     /**
      * {@inheritDoc}
+     * @return
      */
     @Override
     public boolean equals(Object obj) {
         if (!(obj instanceof Thumbprint)) {
             return false;
         }
-        
+
         final Thumbprint compareTo = (Thumbprint)obj;
 
         // deep compare
         return Arrays.equals(compareTo.digest, digest);
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 5;
+        hash = 43 * hash + Arrays.hashCode(this.digest);
+        return hash;
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,22 +26,20 @@
  */
 package gov.hhs.fha.nhinc.docsubmission.adapter.component.deferred.response;
 
-import javax.xml.ws.WebServiceContext;
-
-import oasis.names.tc.ebxml_regrep.xsd.rs._3.RegistryResponseType;
-
-import org.apache.log4j.Logger;
-
 import gov.hhs.fha.nhinc.common.nhinccommon.AssertionType;
 import gov.hhs.fha.nhinc.common.nhinccommonadapter.AdapterRegistryResponseType;
 import gov.hhs.healthit.nhin.XDRAcknowledgementType;
+import javax.xml.ws.WebServiceContext;
+import oasis.names.tc.ebxml_regrep.xsd.rs._3.RegistryResponseType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
  * @author JHOPPESC
  */
 public class AdapterComponentXDRResponseImpl {
-    private static final Logger LOG = Logger.getLogger(AdapterComponentXDRResponseImpl.class);
+    private static final Logger LOG = LoggerFactory.getLogger(AdapterComponentXDRResponseImpl.class);
 
     /**
      * Extract information from the context and place it into the assertion.

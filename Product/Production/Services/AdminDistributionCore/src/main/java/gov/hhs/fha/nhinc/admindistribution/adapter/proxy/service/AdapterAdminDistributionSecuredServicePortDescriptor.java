@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,17 +32,17 @@ import gov.hhs.fha.nhinc.messaging.service.port.SOAP12ServicePortDescriptor;
 
 /**
  * @author akong
- * 
+ *
  */
-public class AdapterAdminDistributionSecuredServicePortDescriptor extends
-        SOAP12ServicePortDescriptor<AdapterAdministrativeDistributionSecuredPortType> {
+public class AdapterAdminDistributionSecuredServicePortDescriptor
+        extends SOAP12ServicePortDescriptor<AdapterAdministrativeDistributionSecuredPortType> {
 
     private static final String NAMESPACE_URI = "urn:gov:hhs:fha:nhinc:adapteradmindistribution";
     private static final String WS_ADDRESSING_ACTION = NAMESPACE_URI + ":SendAlertMessageSecured_Message";
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see gov.hhs.fha.nhinc.messaging.service.port.ServicePortDescriptor#getWSAddressingAction()
      */
     @Override
@@ -52,7 +52,7 @@ public class AdapterAdminDistributionSecuredServicePortDescriptor extends
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see gov.hhs.fha.nhinc.messaging.service.port.ServicePortDescriptor#getPortClass()
      */
     @Override

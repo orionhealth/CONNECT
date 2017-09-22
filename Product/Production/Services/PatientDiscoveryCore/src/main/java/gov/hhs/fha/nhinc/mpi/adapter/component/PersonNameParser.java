@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,9 +26,9 @@
  */
 package gov.hhs.fha.nhinc.mpi.adapter.component;
 
-import org.apache.log4j.Logger;
-
 import gov.hhs.fha.nhinc.mpilib.PersonName;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -36,7 +36,7 @@ import gov.hhs.fha.nhinc.mpilib.PersonName;
  */
 public class PersonNameParser {
 
-    private static final Logger LOG = Logger.getLogger(PersonNameParser.class);
+    private static final Logger LOG = LoggerFactory.getLogger(PersonNameParser.class);
 
     /**
      *An enum for possible combinations of name order.
@@ -111,7 +111,7 @@ public class PersonNameParser {
      */
     public static String serializeName(PersonName personName) {
         LOG.trace("Begin PersonNameParser.SerializeName(PersonName)");
-        String serializedName = null;
+        String serializedName;
         if (personName == null) {
             serializedName = "";
         } else if (personName.getFirstName().contentEquals("")) {

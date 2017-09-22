@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -36,7 +36,8 @@ import gov.hhs.fha.nhinc.nhinclib.NullChecker;
 import gov.hhs.fha.nhinc.properties.PropertyAccessException;
 import gov.hhs.fha.nhinc.properties.PropertyAccessor;
 import gov.hhs.fha.nhinc.webserviceproxy.WebServiceProxyHelper;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -44,14 +45,14 @@ import org.apache.log4j.Logger;
  */
 public class AdminDistributionHelper {
 
-    private static final Logger LOG = Logger.getLogger(AdminDistributionHelper.class);
+    private static final Logger LOG = LoggerFactory.getLogger(AdminDistributionHelper.class);
     private final WebServiceProxyHelper webServiceProxyHelper;
 
     /**
      * Constructs an instance of WebServiceProxyHelper.
      */
     public AdminDistributionHelper() {
-        this.webServiceProxyHelper = new WebServiceProxyHelper();
+        webServiceProxyHelper = new WebServiceProxyHelper();
     }
 
     /**
@@ -66,7 +67,6 @@ public class AdminDistributionHelper {
      * @return NhinTargetSystemType
      */
     public NhinTargetSystemType createNhinTargetSystemType(String targetHCID) {
-
         if (NullChecker.isNotNullish(targetHCID)) {
             HomeCommunityType hc = new HomeCommunityType();
             hc.setHomeCommunityId(targetHCID);
@@ -74,6 +74,7 @@ public class AdminDistributionHelper {
         } else {
             LOG.error("Target ID is null");
         }
+
         return null;
     }
 
@@ -108,7 +109,9 @@ public class AdminDistributionHelper {
         return getUrl(ts, targetSystem, apiLevel);
     }
 
-    /** This method retrieves url of the Nhin targetcommunity.
+    /**
+     * This method retrieves url of the Nhin targetcommunity.
+     *
      * @param target The Nhin target Community received.
      * @param targetSystem The targetsystem received.
      * @param apiLevel The gateway apiLevel g0 or g1.
@@ -121,20 +124,22 @@ public class AdminDistributionHelper {
         if (target != null) {
             try {
                 url = webServiceProxyHelper.getUrlFromTargetSystemByGatewayAPILevel(target, targetSystem, apiLevel);
-
             } catch (Exception ex) {
-                LOG.error("Error: Failed to retrieve url for service: " + targetSystem);
-                LOG.error(ex.getMessage());
+                LOG.error("Error: Failed to retrieve url for service {}: {}", targetSystem, ex.getLocalizedMessage(),
+                        ex);
             }
         } else {
             LOG.error("Target system passed into the proxy is null");
         }
+
         LOG.debug("end getUrl target/targetSystem url= " + url);
 
         return url;
     }
 
-    /** This method retrieves adapterservice url for AdminDist..
+    /**
+     * This method retrieves adapterservice url for AdminDist..
+     *
      * @param adapterServcice The name of AdapterService in internalconnectionInfo.xml.
      * @param adapterApiLevel The adapter apiLevel a0 or a1.
      * @return adapter url from internalconnectioninfo.xml.
@@ -143,32 +148,34 @@ public class AdminDistributionHelper {
         try {
             return ConnectionManagerCache.getInstance().getAdapterEndpointURL(adapterServcice, adapterApiLevel);
         } catch (ConnectionManagerException ex) {
-            LOG.error("Error: Failed to retrieve url for service: "
-                    + NhincConstants.ADAPTER_ADMIN_DIST_SECURED_SERVICE_NAME);
-            LOG.error(ex.getMessage());
+            LOG.error("Error: Failed to retrieve url for service {}: {}",
+                    NhincConstants.ADAPTER_ADMIN_DIST_SECURED_SERVICE_NAME, ex.getLocalizedMessage(), ex);
         }
 
         return null;
     }
 
-    /** This method read pasased in property value from gateway.property and returns boolean.
+    /**
+     * This method read pasased in property value from gateway.property and returns boolean.
+     *
      * @param propertyName The Property name passed in to read property value from gateway.properties.
      * @return true or false value from gateway.properties for that specific property.
      */
     public boolean readBooleanGatewayProperty(String propertyName) {
         boolean result = false;
         try {
-            result = PropertyAccessor.getInstance().
-                    getPropertyBoolean(NhincConstants.GATEWAY_PROPERTY_FILE, propertyName);
+            result = PropertyAccessor.getInstance().getPropertyBoolean(NhincConstants.GATEWAY_PROPERTY_FILE,
+                    propertyName);
         } catch (PropertyAccessException ex) {
-            LOG.error("Error: Failed to retrieve " + propertyName + " from property file: "
-                    + NhincConstants.GATEWAY_PROPERTY_FILE);
-            LOG.error(ex.getMessage());
+            LOG.error("Error: Failed to retrieve {} from property file {}: ", propertyName,
+                    NhincConstants.GATEWAY_PROPERTY_FILE, ex.getLocalizedMessage(), ex);
         }
         return result;
     }
 
-    /** This method read PropertyName from gateway.properties.
+    /**
+     * This method read PropertyName from gateway.properties.
+     *
      * @param propertyName Property received to read from gateway.properties.
      * @return PropertyName from gateway.properties.
      */
@@ -177,13 +184,15 @@ public class AdminDistributionHelper {
         try {
             result = PropertyAccessor.getInstance().getProperty(NhincConstants.GATEWAY_PROPERTY_FILE, propertyName);
         } catch (Exception ex) {
-            LOG.error("Unable to retrieve " + propertyName + " from Gateway.properties");
-            LOG.error(ex);
+            LOG.error("Unable to retrieve property {} from {}.properties: {}", propertyName,
+                    NhincConstants.GATEWAY_PROPERTY_FILE, ex.getLocalizedMessage(), ex);
         }
         return result;
     }
 
-    /** This method builds NhinTargetSystem for the homeCommunityId passed.
+    /**
+     * This method builds NhinTargetSystem for the homeCommunityId passed.
+     *
      * @param homeCommunityId homeCommunityId received.
      * @return targetSystem.
      */
@@ -194,5 +203,4 @@ public class AdminDistributionHelper {
         nhinTargetSystem.setHomeCommunity(homeCommunity);
         return nhinTargetSystem;
     }
-
 }

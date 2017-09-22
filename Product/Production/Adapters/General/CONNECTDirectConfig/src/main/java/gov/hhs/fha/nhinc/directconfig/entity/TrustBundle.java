@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2014, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,7 +24,7 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-/*
+ /*
  Copyright (c) 2010, NHIN Direct Project
  All rights reserved.
 
@@ -44,12 +44,10 @@
  STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
  THE POSSIBILITY OF SUCH DAMAGE.
  */
-
 package gov.hhs.fha.nhinc.directconfig.entity;
 
 import gov.hhs.fha.nhinc.directconfig.entity.helpers.BundleRefreshError;
 import gov.hhs.fha.nhinc.directconfig.exception.CertificateException;
-
 import java.io.ByteArrayInputStream;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
@@ -57,16 +55,16 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
-
 import javax.xml.bind.annotation.XmlTransient;
 
 /**
  * JPA entity object for a trust bundle
- * 
+ *
  * @author Greg Meyer
  * @since 1.2
  */
 public class TrustBundle {
+
     private Long id;
     private String bundleName;
     private String bundleURL;
@@ -90,7 +88,7 @@ public class TrustBundle {
 
     /**
      * Get the value of id.
-     * 
+     *
      * @return the value of id.
      */
     public Long getId() {
@@ -99,7 +97,7 @@ public class TrustBundle {
 
     /**
      * Set the value of id.
-     * 
+     *
      * @param id The value of id.
      */
     public void setId(Long id) {
@@ -108,7 +106,7 @@ public class TrustBundle {
 
     /**
      * Gets the value of the bundle name. The bundle name must be unique
-     * 
+     *
      * @return the value of the bundle name
      */
     public String getBundleName() {
@@ -117,7 +115,7 @@ public class TrustBundle {
 
     /**
      * Set the value of the bundle name.
-     * 
+     *
      * @param bundleName The value of the bundleName
      */
     public void setBundleName(String bundleName) {
@@ -126,7 +124,7 @@ public class TrustBundle {
 
     /**
      * Gets the value of the bundle URL. The URL specifies the location of the bundle
-     * 
+     *
      * @return the value of the bundle URL
      */
     public String getBundleURL() {
@@ -135,7 +133,7 @@ public class TrustBundle {
 
     /**
      * Set the value of the bundle url.
-     * 
+     *
      * @param bundleURL The value of the bundle URL
      */
     public void setBundleURL(String bundleURL) {
@@ -145,7 +143,7 @@ public class TrustBundle {
     /**
      * Gets the value of the signing certificate as it DER encoded byte array. The signing certificate validates the
      * authenticity of a bundle. It is optional and only used with signed bundles.
-     * 
+     *
      * @return the value of the signing certificate
      */
     public byte[] getSigningCertificateData() {
@@ -154,7 +152,7 @@ public class TrustBundle {
 
     /**
      * Set the value of the signing certificate
-     * 
+     *
      * @param signingCertificateData The value of the signing certificate
      */
     public void setSigningCertificateData(byte[] signingCertificateData) throws CertificateException {
@@ -163,7 +161,7 @@ public class TrustBundle {
 
     /**
      * Gets the value of the bundle refresh interval in seconds.
-     * 
+     *
      * @return the value of the bundle refresh interval
      */
     public int getRefreshInterval() {
@@ -172,7 +170,7 @@ public class TrustBundle {
 
     /**
      * Set the value of the bundle refresh interval in seconds
-     * 
+     *
      * @param refreshInterval The value of the bundle refresh interval
      */
     public void setRefreshInterval(int refreshInterval) {
@@ -181,7 +179,7 @@ public class TrustBundle {
 
     /**
      * Get the value of createTime.
-     * 
+     *
      * @return the value of createTime.
      */
     public Calendar getCreateTime() {
@@ -190,7 +188,7 @@ public class TrustBundle {
 
     /**
      * Set the value of createTime.
-     * 
+     *
      * @param timestamp The value of createTime.
      */
     public void setCreateTime(Calendar timestamp) {
@@ -200,7 +198,7 @@ public class TrustBundle {
     /**
      * Get the value of the last successful refresh date time. This time represents the last time a successful refresh
      * operation was performed.
-     * 
+     *
      * @return the value of the last successful refresh date time.
      */
     public Calendar getLastSuccessfulRefresh() {
@@ -209,7 +207,7 @@ public class TrustBundle {
 
     /**
      * Set the value of the last successful refresh date time
-     * 
+     *
      * @param lastSuccessfulRefresh The value of the last successful refresh date time
      */
     public void setLastSuccessfulRefresh(Calendar lastSuccessfulRefresh) {
@@ -219,7 +217,7 @@ public class TrustBundle {
     /**
      * Get the value of the last refresh attempt date time. This time represents the last time a refresh operation was
      * attempted. It is updated regardless if the refresh operation is successful or not.
-     * 
+     *
      * @return the value of the last refresh attempt date time
      */
     public Calendar getLastRefreshAttempt() {
@@ -228,7 +226,7 @@ public class TrustBundle {
 
     /**
      * Set the value of the last refresh attempt date time.
-     * 
+     *
      * @param lastRefreshAttempt The value of the last refresh attempt date time.
      */
     public void setLastRefreshAttempt(Calendar lastRefreshAttempt) {
@@ -237,7 +235,7 @@ public class TrustBundle {
 
     /**
      * Get the value of the last refresh error.
-     * 
+     *
      * @return the value of the last refresh error.
      */
     public BundleRefreshError getLastRefreshError() {
@@ -246,7 +244,7 @@ public class TrustBundle {
 
     /**
      * Set the value of the last refresh error.
-     * 
+     *
      * @param lastRefreshError The value of the last refresh error.
      */
     public void setLastRefreshError(BundleRefreshError lastRefreshError) {
@@ -255,12 +253,12 @@ public class TrustBundle {
 
     /**
      * Get the value of the collection of trust anchors contained within the bundle
-     * 
+     *
      * @return collection of trust anchors contained within the bundle
      */
     public Collection<TrustBundleAnchor> getTrustBundleAnchors() {
         if (trustBundleAnchors == null) {
-            trustBundleAnchors = new ArrayList<TrustBundleAnchor>();
+            trustBundleAnchors = new ArrayList<>();
         }
 
         return trustBundleAnchors;
@@ -268,7 +266,7 @@ public class TrustBundle {
 
     /**
      * Set the collection of Trust Bundle - Domain relations
-     * 
+     *
      * @param relations The collection of Trust Bundle - Domain relations
      */
     public void setRelations(Collection<TrustBundleDomainReltn> relations) {
@@ -277,13 +275,13 @@ public class TrustBundle {
 
     /**
      * Get the collection of Trust Bundle - Domain relations
-     * 
+     *
      * @return The collection of Trust Bundle - Domain relations
      */
     @XmlTransient
     public Collection<TrustBundleDomainReltn> getRelations() {
         if (relations == null) {
-            relations = new ArrayList<TrustBundleDomainReltn>();
+            relations = new ArrayList<>();
         }
 
         return relations;
@@ -291,7 +289,7 @@ public class TrustBundle {
 
     /**
      * Set the value of the collection of trust anchors contained within the bundle
-     * 
+     *
      * @param trustBundleAnchors The value of the collection of trust anchors contained within the bundle
      */
     public void setTrustBundleAnchors(Collection<TrustBundleAnchor> trustBundleAnchors) {
@@ -300,7 +298,7 @@ public class TrustBundle {
 
     /**
      * Get the value of the bundle check sum.
-     * 
+     *
      * @return collection of the bundle check sum.
      */
     public String getCheckSum() {
@@ -309,7 +307,7 @@ public class TrustBundle {
 
     /**
      * Set the value of the bundle check sum.
-     * 
+     *
      * @param checkSum The value of the bundle check sum.
      */
     public void setCheckSum(String checkSum) {
@@ -318,12 +316,12 @@ public class TrustBundle {
 
     /**
      * Converts the signing data into an X509 certificate
-     * 
+     *
      * @return The signing data as an X509 certificate
      * @throws CertificateException
      */
     public X509Certificate toSigningCertificate() throws CertificateException {
-        X509Certificate cert = null;
+        X509Certificate cert;
 
         try {
             validate();
@@ -339,7 +337,7 @@ public class TrustBundle {
 
     /**
      * Validates that the bundle has valid and complete data
-     * 
+     *
      * @throws CertificateException
      */
     public void validate() throws CertificateException {
@@ -349,6 +347,6 @@ public class TrustBundle {
     }
 
     private boolean hasData() {
-        return ((signingCertificateData != null) && (!Arrays.equals(signingCertificateData, Certificate.NULL_CERT)));
+        return signingCertificateData != null && !Arrays.equals(signingCertificateData, Certificate.getNullCert());
     }
 }

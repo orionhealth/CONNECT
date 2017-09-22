@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,11 +27,12 @@
 package gov.hhs.fha.nhinc.util;
 
 import java.io.UnsupportedEncodingException;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Base64Coder {
 
-    private static final Logger LOG = Logger.getLogger(Base64Coder.class);
+    private static final Logger LOG = LoggerFactory.getLogger(Base64Coder.class);
     // Mapping table from 6-bit nibbles to Base64 characters.
     private static char[] map1 = new char[64];
 
@@ -52,6 +53,7 @@ public class Base64Coder {
         map1[i++] = '+';
         map1[i++] = '/';
     }
+
     // Mapping table from Base64 characters to 6-bit nibbles.
     private static byte[] map2 = new byte[128];
 
@@ -75,7 +77,7 @@ public class Base64Coder {
         try {
             encodedString = new String(encode(s.getBytes(StringUtil.UTF8_CHARSET)));
         } catch (UnsupportedEncodingException ex) {
-            LOG.error("Error converting String to UTF8 format: " + ex.getMessage());
+            LOG.error("Error converting String to UTF8 format: {}", ex.getLocalizedMessage(), ex);
         }
         return encodedString;
     }
@@ -99,7 +101,7 @@ public class Base64Coder {
      */
     public static char[] encode(byte[] in, int iLen) {
         int oDataLen = (iLen * 4 + 2) / 3; // output length without padding
-        int oLen = ((iLen + 2) / 3) * 4; // output length including padding
+        int oLen = (iLen + 2) / 3 * 4; // output length including padding
         char[] out = new char[oLen];
         int ip = 0;
         int op = 0;
@@ -108,8 +110,8 @@ public class Base64Coder {
             int i1 = ip < iLen ? in[ip++] & 0xff : 0;
             int i2 = ip < iLen ? in[ip++] & 0xff : 0;
             int o0 = i0 >>> 2;
-            int o1 = ((i0 & 3) << 4) | (i1 >>> 4);
-            int o2 = ((i1 & 0xf) << 2) | (i2 >>> 6);
+            int o1 = (i0 & 3) << 4 | i1 >>> 4;
+            int o2 = (i1 & 0xf) << 2 | i2 >>> 6;
             int o3 = i2 & 0x3F;
             out[op++] = map1[o0];
             out[op++] = map1[o1];
@@ -133,7 +135,7 @@ public class Base64Coder {
         try {
             decodedData = StringUtil.convertToStringUTF8(decode(s));
         } catch (UnsupportedEncodingException ex) {
-            LOG.error("Error converting String to UTF8 format: " + ex.getMessage());
+            LOG.error("Error converting String to UTF8 format: {}", ex.getLocalizedMessage(), ex);
         }
         return decodedData;
     }
@@ -164,7 +166,7 @@ public class Base64Coder {
         while (iLen > 0 && in[iLen - 1] == '=') {
             iLen--;
         }
-        int oLen = (iLen * 3) / 4;
+        int oLen = iLen * 3 / 4;
         byte[] out = new byte[oLen];
         int ip = 0;
         int op = 0;
@@ -183,9 +185,9 @@ public class Base64Coder {
             if (b0 < 0 || b1 < 0 || b2 < 0 || b3 < 0) {
                 throw new IllegalArgumentException("Illegal character in Base64 encoded data.");
             }
-            int o0 = (b0 << 2) | (b1 >>> 4);
-            int o1 = ((b1 & 0xf) << 4) | (b2 >>> 2);
-            int o2 = ((b2 & 3) << 6) | b3;
+            int o0 = b0 << 2 | b1 >>> 4;
+            int o1 = (b1 & 0xf) << 4 | b2 >>> 2;
+            int o2 = (b2 & 3) << 6 | b3;
             out[op++] = (byte) o0;
             if (op < oLen) {
                 out[op++] = (byte) o1;

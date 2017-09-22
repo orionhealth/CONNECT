@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,6 +26,7 @@
  */
 package gov.hhs.fha.nhinc.direct;
 
+import java.util.Arrays;
 import javax.mail.MessagingException;
 import javax.mail.Session;
 import javax.mail.internet.InternetAddress;
@@ -34,7 +35,8 @@ import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 import javax.xml.ws.BindingType;
 import javax.xml.ws.soap.SOAPBinding;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -43,7 +45,7 @@ import org.apache.log4j.Logger;
 @BindingType(SOAPBinding.SOAP12HTTP_BINDING)
 public class DirectSenderServiceImpl extends DirectAdapterEntity implements DirectSenderPortType {
 
-    private static final Logger LOG = Logger.getLogger(DirectSenderServiceImpl.class);
+    private static final Logger LOG = LoggerFactory.getLogger(DirectSenderServiceImpl.class);
 
     @Override
     public void sendOutboundDirect(SendoutMessage parameters) {
@@ -59,7 +61,7 @@ public class DirectSenderServiceImpl extends DirectAdapterEntity implements Dire
             }
             MimeMultipart mpart = new MimeMultipart();
             MimeBodyPart bp = new MimeBodyPart();
-            bp.setText(message.getContent().toString());
+            bp.setText(Arrays.toString(message.getContent()));
             // add message body
             mpart.addBodyPart(bp);
             mimeMessage.setContent(mpart);
@@ -67,7 +69,7 @@ public class DirectSenderServiceImpl extends DirectAdapterEntity implements Dire
             mimeMessage.setSubject(message.getSubject());
             getDirectSender().sendOutboundDirect(mimeMessage);
         } catch (MessagingException ex) {
-            LOG.error(ex.getMessage());
+            LOG.error(ex.getLocalizedMessage(), ex);
         }
         LOG.debug("-- End DirectSenderServiceImpl.sendOutboundDirect() --");
     }

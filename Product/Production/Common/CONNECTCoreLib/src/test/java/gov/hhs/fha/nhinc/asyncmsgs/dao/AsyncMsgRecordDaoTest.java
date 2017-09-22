@@ -1,37 +1,58 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *     * Redistributions of source code must retain the above
+ *       copyright notice, this list of conditions and the following disclaimer.
+ *     * Redistributions in binary form must reproduce the above copyright
+ *       notice, this list of conditions and the following disclaimer in the documentation
+ *       and/or other materials provided with the distribution.
+ *     * Neither the name of the United States Government nor the
+ *       names of its contributors may be used to endorse or promote products
+ *       derived from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE UNITED STATES GOVERNMENT BE LIABLE FOR ANY
+ * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 package gov.hhs.fha.nhinc.asyncmsgs.dao;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import gov.hhs.fha.nhinc.asyncmsgs.model.AsyncMsgRecord;
 import gov.hhs.fha.nhinc.common.deferredqueuemanager.QueryDeferredQueueRequestType;
 import gov.hhs.fha.nhinc.properties.PropertyAccessException;
 import gov.hhs.fha.nhinc.properties.PropertyAccessor;
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
-
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
-
 import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
-import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 /**
  * Unit test class for AsyncMsgRecordDao
- * 
+ *
  * @author nsubramanyan
  */
 public class AsyncMsgRecordDaoTest {
@@ -79,7 +100,7 @@ public class AsyncMsgRecordDaoTest {
         final String COMMUNITYID_2 = "2.2";
         asyncMsgRecord2.setCommunityId(COMMUNITYID_2);
         // create the asyncMsgRecord list
-        List<AsyncMsgRecord> asyncRecords = new ArrayList<AsyncMsgRecord>();
+        List<AsyncMsgRecord> asyncRecords = new ArrayList<>();
         asyncRecords.add(asyncMsgRecord1);
         asyncRecords.add(asyncMsgRecord2);
 
@@ -109,7 +130,7 @@ public class AsyncMsgRecordDaoTest {
         final String SERVICE_NAME = "PatientDiscovery";
         asyncMsgRecord.setDirection(SERVICE_NAME);
         // create the asyncMsgRecord list
-        List<AsyncMsgRecord> asyncRecords = new ArrayList<AsyncMsgRecord>();
+        List<AsyncMsgRecord> asyncRecords = new ArrayList<>();
         asyncRecords.add(asyncMsgRecord);
 
         // crete the Query for Named Query used in the service
@@ -128,7 +149,7 @@ public class AsyncMsgRecordDaoTest {
     public void testQueryByTime() {
         System.out.println("queryByTime");
         // create the asyncMsgRecord list
-        List<AsyncMsgRecord> asyncRecords = new ArrayList<AsyncMsgRecord>();
+        List<AsyncMsgRecord> asyncRecords = new ArrayList<>();
 
         // create 4 records
         // row 1
@@ -173,7 +194,7 @@ public class AsyncMsgRecordDaoTest {
     public void testQueryForExpired() {
         System.out.println("queryForExpired");
         // create the asyncMsgRecord list
-        List<AsyncMsgRecord> asyncRecords = new ArrayList<AsyncMsgRecord>();
+        List<AsyncMsgRecord> asyncRecords = new ArrayList<>();
 
         // create 4 records
         // row 1
@@ -218,7 +239,7 @@ public class AsyncMsgRecordDaoTest {
     public void testQueryForDeferredQueueProcessing() {
         System.out.println("queryForDeferredQueueProcessing");
         // create the asyncMsgRecord list
-        List<AsyncMsgRecord> asyncRecords = new ArrayList<AsyncMsgRecord>();
+        List<AsyncMsgRecord> asyncRecords = new ArrayList<>();
 
         // create 3 records
         // row 1
@@ -256,7 +277,7 @@ public class AsyncMsgRecordDaoTest {
     public void testQueryForDeferredQueueSelected() {
         System.out.println("queryForDeferredQueueSelected");
         // create the asyncMsgRecord list
-        List<AsyncMsgRecord> asyncRecords = new ArrayList<AsyncMsgRecord>();
+        List<AsyncMsgRecord> asyncRecords = new ArrayList<>();
 
         // create 3 records
         // row 1
@@ -288,11 +309,11 @@ public class AsyncMsgRecordDaoTest {
     public void testQueryByCriteria() {
         System.out.println("queryByCriteria");
         QueryDeferredQueueRequestType queryCriteria = new QueryDeferredQueueRequestType();
-        queryCriteria.setCreationBeginTime(long2Gregorian((new Date()).getTime()));
-        queryCriteria.setCreationEndTime(long2Gregorian((new Date()).getTime()));
+        queryCriteria.setCreationBeginTime(long2Gregorian(new Date().getTime()));
+        queryCriteria.setCreationEndTime(long2Gregorian(new Date().getTime()));
         queryCriteria.setDirection("Test");
-        queryCriteria.setResponseBeginTime(long2Gregorian((new Date()).getTime()));
-        queryCriteria.setResponseEndTime(long2Gregorian((new Date()).getTime()));
+        queryCriteria.setResponseBeginTime(long2Gregorian(new Date().getTime()));
+        queryCriteria.setResponseEndTime(long2Gregorian(new Date().getTime()));
         queryCriteria.setResponseType("DQ");
 
         QueryDeferredQueueRequestType queryCriteria1 = new QueryDeferredQueueRequestType();
@@ -301,7 +322,7 @@ public class AsyncMsgRecordDaoTest {
         Query query = mock(Query.class);
         when(session.getNamedQuery(Mockito.anyString())).thenReturn(query);
         // create the asyncMsgRecord list
-        List<AsyncMsgRecord> asyncRecords = new ArrayList<AsyncMsgRecord>();
+        List<AsyncMsgRecord> asyncRecords = new ArrayList<>();
         AsyncMsgRecord asyncMsgRecord1 = new AsyncMsgRecord();
         AsyncMsgRecord asyncMsgRecord2 = new AsyncMsgRecord();
         asyncRecords.add(asyncMsgRecord1);
@@ -326,7 +347,7 @@ public class AsyncMsgRecordDaoTest {
         System.out.println("insertRecords");
         AsyncMsgRecord asyncMsgRecord1 = new AsyncMsgRecord();
         AsyncMsgRecord asyncMsgRecord2 = new AsyncMsgRecord();
-        List<AsyncMsgRecord> asyncMsgRecs = new ArrayList<AsyncMsgRecord>();
+        List<AsyncMsgRecord> asyncMsgRecs = new ArrayList<>();
         asyncMsgRecs.add(asyncMsgRecord1);
         asyncMsgRecs.add(asyncMsgRecord2);
         boolean result = asyncMsgRecordDao.insertRecords(asyncMsgRecs);
@@ -354,7 +375,7 @@ public class AsyncMsgRecordDaoTest {
         asyncMsgRecord1.setCommunityId("1.1");
         AsyncMsgRecord asyncMsgRecord2 = new AsyncMsgRecord();
         asyncMsgRecord2.setCommunityId("2.2");
-        List<AsyncMsgRecord> asyncMsgRecords = new ArrayList<AsyncMsgRecord>();
+        List<AsyncMsgRecord> asyncMsgRecords = new ArrayList<>();
         asyncMsgRecords.add(asyncMsgRecord1);
         asyncMsgRecords.add(asyncMsgRecord2);
         asyncMsgRecordDao.save(asyncMsgRecords);
@@ -392,7 +413,7 @@ public class AsyncMsgRecordDaoTest {
         asyncMsgRecord2.setDuration(Long.valueOf(0));
         asyncMsgRecord2.setStatus(AsyncMsgRecordDao.QUEUE_STATUS_EXPIRED);
 
-        final List<AsyncMsgRecord> asyncMsgRecords = new ArrayList<AsyncMsgRecord>();
+        final List<AsyncMsgRecord> asyncMsgRecords = new ArrayList<>();
         asyncMsgRecords.add(asyncMsgRecord1);
         asyncMsgRecords.add(asyncMsgRecord2);
         when(accessor.getProperty(Mockito.anyString(), Mockito.anyString())).thenReturn("days");

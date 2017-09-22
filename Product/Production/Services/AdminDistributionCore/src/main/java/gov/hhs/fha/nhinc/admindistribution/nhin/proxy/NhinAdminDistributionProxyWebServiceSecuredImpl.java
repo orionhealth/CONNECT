@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -45,15 +45,16 @@ import gov.hhs.fha.nhinc.nhinclib.NhincConstants.GATEWAY_API_LEVEL;
 import gov.hhs.fha.nhinc.nhinclib.NullChecker;
 import gov.hhs.fha.nhinc.webserviceproxy.WebServiceProxyHelper;
 import oasis.names.tc.emergency.edxl.de._1.EDXLDistribution;
-
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
- * 
+ *
  * @author dunnek
  */
 public class NhinAdminDistributionProxyWebServiceSecuredImpl implements NhinAdminDistributionProxy {
-    private static final Logger LOG = Logger.getLogger(NhinAdminDistributionProxyWebServiceSecuredImpl.class);
+
+    private static final Logger LOG = LoggerFactory.getLogger(NhinAdminDistributionProxyWebServiceSecuredImpl.class);
     private AdminDistributionAuditLogger adLogger = null;
 
     /**
@@ -76,12 +77,13 @@ public class NhinAdminDistributionProxyWebServiceSecuredImpl implements NhinAdmi
 
     /**
      * This method returns ServicePortDescriptor for AdminDist based on gateway apiLevel.
-     * 
+     *
      * @param apiLevel gateway apiLevel received (g0/g1).
      * @return NhinAdminDistributionPortDescriptor based on g0/g1 impl
      */
     public ServicePortDescriptor<RespondingGatewayAdministrativeDistributionPortType> getServicePortDescriptor(
             NhincConstants.GATEWAY_API_LEVEL apiLevel) {
+
         switch (apiLevel) {
         case LEVEL_g0:
             return new NhinAdminDistributionG0ServicePortDescriptor();
@@ -92,10 +94,12 @@ public class NhinAdminDistributionProxyWebServiceSecuredImpl implements NhinAdmi
 
     /**
      * This method returns CXFClient to implement AdminDist Secured Service.
-     * 
+     *
      * @param portDescriptor Comprises of
      * @param url target community url to send the message.
      * @param assertion Assertion received.
+     * @param target
+     * @param serviceName
      * @return CXFClient to implement Secured Service.
      */
     protected CONNECTClient<RespondingGatewayAdministrativeDistributionPortType> getCONNECTClientSecured(
@@ -108,7 +112,7 @@ public class NhinAdminDistributionProxyWebServiceSecuredImpl implements NhinAdmi
 
     /**
      * This method implements sendAlertMessage for AdminDist.
-     * 
+     *
      * @param body Emergency Message Distribution Element transaction messgae body.
      * @param assertion Assertion received.
      * @param target NhinTargetCommunity received.
@@ -118,30 +122,34 @@ public class NhinAdminDistributionProxyWebServiceSecuredImpl implements NhinAdmi
     @NwhinInvocationEvent(beforeBuilder = EDXLDistributionEventDescriptionBuilder.class, afterReturningBuilder = EDXLDistributionEventDescriptionBuilder.class, serviceType = "Admin Distribution", version = "")
     public void sendAlertMessage(EDXLDistribution body, AssertionType assertion, NhinTargetSystemType target,
             NhincConstants.GATEWAY_API_LEVEL apiLevel) {
+
         LOG.debug("begin sendAlertMessage");
         AdminDistributionHelper helper = getHelper();
         String url = helper.getUrl(target, NhincConstants.NHIN_ADMIN_DIST_SERVICE_NAME, apiLevel);
 
         if (NullChecker.isNotNullish(url)) {
-
             auditMessage(body, assertion, NhincConstants.AUDIT_LOG_OUTBOUND_DIRECTION, target);
 
             try {
                 getAdminDistributionUtils().convertFileLocationToDataIfEnabled(body);
 
-                ServicePortDescriptor<RespondingGatewayAdministrativeDistributionPortType> portDescriptor = getServicePortDescriptor(apiLevel);
+                ServicePortDescriptor<RespondingGatewayAdministrativeDistributionPortType> portDescriptor = getServicePortDescriptor(
+                        apiLevel);
 
                 CONNECTClient<RespondingGatewayAdministrativeDistributionPortType> client = getCONNECTClientSecured(
                         portDescriptor, url, assertion, target.getHomeCommunity().getHomeCommunityId(),
                         NhincConstants.NHIN_ADMIN_DIST_SERVICE_NAME);
+
                 if (apiLevel == GATEWAY_API_LEVEL.LEVEL_g1) {
                     client.enableMtom();
                 }
 
                 client.invokePort(RespondingGatewayAdministrativeDistributionPortType.class, "sendAlertMessage", body);
             } catch (Exception ex) {
-                LOG.error("Failed to call the web service (" + NhincConstants.NHIN_ADMIN_DIST_SERVICE_NAME
-                        + ").  An unexpected exception occurred.  " + "Exception: " + ex.getMessage(), ex);
+                LOG.error(
+                        "Failed to call the web service (" + NhincConstants.NHIN_ADMIN_DIST_SERVICE_NAME
+                                + ").  An unexpected exception occurred.  " + "Exception: " + ex.getLocalizedMessage(),
+                        ex);
             }
         } else {
             LOG.error("Failed to call the web service (" + NhincConstants.ADAPTER_ADMIN_DIST_SERVICE_NAME
@@ -151,13 +159,15 @@ public class NhinAdminDistributionProxyWebServiceSecuredImpl implements NhinAdmi
 
     /**
      * This method audits the AdminDist Service at Nhin interface.
-     * 
+     *
      * @param message Emergency Message Distribution Element transaction message.
      * @param assertion Assertion received.
      * @param direction The direction can be eigther outbound or inbound.
+     * @param target
      */
     protected void auditMessage(EDXLDistribution message, AssertionType assertion, String direction,
             NhinTargetSystemType target) {
+
         AcknowledgementType ack = getLogger().auditNhinAdminDist(message, assertion, direction, target,
                 NhincConstants.AUDIT_LOG_NHIN_INTERFACE);
         if (ack != null) {
@@ -169,7 +179,7 @@ public class NhinAdminDistributionProxyWebServiceSecuredImpl implements NhinAdmi
      * @return Nhin AdminDist audit logger.
      */
     protected AdminDistributionAuditLogger getLogger() {
-        return (adLogger != null) ? adLogger : new AdminDistributionAuditLogger();
+        return adLogger != null ? adLogger : new AdminDistributionAuditLogger();
     }
 
 }

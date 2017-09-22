@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -28,20 +28,19 @@ package gov.hhs.fha.nhinc.util;
 
 import gov.hhs.fha.nhinc.common.nhinccommon.AssertionType;
 import gov.hhs.fha.nhinc.common.nhinccommon.NhinTargetCommunitiesType;
+import gov.hhs.fha.nhinc.common.nhinccommon.NhinTargetCommunityType;
 import gov.hhs.fha.nhinc.common.nhinccommon.NhinTargetSystemType;
+import gov.hhs.fha.nhinc.nhinclib.NullChecker;
 import gov.hhs.fha.nhinc.transform.marshallers.Marshaller;
 import gov.hhs.fha.nhinc.wsa.WSAHeaderHelper;
-
 import javax.xml.namespace.QName;
-
 import oasis.names.tc.ebxml_regrep.xsd.query._3.AdhocQueryRequest;
-
 import org.hl7.v3.PRPAIN201305UV02;
 import org.w3c.dom.Element;
 
 /**
  * @author akong
- * 
+ *
  */
 public class MessageGeneratorUtils {
 
@@ -52,7 +51,7 @@ public class MessageGeneratorUtils {
 
     private static final String OASIS_QUERY_30_CONTEXT = "oasis.names.tc.ebxml_regrep.xsd.query._3";
     private static final String OASIS_QUERY_30_URN = "urn:oasis:names:tc:ebxml-regrep:xsd:query:3.0";
-    
+
     private static final String HL7_V3_CONTEXT = "org.hl7.v3";
     private static final String HL7_V3_URN = "urn:hl7-org:v3";
 
@@ -61,7 +60,7 @@ public class MessageGeneratorUtils {
 
     /**
      * Returns the singleton instance of this class.
-     * 
+     *
      * @return the singleton instance
      */
     public static MessageGeneratorUtils getInstance() {
@@ -70,14 +69,15 @@ public class MessageGeneratorUtils {
 
     /**
      * Converts the first target into a NhinTargetSystemType format.
-     * 
+     *
      * @param targets
      * @return NhinTargetSystemType
      */
     public NhinTargetSystemType convertFirstToNhinTargetSystemType(NhinTargetCommunitiesType targets) {
         NhinTargetSystemType nhinTargetSystem = new NhinTargetSystemType();
 
-        if (targets != null && targets.getNhinTargetCommunity() != null && targets.getNhinTargetCommunity().size() > 0) {
+        if (targets != null && targets.getNhinTargetCommunity() != null
+                && targets.getNhinTargetCommunity().size() > 0) {
             nhinTargetSystem.setHomeCommunity(targets.getNhinTargetCommunity().get(0).getHomeCommunity());
             nhinTargetSystem.setUseSpecVersion(targets.getUseSpecVersion());
         }
@@ -86,8 +86,24 @@ public class MessageGeneratorUtils {
     }
 
     /**
+     * Converts the first target into a NhinTargetSystemType format.
+     *
+     * @param target
+     * @return NhinTargetSystemType
+     */
+    public NhinTargetSystemType convertToNhinTargetSystemType(NhinTargetCommunityType target) {
+        NhinTargetSystemType nhinTargetSystem = new NhinTargetSystemType();
+
+        if (target != null && target.getHomeCommunity() != null) {
+            nhinTargetSystem.setHomeCommunity(target.getHomeCommunity());
+        }
+
+        return nhinTargetSystem;
+    }
+
+    /**
      * Clones the assertion object.
-     * 
+     *
      * @param assertion
      * @return a cloned assertion
      */
@@ -99,23 +115,23 @@ public class MessageGeneratorUtils {
 
         return (AssertionType) marshaller.unmarshallJaxbElement(jaxbElement, NHINC_COMMON_CONTEXT);
     }
-    
+
     /**
      * Clones the assertion object but with a new message id
-     * 
+     *
      * @param assertion
      * @return a cloned assertion but with a new message id
      */
     public AssertionType cloneWithNewMsgId(AssertionType assertion) {
         AssertionType newAssertion = clone(assertion);
         newAssertion.setMessageId(new WSAHeaderHelper().generateMessageID());
-        
+
         return newAssertion;
     }
 
     /**
      * Clones the Adhoc Query Request.
-     * 
+     *
      * @param adhocQueryRequest
      * @return a cloned adhocQueryRequest
      */
@@ -127,20 +143,40 @@ public class MessageGeneratorUtils {
 
         return (AdhocQueryRequest) marshaller.unmarshallJaxbElement(jaxbElement, OASIS_QUERY_30_CONTEXT);
     }
-    
+
     /**
      * Clones the PRPAIN201305UV02.
-     * 
+     *
      * @param request
      * @return a cloned PRPAIN201305UV02
      */
     public PRPAIN201305UV02 clone(PRPAIN201305UV02 request) {
-        QName qName = new QName(HL7_V3_URN, "PRPA_IN201305UV02");        
+        QName qName = new QName(HL7_V3_URN, "PRPA_IN201305UV02");
         Marshaller marshaller = new Marshaller();
 
         Element jaxbElement = marshaller.marshal(request, HL7_V3_CONTEXT, qName);
-        
+
         return (PRPAIN201305UV02) marshaller.unmarshallJaxbElement(jaxbElement, HL7_V3_CONTEXT);
     }
 
+    /**
+     * This message generates a messageId if it is not present and set it in the assertion object. If present it will
+     * format the messsageId and return it back.
+     *
+     * Note: AssertionType is a required element. It can never be null.
+     *
+     * @param assertion
+     * @return messageId
+     */
+    public AssertionType generateMessageId(AssertionType assertion) {
+        WSAHeaderHelper wsaHelper = new WSAHeaderHelper();
+        if (assertion != null) {
+            if (NullChecker.isNullish(assertion.getMessageId())) {
+                assertion.setMessageId(wsaHelper.generateMessageID());
+            } else {
+                assertion.setMessageId(wsaHelper.fixMessageIDPrefix(assertion.getMessageId()));
+            }
+        }
+        return assertion;
+    }
 }

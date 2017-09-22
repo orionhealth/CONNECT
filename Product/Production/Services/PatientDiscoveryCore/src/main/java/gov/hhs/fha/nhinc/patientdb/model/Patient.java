@@ -1,28 +1,28 @@
 /*
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services. 
- * All rights reserved. 
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
+ * All rights reserved.
  *
- * Redistribution and use in source and binary forms, with or without 
- * modification, are permitted provided that the following conditions are met: 
- *     * Redistributions of source code must retain the above 
- *       copyright notice, this list of conditions and the following disclaimer. 
- *     * Redistributions in binary form must reproduce the above copyright 
- *       notice, this list of conditions and the following disclaimer in the documentation 
- *       and/or other materials provided with the distribution. 
- *     * Neither the name of the United States Government nor the 
- *       names of its contributors may be used to endorse or promote products 
- *       derived from this software without specific prior written permission. 
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *     * Redistributions of source code must retain the above
+ *       copyright notice, this list of conditions and the following disclaimer.
+ *     * Redistributions in binary form must reproduce the above copyright
+ *       notice, this list of conditions and the following disclaimer in the documentation
+ *       and/or other materials provided with the distribution.
+ *     * Neither the name of the United States Government nor the
+ *       names of its contributors may be used to endorse or promote products
+ *       derived from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
- * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED 
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE 
- * DISCLAIMED. IN NO EVENT SHALL THE UNITED STATES GOVERNMENT BE LIABLE FOR ANY 
- * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES 
- * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; 
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND 
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT 
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS 
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE UNITED STATES GOVERNMENT BE LIABLE FOR ANY
+ * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 package gov.hhs.fha.nhinc.patientdb.model;
 
@@ -32,72 +32,74 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 
- * 
- * 
+ *
+ *
+ *
  * @author richard.ettema
  */
 
 public class Patient implements Serializable {
 
+    private static final long serialVersionUID = -5941897049106149743L;
+
     /**
-     * 
+     *
      * Attribute patientId.
      */
 
     private Long patientId;
 
     /**
-     * 
+     *
      * Attribute dateOfBirth.
      */
 
     private Timestamp dateOfBirth;
 
     /**
-     * 
+     *
      * Attribute gender.
      */
 
     private String gender;
 
     /**
-     * 
+     *
      * Attribute ssn.
      */
 
     private String ssn;
 
     /**
-     * 
+     *
      * List of Addresses
      */
 
     private List<Address> addresses = null;
 
     /**
-     * 
+     *
      * List of Identifiers
      */
 
     private List<Identifier> identifiers = null;
 
     /**
-     * 
+     *
      * List of Personnames
      */
 
     private List<Personname> personnames = null;
 
     /**
-     * 
+     *
      * List of Phonenumbers
      */
 
     private List<Phonenumber> phonenumbers = null;
 
     /**
-     * 
+     *
      * @return patientId
      */
 
@@ -108,7 +110,7 @@ public class Patient implements Serializable {
     }
 
     /**
-     * 
+     *
      * @param patientId new value for patientId
      */
 
@@ -119,7 +121,7 @@ public class Patient implements Serializable {
     }
 
     /**
-     * 
+     *
      * @return dateOfBirth
      */
 
@@ -130,7 +132,7 @@ public class Patient implements Serializable {
     }
 
     /**
-     * 
+     *
      * @param dateOfBirth new value for dateOfBirth
      */
 
@@ -141,7 +143,7 @@ public class Patient implements Serializable {
     }
 
     /**
-     * 
+     *
      * @return gender
      */
 
@@ -152,7 +154,7 @@ public class Patient implements Serializable {
     }
 
     /**
-     * 
+     *
      * @param gender new value for gender
      */
 
@@ -163,7 +165,7 @@ public class Patient implements Serializable {
     }
 
     /**
-     * 
+     *
      * @return ssn
      */
 
@@ -174,7 +176,7 @@ public class Patient implements Serializable {
     }
 
     /**
-     * 
+     *
      * @param ssn new value for ssn
      */
 
@@ -185,7 +187,7 @@ public class Patient implements Serializable {
     }
 
     /**
-     * 
+     *
      * Get the list of Addresses
      */
 
@@ -193,7 +195,7 @@ public class Patient implements Serializable {
 
         if (this.addresses == null) {
 
-            this.addresses = new ArrayList<Address>();
+            this.addresses = new ArrayList<>();
 
         }
 
@@ -202,7 +204,7 @@ public class Patient implements Serializable {
     }
 
     /**
-     * 
+     *
      * Set the list of Addresses
      */
 
@@ -213,7 +215,7 @@ public class Patient implements Serializable {
     }
 
     /**
-     * 
+     *
      * Get the list of Identifiers
      */
 
@@ -221,7 +223,7 @@ public class Patient implements Serializable {
 
         if (this.identifiers == null) {
 
-            this.identifiers = new ArrayList<Identifier>();
+            this.identifiers = new ArrayList<>();
 
         }
 
@@ -230,7 +232,7 @@ public class Patient implements Serializable {
     }
 
     /**
-     * 
+     *
      * Set the list of Identifiers
      */
 
@@ -241,7 +243,7 @@ public class Patient implements Serializable {
     }
 
     /**
-     * 
+     *
      * Get the list of Personnames
      */
 
@@ -249,7 +251,7 @@ public class Patient implements Serializable {
 
         if (this.personnames == null) {
 
-            this.personnames = new ArrayList<Personname>();
+            this.personnames = new ArrayList<>();
 
         }
 
@@ -258,7 +260,7 @@ public class Patient implements Serializable {
     }
 
     /**
-     * 
+     *
      * Set the list of Personnames
      */
 
@@ -269,7 +271,7 @@ public class Patient implements Serializable {
     }
 
     /**
-     * 
+     *
      * Get the list of Phonenumbers
      */
 
@@ -277,7 +279,7 @@ public class Patient implements Serializable {
 
         if (this.phonenumbers == null) {
 
-            this.phonenumbers = new ArrayList<Phonenumber>();
+            this.phonenumbers = new ArrayList<>();
 
         }
 
@@ -286,7 +288,7 @@ public class Patient implements Serializable {
     }
 
     /**
-     * 
+     *
      * Set the list of Phonenumbers
      */
 

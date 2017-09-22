@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2014, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,42 +29,42 @@ package gov.hhs.fha.nhinc.patientdiscovery.inbound.deferred.response;
 import gov.hhs.fha.nhinc.common.nhinccommon.AssertionType;
 import gov.hhs.fha.nhinc.generic.GenericFactory;
 import gov.hhs.fha.nhinc.nhinclib.NhincConstants;
-import gov.hhs.fha.nhinc.patientdiscovery.PatientDiscoveryAuditor;
 import gov.hhs.fha.nhinc.patientdiscovery.adapter.deferred.response.proxy.AdapterPatientDiscoveryDeferredRespProxy;
 import gov.hhs.fha.nhinc.patientdiscovery.adapter.deferred.response.proxy.AdapterPatientDiscoveryDeferredRespProxyObjectFactory;
-
+import gov.hhs.fha.nhinc.patientdiscovery.audit.PatientDiscoveryDeferredResponseAuditLogger;
+import java.util.Properties;
 import org.hl7.v3.MCCIIN000002UV01;
 import org.hl7.v3.PRPAIN201306UV02;
 
 /**
  * @author akong
- * 
+ *
  */
 public abstract class AbstractInboundPatientDiscoveryDeferredResponse implements
-        InboundPatientDiscoveryDeferredResponse {
+    InboundPatientDiscoveryDeferredResponse {
 
     private final GenericFactory<AdapterPatientDiscoveryDeferredRespProxy> proxyFactory;
 
     abstract MCCIIN000002UV01 process(PRPAIN201306UV02 request, AssertionType assertion);
 
-    abstract PatientDiscoveryAuditor getAuditLogger();
+    abstract PatientDiscoveryDeferredResponseAuditLogger getAuditLogger();
 
     public AbstractInboundPatientDiscoveryDeferredResponse() {
         proxyFactory = new AdapterPatientDiscoveryDeferredRespProxyObjectFactory();
     }
 
     public AbstractInboundPatientDiscoveryDeferredResponse(
-            GenericFactory<AdapterPatientDiscoveryDeferredRespProxy> factory) {
+        GenericFactory<AdapterPatientDiscoveryDeferredRespProxy> factory) {
         proxyFactory = factory;
     }
 
     @Override
-    public MCCIIN000002UV01 respondingGatewayDeferredPRPAIN201306UV02(PRPAIN201306UV02 request, AssertionType assertion) {
-        auditRequestFromNhin(request, assertion);
+    public MCCIIN000002UV01 respondingGatewayDeferredPRPAIN201306UV02(PRPAIN201306UV02 request, AssertionType assertion,
+        Properties webContextProperties) {
 
         MCCIIN000002UV01 response = process(request, assertion);
 
-        auditResponseToNhin(response, assertion);
+        auditResponseToNhin(request, response, assertion, webContextProperties);
 
         return response;
     }
@@ -75,13 +75,11 @@ public abstract class AbstractInboundPatientDiscoveryDeferredResponse implements
         return proxy.processPatientDiscoveryAsyncResp(request, assertion);
     }
 
-    protected void auditRequestFromNhin(PRPAIN201306UV02 request, AssertionType assertion) {
-        getAuditLogger().auditNhinDeferred201306(request, assertion, NhincConstants.AUDIT_LOG_INBOUND_DIRECTION);
-    }
-
-    protected void auditResponseToNhin(MCCIIN000002UV01 response, AssertionType assertion) {
-        getAuditLogger().auditAck(response, assertion, NhincConstants.AUDIT_LOG_OUTBOUND_DIRECTION,
-                NhincConstants.AUDIT_LOG_NHIN_INTERFACE);
+    protected void auditResponseToNhin(PRPAIN201306UV02 request, MCCIIN000002UV01 response, AssertionType assertion,
+        Properties webContextProperties) {
+        getAuditLogger().auditResponseMessage(request, response, assertion, null,
+            NhincConstants.AUDIT_LOG_INBOUND_DIRECTION, NhincConstants.AUDIT_LOG_NHIN_INTERFACE, Boolean.FALSE,
+            webContextProperties, NhincConstants.PATIENT_DISCOVERY_DEFERRED_RESP_SERVICE_NAME);
     }
 
 }

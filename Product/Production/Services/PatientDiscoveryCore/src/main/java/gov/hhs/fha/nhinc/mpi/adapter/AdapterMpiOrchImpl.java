@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,13 +26,13 @@
  */
 package gov.hhs.fha.nhinc.mpi.adapter;
 
-import org.apache.log4j.Logger;
-import org.hl7.v3.PRPAIN201305UV02;
-import org.hl7.v3.PRPAIN201306UV02;
-
 import gov.hhs.fha.nhinc.common.nhinccommon.AssertionType;
 import gov.hhs.fha.nhinc.mpi.adapter.component.proxy.AdapterComponentMpiProxy;
 import gov.hhs.fha.nhinc.mpi.adapter.component.proxy.AdapterComponentMpiProxyObjectFactory;
+import org.hl7.v3.PRPAIN201305UV02;
+import org.hl7.v3.PRPAIN201306UV02;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -41,10 +41,9 @@ import gov.hhs.fha.nhinc.mpi.adapter.component.proxy.AdapterComponentMpiProxyObj
  *
  * @author Les Westberg
  */
-
 public class AdapterMpiOrchImpl {
 
-    private static final Logger LOG = Logger.getLogger(AdapterMpiOrchImpl.class);
+    private static final Logger LOG = LoggerFactory.getLogger(AdapterMpiOrchImpl.class);
 
     /**
      * Send the patient query request to the actual MPI that is implemented.
@@ -55,10 +54,8 @@ public class AdapterMpiOrchImpl {
      */
     public PRPAIN201306UV02 query(PRPAIN201305UV02 findCandidatesRequest, AssertionType assertion) {
         LOG.trace("Entering AdapterMpiOrchImpl.query method...");
-        AdapterComponentMpiProxy oMpiProxy = null;
         AdapterComponentMpiProxyObjectFactory oFactory = new AdapterComponentMpiProxyObjectFactory();
-        oMpiProxy = oFactory.getAdapterComponentMpiProxy();
-        PRPAIN201306UV02 oResponse = oMpiProxy.findCandidates(findCandidatesRequest, assertion);
-        return oResponse;
+        AdapterComponentMpiProxy oMpiProxy = oFactory.getAdapterComponentMpiProxy();
+        return oMpiProxy.findCandidates(findCandidatesRequest, assertion);
     }
 }

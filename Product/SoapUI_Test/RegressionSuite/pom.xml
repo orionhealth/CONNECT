@@ -1,17 +1,20 @@
-<?xml version="1.0"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
+
     <parent>
         <groupId>org.connectopensource</groupId>
         <artifactId>SoapUI_Test</artifactId>
-        <version>4.4.1</version>
+        <version>4.7.0-HOTFIX-1</version>
     </parent>
+
     <artifactId>RegressionSuite</artifactId>
-    <packaging>pom</packaging>
     <name>Maven 3 soapUI RegressionSuite</name>
+    <packaging>pom</packaging>
+    <modelVersion>4.0.0</modelVersion>
+
     <properties>
-        <soapui.testFailIgnore>true</soapui.testFailIgnore>
+	     <soapui.testFailIgnore>true</soapui.testFailIgnore>
     </properties>
+
     <profiles>
         <profile>
             <id>regression-testing</id>
@@ -26,8 +29,76 @@
                 <module>Passthru</module>
                 <module>Bimodal</module>
                 <module>NewFeature</module>
-                <!--module>stopEmbedded</module-->
+				<!--module>stopEmbedded</module-->
             </modules>
         </profile>
+
+        <profile>
+            <id>direct-testing</id>
+            <activation>
+                <property>
+                    <name>testDirect</name>
+                    <value>true</value>
+                </property>
+            </activation>
+            <modules>
+                <module>Direct</module>
+            </modules>
+        </profile>
+
+		<profile>
+            <id>manual-testing</id>
+           	<modules>
+			     <module>Manual</module>
+		         <module>Bimodal/ValidateRDMessageSpecVersionTest</module>
+				 <module>Bimodal/ValidateSAMLResourceURIAttributeTest</module>
+				 <module>Bimodal/ValidateAuditQueryLogService</module>
+				 <module>Bimodal/ValidateQDMessageSpecVersionTest</module>
+				 <module>Passthru/AuditLogging-Passthrough</module>
+				 <module>Passthru/DocQueryErrorCodesPassthru</module>
+				 <module>Passthru/NHINCReceivingXDRAsyncRequestTests</module>
+				 <module>Passthru/NHINCReceivingXDRAsyncResponseTests</module>
+				 <module>Standard/EntitySendingXDRAsyncReqTests</module>
+				 <module>Standard/EntitySendingXDRAsyncResponseTests</module>
+				 <module>Standard/Fanout-Test</module>
+				 <module>Standard/TransactionIDTest</module>
+				 <module>startEmbedded</module>
+				 <module>stopEmbedded</module>
+				 <module>Graveyard/LargePayloadTest</module>
+				 <module>Utility/JMXConfigTest</module>
+			 </modules>
+	   </profile>
+
     </profiles>
+
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>com.github.redfish4ktc.soapui</groupId>
+                    <artifactId>maven-soapui-extension-plugin</artifactId>
+                    <configuration>
+                        <exportAll>true</exportAll>
+                        <printReport>true</printReport>
+                        <junitReport>true</junitReport>
+                        <coverage>false</coverage>
+                        <testFailIgnore>${soapui.testFailIgnore}</testFailIgnore>
+                        <saveAfterRun>false</saveAfterRun>
+                        <host>${host}:${port}</host>
+                        <projectProperties>
+                            <value>GatewayPropDir=${properties.dir}</value>
+                            <value>DBHost=${db.host}</value>
+                            <value>DBPass=${db.password}</value>
+                            <value>DBPort=${db.port}</value>
+                            <value>DBUser=${db.user}</value>
+                            <value>ASUsername=${as.username}</value>
+                            <value>ASPassword=${as.password}</value>
+                            <value>JMXHost=${jmx.host}</value>
+                            <value>JMXPort=${jmx.port}</value>
+                        </projectProperties>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
 </project>

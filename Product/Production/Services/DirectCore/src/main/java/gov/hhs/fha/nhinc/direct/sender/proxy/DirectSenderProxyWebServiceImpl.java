@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2014, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -33,23 +33,24 @@ import gov.hhs.fha.nhinc.direct.DirectConstants;
 import gov.hhs.fha.nhinc.direct.DirectSenderPortType;
 import gov.hhs.fha.nhinc.direct.DirectSenderService;
 import java.io.IOException;
-import java.util.logging.Level;
 import javax.mail.MessagingException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import javax.xml.ws.BindingType;
 import javax.xml.ws.soap.Addressing;
-import org.apache.log4j.Logger;
+import javax.xml.ws.soap.SOAPBinding;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
  * @author svalluripalli
  */
-@BindingType(value = javax.xml.ws.soap.SOAPBinding.SOAP12HTTP_BINDING)
+@BindingType(value = SOAPBinding.SOAP12HTTP_BINDING)
 @Addressing(enabled = true)
 public class DirectSenderProxyWebServiceImpl {
 
-    private static final Logger LOG = Logger.getLogger(DirectSenderProxyWebServiceImpl.class);
+    private static final Logger LOG = LoggerFactory.getLogger(DirectSenderProxyWebServiceImpl.class);
 
     /**
      *
@@ -58,7 +59,7 @@ public class DirectSenderProxyWebServiceImpl {
     public void sendOutboundDirect(MimeMessage message) {
         LOG.debug("Begin DirectSenderUnsecuredProxy.sendOutboundDirect(MimeMessage)");
 
-        try { // Call Web Service Operation        
+        try { // Call Web Service Operation
             String url = ConnectionManagerCache.getInstance().getInternalEndpointURLByServiceName(DirectConstants.DIRECT_SENDER_SERVICE_NAME);
             DirectSenderPortType port = getPort(url);
             gov.hhs.fha.nhinc.direct.SendoutMessage parameters = new gov.hhs.fha.nhinc.direct.SendoutMessage();
@@ -69,12 +70,8 @@ public class DirectSenderProxyWebServiceImpl {
             senderMessage.setSubject(message.getSubject());
             parameters.setMessage(senderMessage);
             port.sendOutboundDirect(parameters);
-        } catch (IOException ex) {
-            LOG.error("DirectSender WebService Failed :" + ex.getMessage());
-        } catch (MessagingException ex) {
-            LOG.error("DirectSender WebService Failed :" + ex.getMessage());
-        } catch (ConnectionManagerException ex) {
-            java.util.logging.Logger.getLogger(DirectSenderProxyWebServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException | MessagingException | ConnectionManagerException ex) {
+            LOG.error("DirectSender WebService Failed :{}", ex.getLocalizedMessage(), ex);
         }
         LOG.debug("End DirectSenderUnsecuredProxy.sendOutboundDirect(MimeMessage)");
     }

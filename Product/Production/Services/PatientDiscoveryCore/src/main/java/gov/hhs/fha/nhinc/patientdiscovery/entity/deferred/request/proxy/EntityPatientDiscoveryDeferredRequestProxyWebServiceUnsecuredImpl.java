@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -35,15 +35,16 @@ import gov.hhs.fha.nhinc.messaging.service.port.ServicePortDescriptor;
 import gov.hhs.fha.nhinc.nhinclib.NhincConstants;
 import gov.hhs.fha.nhinc.patientdiscovery.entity.deferred.request.proxy.service.EntityPatientDiscoveryAsyncReqServicePortDescriptor;
 import gov.hhs.fha.nhinc.webserviceproxy.WebServiceProxyHelper;
-
-import org.apache.log4j.Logger;
 import org.hl7.v3.MCCIIN000002UV01;
 import org.hl7.v3.PRPAIN201305UV02;
 import org.hl7.v3.RespondingGatewayPRPAIN201305UV02RequestType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class EntityPatientDiscoveryDeferredRequestProxyWebServiceUnsecuredImpl implements
-        EntityPatientDiscoveryDeferredRequestProxy {
-    private static final Logger LOG = Logger.getLogger(EntityPatientDiscoveryDeferredRequestProxyWebServiceUnsecuredImpl.class);
+    EntityPatientDiscoveryDeferredRequestProxy {
+
+    private static final Logger LOG = LoggerFactory.getLogger(EntityPatientDiscoveryDeferredRequestProxyWebServiceUnsecuredImpl.class);
     private WebServiceProxyHelper oProxyHelper = null;
 
     public EntityPatientDiscoveryDeferredRequestProxyWebServiceUnsecuredImpl() {
@@ -54,8 +55,16 @@ public class EntityPatientDiscoveryDeferredRequestProxyWebServiceUnsecuredImpl i
         return new WebServiceProxyHelper();
     }
 
+    /**
+     *
+     * @param message
+     * @param assertion
+     * @param target
+     * @return
+     */
+    @Override
     public MCCIIN000002UV01 processPatientDiscoveryAsyncReq(PRPAIN201305UV02 message, AssertionType assertion,
-            NhinTargetCommunitiesType target) {
+        NhinTargetCommunitiesType target) {
         LOG.debug("Begin processPatientDiscoveryAsyncReq");
         MCCIIN000002UV01 response = new MCCIIN000002UV01();
 
@@ -65,14 +74,15 @@ public class EntityPatientDiscoveryDeferredRequestProxyWebServiceUnsecuredImpl i
             request.setNhinTargetCommunities(target);
             request.setPRPAIN201305UV02(message);
             String url = oProxyHelper
-                    .getUrlLocalHomeCommunity(NhincConstants.PATIENT_DISCOVERY_ENTITY_ASYNC_REQ_SERVICE_NAME);
-            ServicePortDescriptor<EntityPatientDiscoveryAsyncReqPortType> portDescriptor = new EntityPatientDiscoveryAsyncReqServicePortDescriptor();
+                .getUrlLocalHomeCommunity(NhincConstants.PATIENT_DISCOVERY_ENTITY_ASYNC_REQ_SERVICE_NAME);
+            ServicePortDescriptor<EntityPatientDiscoveryAsyncReqPortType> portDescriptor
+                = new EntityPatientDiscoveryAsyncReqServicePortDescriptor();
             CONNECTClient<EntityPatientDiscoveryAsyncReqPortType> client = CONNECTClientFactory.getInstance()
-                    .getCONNECTClientUnsecured(portDescriptor, url, assertion);
+                .getCONNECTClientUnsecured(portDescriptor, url, assertion);
             response = (MCCIIN000002UV01) client.invokePort(EntityPatientDiscoveryAsyncReqPortType.class,
-                    "processPatientDiscoveryAsyncReq", request);
+                "processPatientDiscoveryAsyncReq", request);
         } catch (Exception ex) {
-            LOG.error("Error calling processPatientDiscoveryAsyncReq: " + ex.getMessage(), ex);
+            LOG.error("Error calling processPatientDiscoveryAsyncReq: " + ex.getLocalizedMessage(), ex);
         }
 
         LOG.debug("End processPatientDiscoveryAsyncReq");

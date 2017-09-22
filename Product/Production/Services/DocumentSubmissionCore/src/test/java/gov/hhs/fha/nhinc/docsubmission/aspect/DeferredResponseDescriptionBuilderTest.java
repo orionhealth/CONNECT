@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,24 +26,20 @@
  */
 package gov.hhs.fha.nhinc.docsubmission.aspect;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import com.google.common.collect.ImmutableList;
 import gov.hhs.fha.nhinc.common.nhinccommon.AssertionType;
 import gov.hhs.fha.nhinc.event.AssertionEventDescriptionBuilder;
 import gov.hhs.fha.nhinc.event.BaseDescriptionBuilderTest;
 import gov.hhs.fha.nhinc.event.EventDescription;
-
 import java.util.ArrayList;
 import java.util.List;
-
 import oasis.names.tc.ebxml_regrep.xsd.rs._3.RegistryResponseType;
-
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.Test;
-
-import com.google.common.collect.ImmutableList;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class DeferredResponseDescriptionBuilderTest extends BaseDescriptionBuilderTest {
 
@@ -68,7 +64,7 @@ public class DeferredResponseDescriptionBuilderTest extends BaseDescriptionBuild
     public void delegatesToExtractor() {
         RegistryResponseType response = new RegistryResponseType();
         RegistryResponseDescriptionExtractor responseExtractor = mock(RegistryResponseDescriptionExtractor.class);
-        List<String> errorCodes = new ArrayList<String>();
+        List<String> errorCodes = new ArrayList<>();
         errorCodes.add("errorCode");
         when(responseExtractor.getErrorCodes(response)).thenReturn(errorCodes);
 

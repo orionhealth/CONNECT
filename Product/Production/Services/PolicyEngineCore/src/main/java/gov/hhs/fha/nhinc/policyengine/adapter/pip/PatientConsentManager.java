@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -56,9 +56,10 @@ import oasis.names.tc.ebxml_regrep.xsd.rim._3.ExtrinsicObjectType;
 import oasis.names.tc.ebxml_regrep.xsd.rim._3.IdentifiableType;
 import oasis.names.tc.ebxml_regrep.xsd.rs._3.RegistryResponseType;
 import oasis.names.tc.xacml._2_0.policy.schema.os.PolicyType;
-import org.apache.log4j.Logger;
 import org.hl7.v3.II;
 import org.hl7.v3.POCDMT000040ClinicalDocument;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This class manages the patient consent form. It stores or retrieves the patient consent document from the repository.
@@ -67,7 +68,7 @@ import org.hl7.v3.POCDMT000040ClinicalDocument;
  */
 public class PatientConsentManager {
 
-    private static final Logger LOG = Logger.getLogger(PatientConsentManager.class);
+    private static final Logger LOG = LoggerFactory.getLogger(PatientConsentManager.class);
     private static final String XACML_MIME_TYPE = "text/xml";
     private static final String PDF_MIME_TYPE = "application/pdf";
 
@@ -91,7 +92,7 @@ public class PatientConsentManager {
             // Create the document
             // This also takes care of the case where there is only the
             // OptIn\OptOut setting and no fine grained policy
-            PolicyType oConsentXACML = null;
+            PolicyType oConsentXACML;
             XACMLCreator oCreator = new XACMLCreator();
             oConsentXACML = oCreator.createConsentXACMLDoc(oPtPref);
             LOG.info("Created XACML Doc with policy OID: " + oConsentXACML.getPolicyId());
@@ -119,7 +120,7 @@ public class PatientConsentManager {
                 && oPtPref.getBinaryDocumentPolicyCriteria().getBinaryDocumentPolicyCriterion() != null
                 && !oPtPref.getBinaryDocumentPolicyCriteria().getBinaryDocumentPolicyCriterion().isEmpty()) {
 
-                List<String> olDocIds2Store = new ArrayList<String>();
+                List<String> olDocIds2Store = new ArrayList<>();
                 List<BinaryDocumentPolicyCriterionType> olBinPolicyCriteria = oPtPref.getBinaryDocumentPolicyCriteria()
                     .getBinaryDocumentPolicyCriterion();
                 for (BinaryDocumentPolicyCriterionType oBinPolicyCriterion : olBinPolicyCriteria) {
@@ -250,7 +251,7 @@ public class PatientConsentManager {
             RegistryResponseType oRegistryResponse = invokeDocRepositoryProvideAndRegisterDocumentSetB(oRequest);
 
             if (oRegistryResponse != null) {
-                if (oRegistryResponse.getStatus() != null && !oRegistryResponse.getStatus().equals("")) {
+                if (oRegistryResponse.getStatus() != null && !oRegistryResponse.getStatus().isEmpty()) {
                     LOG.info("Patient Consent Document saved to repository Successfully");
                 } else {
                     throw new AdapterPIPException("Unable to save Patient Consent Document"
@@ -417,7 +418,7 @@ public class PatientConsentManager {
     private String retrievePtIdFromDocumentId(String sDocumentUniqueId, String sRepositoryId)
         throws AdapterPIPException {
         LOG.debug("Begin PatientConsentManager.retrievePtIdFromDocumentId()..");
-        String sPatientId = "";
+        String sPatientId;
 
         AdhocQueryRequest oRequest = new QueryUtil().createPatientIdQuery(sDocumentUniqueId, sRepositoryId);
         AdhocQueryResponse oResponse = invokeDocRegistryStoredQuery(oRequest);
@@ -441,7 +442,7 @@ public class PatientConsentManager {
             if (uniquePatientId.startsWith("'")) {
                 uniquePatientId = uniquePatientId.substring(1);
             }
-            int pos = 0;
+            int pos;
             String[] tokens = uniquePatientId.split("\\&");
             LOG.debug("extractUniquePatientIdToII - tokens length is " + tokens.length);
             if (tokens.length > 0) {
@@ -537,7 +538,7 @@ public class PatientConsentManager {
     private List<CPPDocumentInfo> retrieveCPPFromRepositoryUsingXDSb(String sPatientId, String sAssigningAuthority)
         throws AdapterPIPException {
 
-        List<CPPDocumentInfo> olCPPDocInfo = new ArrayList<CPPDocumentInfo>();
+        List<CPPDocumentInfo> olCPPDocInfo = new ArrayList<>();
 
         List<DocumentRequest> olDocReq = retrieveCPPDocIdentifiers(sPatientId, sAssigningAuthority);
         for (DocumentRequest oDocRequest : olDocReq) {
@@ -603,7 +604,7 @@ public class PatientConsentManager {
      * @throws gov.hhs.fha.nhinc.policyengine.adapter.pip.AdapterPIPException This is thrown if there are any errors.
      */
     private void retrieveCPPDoc(DocumentRequest oDocRequest, CPPDocumentInfo oCPPDocInfo) throws AdapterPIPException {
-        String sPrefDoc = "";
+        String sPrefDoc;
 
         RetrieveDocumentSetRequestType oRequest = new RetrieveDocumentSetRequestType();
         oRequest.getDocumentRequest().add(oDocRequest);
@@ -666,7 +667,7 @@ public class PatientConsentManager {
     private List<String> extractBinPrefDoc(DocumentRequest oDocRequest, RetrieveDocumentSetResponseType oResponse) {
 
         LOG.info("--------------- Begin extractBinPrefDoc ---------------");
-        List<String> olBinPrefDoc = new ArrayList<String>();
+        List<String> olBinPrefDoc = new ArrayList<>();
 
         if ((oResponse != null) && (oResponse.getDocumentResponse() != null)
             && (oResponse.getDocumentResponse().size() > 0)) {
@@ -783,6 +784,6 @@ public class PatientConsentManager {
         String sRepositoryId = "";
         String sDocumentUniqueId = "";
         String sConsentXACML = "";
-        List<String> olConsentPdf = new ArrayList<String>();
+        List<String> olConsentPdf = new ArrayList<>();
     }
 }

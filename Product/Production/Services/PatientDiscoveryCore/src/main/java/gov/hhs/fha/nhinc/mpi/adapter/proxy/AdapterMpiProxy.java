@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,11 +26,11 @@
  */
 package gov.hhs.fha.nhinc.mpi.adapter.proxy;
 
+import gov.hhs.fha.nhinc.common.nhinccommon.AssertionType;
+import gov.hhs.fha.nhinc.common.nhinccommon.NhinTargetSystemType;
+import gov.hhs.fha.nhinc.patientdiscovery.PatientDiscoveryException;
 import org.hl7.v3.PRPAIN201305UV02;
 import org.hl7.v3.PRPAIN201306UV02;
-
-import gov.hhs.fha.nhinc.common.nhinccommon.AssertionType;
-import gov.hhs.fha.nhinc.patientdiscovery.PatientDiscoveryException;
 
 /**
  * Component proxy interface for AdapterMpi service.
@@ -38,6 +38,7 @@ import gov.hhs.fha.nhinc.patientdiscovery.PatientDiscoveryException;
  * @author Les Westberg
  */
 public interface AdapterMpiProxy {
+
     /**
      * Find the matching candidates from the MPI.
      *
@@ -47,5 +48,9 @@ public interface AdapterMpiProxy {
      * @throws PatientDiscoveryException
      */
     PRPAIN201306UV02 findCandidates(PRPAIN201305UV02 request, AssertionType assertion)
-            throws PatientDiscoveryException;
+        throws PatientDiscoveryException;
+
+    PRPAIN201306UV02 findCandidates(PRPAIN201305UV02 request, AssertionType assertion,
+        NhinTargetSystemType nhinTargetSystem) throws PatientDiscoveryException;
+
 }

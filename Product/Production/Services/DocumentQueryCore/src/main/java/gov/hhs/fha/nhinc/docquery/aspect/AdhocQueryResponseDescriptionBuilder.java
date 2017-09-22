@@ -1,7 +1,5 @@
-/**
- * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
- *
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services.
+/*
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -28,37 +26,33 @@
  */
 package gov.hhs.fha.nhinc.docquery.aspect;
 
-import gov.hhs.fha.nhinc.document.DocumentConstants;
-import gov.hhs.fha.nhinc.util.JaxbDocumentUtils;
-import gov.hhs.fha.nhinc.util.NhincCollections;
-
-import java.util.List;
-
-import javax.xml.bind.JAXBElement;
-
-import oasis.names.tc.ebxml_regrep.xsd.query._3.AdhocQueryResponse;
-import oasis.names.tc.ebxml_regrep.xsd.rim._3.ClassificationType;
-import oasis.names.tc.ebxml_regrep.xsd.rim._3.ExtrinsicObjectType;
-import oasis.names.tc.ebxml_regrep.xsd.rim._3.IdentifiableType;
-import oasis.names.tc.ebxml_regrep.xsd.rs._3.RegistryError;
-
-import org.apache.log4j.Logger;
-
 import com.google.common.base.Function;
 import com.google.common.base.Optional;
 import com.google.common.base.Predicate;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
+import gov.hhs.fha.nhinc.document.DocumentConstants;
 import gov.hhs.fha.nhinc.event.AssertionEventDescriptionBuilder;
+import gov.hhs.fha.nhinc.util.JaxbDocumentUtils;
+import gov.hhs.fha.nhinc.util.NhincCollections;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+import javax.xml.bind.JAXBElement;
+import oasis.names.tc.ebxml_regrep.xsd.query._3.AdhocQueryResponse;
+import oasis.names.tc.ebxml_regrep.xsd.rim._3.ClassificationType;
+import oasis.names.tc.ebxml_regrep.xsd.rim._3.ExtrinsicObjectType;
+import oasis.names.tc.ebxml_regrep.xsd.rim._3.IdentifiableType;
 import oasis.names.tc.ebxml_regrep.xsd.rim._3.RegistryObjectListType;
+import oasis.names.tc.ebxml_regrep.xsd.rs._3.RegistryError;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class AdhocQueryResponseDescriptionBuilder extends AssertionEventDescriptionBuilder {
 
-    private static final Logger LOG = Logger.getLogger(AdhocQueryResponseDescriptionBuilder.class);
+    private static final Logger LOG = LoggerFactory.getLogger(AdhocQueryResponseDescriptionBuilder.class);
     private static final ErrorExtractor ERROR_EXTRACTOR = new ErrorExtractor();
     private static final PayloadTypeExtractor PAYLOAD_TYPE_EXTRACTOR = new PayloadTypeExtractor();
     private static final PayloadSizeExtractor PAYLOAD_SIZE_EXTRACTOR = new PayloadSizeExtractor();
@@ -67,7 +61,7 @@ public class AdhocQueryResponseDescriptionBuilder extends AssertionEventDescript
 
     /**
      * Constructor for aspects. Response should be set via <code>setArguments</code>.
-     * 
+     *
      * @see #setArguments(Object...)
      */
     public AdhocQueryResponseDescriptionBuilder() {
@@ -92,7 +86,7 @@ public class AdhocQueryResponseDescriptionBuilder extends AssertionEventDescript
     @Override
     public void buildRespondingHCIDs() {
         if (hasObjectList()) {
-            setRespondingHCIDs(new ArrayList<String>(extractHcids(response.getRegistryObjectList())));
+            setRespondingHCIDs(new ArrayList<>(extractHcids(response.getRegistryObjectList())));
         } else {
             setLocalResponder();
         }
@@ -154,12 +148,12 @@ public class AdhocQueryResponseDescriptionBuilder extends AssertionEventDescript
     }
 
     private Set<String> extractHcids(RegistryObjectListType registryObjectList) {
-        Set<String> hcids = new HashSet<String>();
+        Set<String> hcids = new HashSet<>();
         if(registryObjectList.getIdentifiable() != null){
             for(JAXBElement<? extends IdentifiableType> identifiable : registryObjectList.getIdentifiable()){
                 if(identifiable.getValue() != null
                         && identifiable.getValue() instanceof ExtrinsicObjectType){
-                    hcids.add(((ExtrinsicObjectType)identifiable.getValue()).getHome());
+                    hcids.add(identifiable.getValue().getHome());
                 }
             }
         }
@@ -177,7 +171,7 @@ public class AdhocQueryResponseDescriptionBuilder extends AssertionEventDescript
 
     /**
      * Finds this deep value, if it is present:
-     * 
+     *
      * <pre>
      * RegistryObjectList/ExtrinsicObject/Classification[@nodeRepresentation="formatCode"]/Slot[@name="codingScheme"]/ValueList/Value[1]
      * </Pre>
@@ -214,7 +208,7 @@ public class AdhocQueryResponseDescriptionBuilder extends AssertionEventDescript
 
     /**
      * Finds these deep values, if present:
-     * 
+     *
      * <pre>
      * RegistryObjectList/ExtrinsicObject/Slot[@name="size"]/ValueList/Value[1]
      * </pre>

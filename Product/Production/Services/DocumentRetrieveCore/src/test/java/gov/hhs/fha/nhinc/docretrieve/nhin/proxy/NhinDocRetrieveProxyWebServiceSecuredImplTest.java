@@ -1,7 +1,5 @@
-/**
- * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
- *
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services.
+/*
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -28,13 +26,6 @@
  */
 package gov.hhs.fha.nhinc.docretrieve.nhin.proxy;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 import gov.hhs.fha.nhinc.aspect.NwhinInvocationEvent;
 import gov.hhs.fha.nhinc.common.nhinccommon.AssertionType;
 import gov.hhs.fha.nhinc.common.nhinccommon.HomeCommunityType;
@@ -49,14 +40,19 @@ import gov.hhs.fha.nhinc.nhinclib.NhincConstants.GATEWAY_API_LEVEL;
 import gov.hhs.fha.nhinc.nhinclib.NhincConstants.UDDI_SPEC_VERSION;
 import ihe.iti.xds_b._2007.RespondingGatewayRetrievePortType;
 import ihe.iti.xds_b._2007.RetrieveDocumentSetRequestType;
-
 import java.lang.reflect.Method;
-
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import org.junit.Test;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 /**
  * @author achidamb
- * 
+ *
  */
 public class NhinDocRetrieveProxyWebServiceSecuredImplTest {
 
@@ -70,7 +66,7 @@ public class NhinDocRetrieveProxyWebServiceSecuredImplTest {
     public void hasNwhinInvocationEventEvent() throws Exception {
         Class<NhinDocRetrieveProxyWebServiceSecuredImpl> clazz = NhinDocRetrieveProxyWebServiceSecuredImpl.class;
         Method method = clazz.getMethod("respondingGatewayCrossGatewayRetrieve", RetrieveDocumentSetRequestType.class,
-                AssertionType.class, NhinTargetSystemType.class, GATEWAY_API_LEVEL.class);
+            AssertionType.class, NhinTargetSystemType.class, GATEWAY_API_LEVEL.class);
         NwhinInvocationEvent annotation = method.getAnnotation(NwhinInvocationEvent.class);
         assertNotNull(annotation);
         assertEquals(RetrieveDocumentSetRequestTypeDescriptionBuilder.class, annotation.beforeBuilder());
@@ -84,7 +80,7 @@ public class NhinDocRetrieveProxyWebServiceSecuredImplTest {
         NhinDocRetrieveProxyWebServiceSecuredImpl impl = getImpl();
         NhinTargetSystemType target = getTarget("1.1", "2.0");
         when(cache.getEndpointURLByServiceNameSpecVersion(anyString(), anyString(), any(UDDI_SPEC_VERSION.class)))
-                .thenReturn("endpoint");
+            .thenReturn("endpoint");
         impl.respondingGatewayCrossGatewayRetrieve(request, assertion, target, GATEWAY_API_LEVEL.LEVEL_g0);
         verify(client).enableMtom();
     }
@@ -94,7 +90,7 @@ public class NhinDocRetrieveProxyWebServiceSecuredImplTest {
         NhinDocRetrieveProxyWebServiceSecuredImpl impl = getImpl();
         NhinTargetSystemType target = getTarget("1.1", "2.0");
         when(cache.getEndpointURLByServiceNameSpecVersion(anyString(), anyString(), any(UDDI_SPEC_VERSION.class)))
-                .thenReturn("endpoint");
+            .thenReturn("endpoint");
         impl.respondingGatewayCrossGatewayRetrieve(request, assertion, target, GATEWAY_API_LEVEL.LEVEL_g1);
         verify(client).enableMtom();
     }
@@ -136,7 +132,7 @@ public class NhinDocRetrieveProxyWebServiceSecuredImplTest {
 
             /*
              * (non-Javadoc)
-             * 
+             *
              * @see
              * gov.hhs.fha.nhinc.docquery.nhin.proxy.NhinDocQueryProxyWebServiceSecuredImpl#getCONNECTClientSecured(
              * gov.hhs.fha.nhinc.messaging.service.port.ServicePortDescriptor,
@@ -145,14 +141,14 @@ public class NhinDocRetrieveProxyWebServiceSecuredImplTest {
              */
             @Override
             public CONNECTClient<RespondingGatewayRetrievePortType> getCONNECTClientSecured(
-                    ServicePortDescriptor<RespondingGatewayRetrievePortType> portDescriptor, AssertionType assertion,
-                    String url, NhinTargetSystemType target) {
+                ServicePortDescriptor<RespondingGatewayRetrievePortType> portDescriptor, AssertionType assertion,
+                String url, NhinTargetSystemType target) {
                 return client;
             }
 
             /*
              * (non-Javadoc)
-             * 
+             *
              * @see gov.hhs.fha.nhinc.docretrieve.nhin.proxy.NhinDocRetrieveProxyWebServiceSecuredImpl#getCMInstance()
              */
             @Override

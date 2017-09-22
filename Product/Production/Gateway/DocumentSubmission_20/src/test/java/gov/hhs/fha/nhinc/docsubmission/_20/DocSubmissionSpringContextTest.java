@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,8 +26,6 @@
  */
 package gov.hhs.fha.nhinc.docsubmission._20;
 
-import static org.junit.Assert.assertNotNull;
-import ihe.iti.xds_b._2007.ProvideAndRegisterDocumentSetRequestType;
 import gov.hhs.fha.nhinc.common.nhinccommonentity.RespondingGatewayProvideAndRegisterDocumentSetRequestType;
 import gov.hhs.fha.nhinc.common.nhinccommonentity.RespondingGatewayProvideAndRegisterDocumentSetSecuredRequestType;
 import gov.hhs.fha.nhinc.docsubmission._20.entity.EntityDocSubmissionSecured_g1;
@@ -37,9 +35,9 @@ import gov.hhs.fha.nhinc.docsubmission.inbound.PassthroughInboundDocSubmission;
 import gov.hhs.fha.nhinc.docsubmission.inbound.StandardInboundDocSubmission;
 import gov.hhs.fha.nhinc.docsubmission.outbound.PassthroughOutboundDocSubmission;
 import gov.hhs.fha.nhinc.docsubmission.outbound.StandardOutboundDocSubmission;
-
+import ihe.iti.xds_b._2007.ProvideAndRegisterDocumentSetRequestType;
 import oasis.names.tc.ebxml_regrep.xsd.rs._3.RegistryResponseType;
-
+import static org.junit.Assert.assertNotNull;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,52 +54,52 @@ public class DocSubmissionSpringContextTest {
 
     @Autowired
     NhinXDR_g1 inboundDocSubmissionEndpoint;
-    
+
     @Autowired
     EntityDocSubmissionUnsecured_g1 outboundDocSubmissionUnsecuredEndpoint;
-    
+
     @Autowired
     EntityDocSubmissionSecured_g1 outboundDocSubmissionSecuredEndpoint;
-    
+
     @Autowired
     StandardOutboundDocSubmission stdOutboundDocSubmission;
-    
+
     @Autowired
     PassthroughOutboundDocSubmission ptOutboundDocSubmission;
-    
+
     @Autowired
     StandardInboundDocSubmission stdInboundDocSubmission;
-    
+
     @Autowired
     PassthroughInboundDocSubmission ptInbounDocSubmission;
-    
+
     @Test
     public void inbound() {
         assertNotNull(inboundDocSubmissionEndpoint);
-        
+
         ProvideAndRegisterDocumentSetRequestType request = new ProvideAndRegisterDocumentSetRequestType();
         RegistryResponseType response = inboundDocSubmissionEndpoint.documentRepositoryProvideAndRegisterDocumentSetB(request);
-        
+
         assertNotNull(response);
     }
-    
+
     @Test
     public void outboundUnsecured() {
         assertNotNull(outboundDocSubmissionUnsecuredEndpoint);
-        
+
         RespondingGatewayProvideAndRegisterDocumentSetRequestType request = new RespondingGatewayProvideAndRegisterDocumentSetRequestType();
         RegistryResponseType response = outboundDocSubmissionUnsecuredEndpoint.provideAndRegisterDocumentSetB(request);
-        
+
         assertNotNull(response);
     }
-    
+
     @Test
     public void outboundSecured() {
         assertNotNull(outboundDocSubmissionSecuredEndpoint);
-        
+
         RespondingGatewayProvideAndRegisterDocumentSetSecuredRequestType request = new RespondingGatewayProvideAndRegisterDocumentSetSecuredRequestType();
         RegistryResponseType response = outboundDocSubmissionSecuredEndpoint.provideAndRegisterDocumentSetB(request);
-        
+
         assertNotNull(response);
     }
 }

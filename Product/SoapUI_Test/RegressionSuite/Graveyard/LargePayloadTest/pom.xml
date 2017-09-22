@@ -1,0 +1,44 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <parent>
+        <groupId>org.connectopensource</groupId>
+        <artifactId>SoapUI_Test</artifactId>
+        <version>4.7.0-HOTFIX-1</version>
+    </parent>
+
+    <artifactId>LargePayloadTest</artifactId>
+    <name>Maven 3 soapUI LargePayloadTest</name>
+    <packaging>jar</packaging>
+    <modelVersion>4.0.0</modelVersion>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>com.github.redfish4ktc.soapui</groupId>
+                <artifactId>maven-soapui-extension-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>LargePayloadTest-soapui-project</id>
+                        <phase>integration-test</phase>
+                        <goals>
+                            <goal>test</goal>
+                        </goals>
+                        <configuration>
+                            <projectFile>${project.basedir}/LargePayloadTest-soapui-project.xml</projectFile>
+                            <outputFolder>${project.build.directory}/soapui/output</outputFolder>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>test-verify</id>
+                        <phase>post-integration-test</phase>
+                        <goals>
+                            <goal>test-verify</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+</project>

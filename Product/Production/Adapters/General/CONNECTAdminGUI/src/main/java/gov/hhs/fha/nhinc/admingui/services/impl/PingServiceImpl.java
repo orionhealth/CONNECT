@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2014, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,7 +24,6 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-
 package gov.hhs.fha.nhinc.admingui.services.impl;
 
 import gov.hhs.fha.nhinc.admingui.services.PingService;
@@ -33,88 +32,91 @@ import gov.hhs.fha.nhinc.properties.PropertyAccessException;
 import gov.hhs.fha.nhinc.properties.PropertyAccessor;
 import gov.hhs.fha.nhinc.util.StreamUtils;
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
-import org.apache.log4j.Logger;
+import javax.net.ssl.SSLSession;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
  * @author jassmit
  */
 public class PingServiceImpl implements PingService {
-    
-    private static final Logger LOG = Logger.getLogger(PingServiceImpl.class);
-    
+
+    private static final Logger LOG = LoggerFactory.getLogger(PingServiceImpl.class);
+
     private static final String WSDL_SUFFIX = "?wsdl";
     private static final String LOG_WSDL_KEY = "logWsdlPing";
-    
+
     @Override
     public boolean ping(String url) {
         InputStream is = null;
         InputStreamReader isReader = null;
         BufferedReader in = null;
+
         try {
             URL webserviceUrl = new URL(prepUrl(url));
             HttpsURLConnection.setDefaultHostnameVerifier(getHostNameVerifier());
             HttpURLConnection con = (HttpURLConnection) webserviceUrl.openConnection();
-            
+
             is = con.getInputStream();
             isReader = new InputStreamReader(is);
-            
+
             in = new BufferedReader(isReader);
             String inputLine;
             StringBuilder pingOutput = new StringBuilder();
-            
+
             while ((inputLine = in.readLine()) != null) {
                 pingOutput.append(inputLine);
             }
-            
+
             logWsdl(pingOutput.toString());
             con.disconnect();
             return true;
         } catch (Exception ex) {
-            LOG.warn(ex, ex);
+            LOG.warn("Problem pinging endpoint: {}", ex.getLocalizedMessage());
+            LOG.trace("Problem pinging endpoint: {}", ex.getLocalizedMessage(), ex);
         } finally {
             StreamUtils.closeStreamSilently(is);
             StreamUtils.closeFileSilently(isReader);
             StreamUtils.closeFileSilently(in);
         }
+
         return false;
     }
-    
+
     private String prepUrl(String serviceUrl) {
         if (!serviceUrl.endsWith(WSDL_SUFFIX)) {
             serviceUrl = serviceUrl.concat(WSDL_SUFFIX);
         }
         return serviceUrl;
     }
-    
+
     private HostnameVerifier getHostNameVerifier() {
-        return new javax.net.ssl.HostnameVerifier() {
+        return new HostnameVerifier() {
             @Override
-            public boolean verify(String hostname,
-                    javax.net.ssl.SSLSession sslSession) {
+            public boolean verify(String hostname, SSLSession sslSession) {
                 return true;
             }
         };
     }
-    
+
     protected void logWsdl(String output) {
         try {
             PropertyAccessor propAccessor = PropertyAccessor.getInstance();
-            String logOutputValue
-                    = propAccessor.getProperty(NhincConstants.ADAPTER_PROPERTY_FILE_NAME, LOG_WSDL_KEY);
-            
+            String logOutputValue = propAccessor.getProperty(NhincConstants.ADAPTER_PROPERTY_FILE_NAME, LOG_WSDL_KEY);
+
             if (logOutputValue.equalsIgnoreCase("true") || logOutputValue.equalsIgnoreCase("t")) {
                 LOG.info(output);
             }
         } catch (PropertyAccessException ex) {
-            LOG.warn(ex.getLocalizedMessage());
+            LOG.warn("Could not access properties: {}", ex.getLocalizedMessage());
+            LOG.trace("Could not access properties: {}", ex.getLocalizedMessage(), ex);
         }
     }
 }

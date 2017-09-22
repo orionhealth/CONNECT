@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services.
+/*
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -35,7 +35,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * @author zmelnick
- * 
+ *
  */
 @Aspect
 public class EventAspectAdvice {
@@ -109,7 +109,8 @@ public class EventAspectAdvice {
     }
 
     @AfterReturning(pointcut = "@annotation(annotation)", returning = "returnValue")
-    public void endOutboundProcessingEvent(JoinPoint joinPoint, OutboundProcessingEvent annotation, Object returnValue) {
+    public void endOutboundProcessingEvent(JoinPoint joinPoint, OutboundProcessingEvent annotation,
+            Object returnValue) {
         outboundProcessingAdviceDelegate.end(joinPoint.getArgs(), annotation.serviceType(), annotation.version(),
                 annotation.afterReturningBuilder(), returnValue);
     }

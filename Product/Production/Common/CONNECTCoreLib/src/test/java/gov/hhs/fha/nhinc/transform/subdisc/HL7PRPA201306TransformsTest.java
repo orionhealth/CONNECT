@@ -1,11 +1,32 @@
+/*
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *     * Redistributions of source code must retain the above
+ *       copyright notice, this list of conditions and the following disclaimer.
+ *     * Redistributions in binary form must reproduce the above copyright
+ *       notice, this list of conditions and the following disclaimer in the documentation
+ *       and/or other materials provided with the distribution.
+ *     * Neither the name of the United States Government nor the
+ *       names of its contributors may be used to endorse or promote products
+ *       derived from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE UNITED STATES GOVERNMENT BE LIABLE FOR ANY
+ * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
 package gov.hhs.fha.nhinc.transform.subdisc;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-
 import javax.xml.bind.JAXBElement;
-
 import org.hl7.v3.CE;
 import org.hl7.v3.II;
 import org.hl7.v3.MCCIMT000100UV01Agent;
@@ -22,11 +43,14 @@ import org.hl7.v3.PRPAMT201301UV02Patient;
 import org.hl7.v3.PRPAMT201301UV02Person;
 import org.hl7.v3.PRPAMT201306UV02ParameterList;
 import org.hl7.v3.PRPAMT201306UV02QueryByParameter;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 
 /**
  * @author achidambaram
- * 
+ *
  */
 public class HL7PRPA201306TransformsTest {
 
@@ -56,7 +80,7 @@ public class HL7PRPA201306TransformsTest {
 
     @Test
     public void createPRPA201306ForPatientNotFound() {
-        PRPAIN201306UV02 result = null;
+        PRPAIN201306UV02 result;
         HL7PRPA201306Transforms transforms = new HL7PRPA201306Transforms();
         result = transforms.createPRPA201306ForPatientNotFound(createPRPAIN201305UV02());
         assertEquals(result.getAcknowledgement().get(0).getTypeId().getExtension(), "1.16.17.19");
@@ -67,7 +91,7 @@ public class HL7PRPA201306TransformsTest {
 
     @Test
     public void createPRPA201306ForPatientNotFoundReceiverNull() {
-        PRPAIN201306UV02 result = null;
+        PRPAIN201306UV02 result;
         HL7PRPA201306Transforms transforms = new HL7PRPA201306Transforms();
         result = transforms.createPRPA201306ForPatientNotFound(createPRPAIN201305UV02WhenReceiverNull());
         assertNull(result);
@@ -75,7 +99,7 @@ public class HL7PRPA201306TransformsTest {
 
     @Test
     public void createPRPA201306ForPatientNotFoundSenderNull() {
-        PRPAIN201306UV02 result = null;
+        PRPAIN201306UV02 result;
         HL7PRPA201306Transforms transforms = new HL7PRPA201306Transforms();
         result = transforms.createPRPA201306ForPatientNotFound(createPRPAIN201305UV02WhenSenderNull());
         assertNull(result);
@@ -83,7 +107,7 @@ public class HL7PRPA201306TransformsTest {
 
     @Test
     public void createPRPA201306ForPatientNotFoundInteractionIdNull() {
-        PRPAIN201306UV02 result = null;
+        PRPAIN201306UV02 result;
         HL7PRPA201306Transforms transforms = new HL7PRPA201306Transforms();
         result = transforms.createPRPA201306ForPatientNotFound(createPRPAIN201305UV02WhenIntercationIdNull());
         assertNull(result);
@@ -128,7 +152,7 @@ public class HL7PRPA201306TransformsTest {
     @Test
     public void createPRPA201306ForErrorsWhenErrorTextPresent() {
         HL7PRPA201306Transforms transforms = new HL7PRPA201306Transforms();
-        PRPAIN201306UV02 result = null;
+        PRPAIN201306UV02 result;
         String sErrorCode = "patient not avialable";
         String sErrorText = "Internal error";
         result = transforms.createPRPA201306ForErrors(createPRPAIN201305UV02(), sErrorCode, sErrorText);
@@ -138,7 +162,7 @@ public class HL7PRPA201306TransformsTest {
 
     @Test
     public void createQUQIMT021001UV01ControlActProcess() {
-        PRPAIN201306UV02MFMIMT700711UV01ControlActProcess result = null;
+        PRPAIN201306UV02MFMIMT700711UV01ControlActProcess result;
         PRPAMT201301UV02Patient patient = null;
         String localDeviceId = "1.1";
         String aaId = "1.1";
@@ -152,7 +176,7 @@ public class HL7PRPA201306TransformsTest {
 
     @Test
     public void areControlActProcessFieldsNullWhenCAPNull() {
-        boolean result = false;
+        boolean result;
         PRPAIN201305UV02 oRequest = new PRPAIN201305UV02();
         HL7PRPA201306Transforms transforms = new HL7PRPA201306Transforms();
         result = transforms.areControlActProcessFieldsNull(oRequest);
@@ -161,7 +185,7 @@ public class HL7PRPA201306TransformsTest {
 
     @Test
     public void areControlActProcessFieldsNullWhenQueryByParameterNull() {
-        boolean result = false;
+        boolean result;
         PRPAIN201305UV02 oRequest = new PRPAIN201305UV02();
         PRPAIN201305UV02QUQIMT021001UV01ControlActProcess controlActProcess = new PRPAIN201305UV02QUQIMT021001UV01ControlActProcess();
         oRequest.setControlActProcess(controlActProcess);
@@ -172,7 +196,7 @@ public class HL7PRPA201306TransformsTest {
 
     @Test
     public void areControlActProcessFieldsNullWhenQueryByParameterValueNull() {
-        boolean result = false;
+        boolean result;
         PRPAIN201305UV02 oRequest = new PRPAIN201305UV02();
         PRPAIN201305UV02QUQIMT021001UV01ControlActProcess controlActProcess = new PRPAIN201305UV02QUQIMT021001UV01ControlActProcess();
         PRPAMT201306UV02QueryByParameter parameter = new PRPAMT201306UV02QueryByParameter();
@@ -185,13 +209,13 @@ public class HL7PRPA201306TransformsTest {
 
     @Test
     public void areControlActProcessFieldsNullWhenQueryIdNull() {
-        boolean result = false;
+        boolean result;
         PRPAIN201305UV02 oRequest = new PRPAIN201305UV02();
         PRPAIN201305UV02QUQIMT021001UV01ControlActProcess controlActProcess = new PRPAIN201305UV02QUQIMT021001UV01ControlActProcess();
         PRPAMT201306UV02QueryByParameter parameter = new PRPAMT201306UV02QueryByParameter();
         parameter.setParameterList(createPRPAMT201306UV02ParameterList());
         javax.xml.namespace.QName xmlqname = new javax.xml.namespace.QName("urn:hl7-org:v3", "parameter");
-        JAXBElement<PRPAMT201306UV02QueryByParameter> queryByParameter = new JAXBElement<PRPAMT201306UV02QueryByParameter>(
+        JAXBElement<PRPAMT201306UV02QueryByParameter> queryByParameter = new JAXBElement<>(
                 xmlqname, PRPAMT201306UV02QueryByParameter.class, parameter);
         controlActProcess.setQueryByParameter(queryByParameter);
         oRequest.setControlActProcess(controlActProcess);
@@ -247,7 +271,7 @@ public class HL7PRPA201306TransformsTest {
         parameter.setQueryId(createII());
         parameter.setParameterList(createPRPAMT201306UV02ParameterList());
         javax.xml.namespace.QName xmlqname = new javax.xml.namespace.QName("urn:hl7-org:v3", "parameter");
-        JAXBElement<PRPAMT201306UV02QueryByParameter> queryByParameter = new JAXBElement<PRPAMT201306UV02QueryByParameter>(
+        JAXBElement<PRPAMT201306UV02QueryByParameter> queryByParameter = new JAXBElement<>(
                 xmlqname, PRPAMT201306UV02QueryByParameter.class, parameter);
         queryByParameter.getValue().setQueryId(createII());
         return queryByParameter;
@@ -313,7 +337,7 @@ public class HL7PRPA201306TransformsTest {
         org.hl7.v3.PRPAMT201301UV02Patient patient = new PRPAMT201301UV02Patient();
         PRPAMT201301UV02Person patientPerson = new PRPAMT201301UV02Person();
         javax.xml.namespace.QName xmlqname = new javax.xml.namespace.QName("urn:hl7-org:v3", "patientPerson");
-        JAXBElement<PRPAMT201301UV02Person> patientPersonElement = new JAXBElement<PRPAMT201301UV02Person>(xmlqname,
+        JAXBElement<PRPAMT201301UV02Person> patientPersonElement = new JAXBElement<>(xmlqname,
                 PRPAMT201301UV02Person.class, patientPerson);
         patient.setPatientPerson(patientPersonElement);
         patient.getId().add(createII());

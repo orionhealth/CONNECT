@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2014, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -45,15 +45,13 @@ package gov.hhs.fha.nhinc.directconfig.dao.impl;
 import gov.hhs.fha.nhinc.directconfig.dao.DNSDao;
 import gov.hhs.fha.nhinc.directconfig.entity.DNSRecord;
 import gov.hhs.fha.nhinc.directconfig.exception.ConfigurationStoreException;
-
 import java.util.Collection;
-
 import org.apache.commons.lang.NotImplementedException;
 import org.springframework.stereotype.Repository;
 
 /**
  * JPA implementation of the DNSDao interface.
- * 
+ *
  * @author Greg Meyer
  * @since 1.1
  */

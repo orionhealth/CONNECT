@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2014, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -28,30 +28,30 @@ package gov.hhs.fha.nhinc.patientdiscovery.inbound.deferred.request;
 
 import gov.hhs.fha.nhinc.aspect.InboundProcessingEvent;
 import gov.hhs.fha.nhinc.common.nhinccommon.AssertionType;
-import gov.hhs.fha.nhinc.patientdiscovery.PatientDiscoveryAuditLogger;
-import gov.hhs.fha.nhinc.patientdiscovery.PatientDiscoveryAuditor;
 import gov.hhs.fha.nhinc.patientdiscovery.PatientDiscoveryPolicyChecker;
 import gov.hhs.fha.nhinc.patientdiscovery.adapter.deferred.request.error.proxy.AdapterPatientDiscoveryDeferredReqErrorProxyObjectFactory;
 import gov.hhs.fha.nhinc.patientdiscovery.adapter.deferred.request.proxy.AdapterPatientDiscoveryDeferredReqProxyObjectFactory;
 import gov.hhs.fha.nhinc.patientdiscovery.aspect.MCCIIN000002UV01EventDescriptionBuilder;
 import gov.hhs.fha.nhinc.patientdiscovery.aspect.PRPAIN201305UV02EventDescriptionBuilder;
+import gov.hhs.fha.nhinc.patientdiscovery.audit.PatientDiscoveryDeferredRequestAuditLogger;
 import gov.hhs.fha.nhinc.transform.subdisc.HL7PRPA201306Transforms;
-
-import org.apache.log4j.Logger;
+import java.util.Properties;
 import org.hl7.v3.MCCIIN000002UV01;
 import org.hl7.v3.PRPAIN201305UV02;
 import org.hl7.v3.PRPAIN201306UV02;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author akong
- * 
+ *
  */
 public class StandardInboundPatientDiscoveryDeferredRequest extends AbstractInboundPatientDiscoveryDeferredRequest {
 
-    private static final Logger LOG = Logger.getLogger(StandardInboundPatientDiscoveryDeferredRequest.class);
+    private static final Logger LOG = LoggerFactory.getLogger(StandardInboundPatientDiscoveryDeferredRequest.class);
     private final PatientDiscoveryPolicyChecker policyChecker;
     private final AdapterPatientDiscoveryDeferredReqErrorProxyObjectFactory proxyErrorFactory;
-    private final PatientDiscoveryAuditor auditLogger;
+    private final PatientDiscoveryDeferredRequestAuditLogger auditLogger;
 
     /**
      * Constructor.
@@ -60,46 +60,44 @@ public class StandardInboundPatientDiscoveryDeferredRequest extends AbstractInbo
         super(new AdapterPatientDiscoveryDeferredReqProxyObjectFactory());
         policyChecker = PatientDiscoveryPolicyChecker.getInstance();
         proxyErrorFactory = new AdapterPatientDiscoveryDeferredReqErrorProxyObjectFactory();
-        auditLogger = new PatientDiscoveryAuditLogger();
+        auditLogger = new PatientDiscoveryDeferredRequestAuditLogger();
     }
 
     /**
      * Constructor.
-     * 
+     *
      * @param policyChecker
      * @param proxyErrorFactory
-     * @param passthroughPatientDiscovery
+     * @param adapterFactory
      * @param auditLogger
-     * @param LOG
      */
     public StandardInboundPatientDiscoveryDeferredRequest(PatientDiscoveryPolicyChecker policyChecker,
-            AdapterPatientDiscoveryDeferredReqErrorProxyObjectFactory proxyErrorFactory,
-            AdapterPatientDiscoveryDeferredReqProxyObjectFactory adapterFactory, PatientDiscoveryAuditor auditLogger) {
+        AdapterPatientDiscoveryDeferredReqErrorProxyObjectFactory proxyErrorFactory,
+        AdapterPatientDiscoveryDeferredReqProxyObjectFactory adapterFactory,
+        PatientDiscoveryDeferredRequestAuditLogger auditLogger) {
         super(adapterFactory);
         this.policyChecker = policyChecker;
         this.proxyErrorFactory = proxyErrorFactory;
         this.auditLogger = auditLogger;
     }
-    
+
     @Override
-    @InboundProcessingEvent(beforeBuilder = PRPAIN201305UV02EventDescriptionBuilder.class, afterReturningBuilder = MCCIIN000002UV01EventDescriptionBuilder.class, serviceType = "Patient Discovery Deferred Request", version = "1.0")
-    public MCCIIN000002UV01 respondingGatewayPRPAIN201305UV02(PRPAIN201305UV02 request, AssertionType assertion) {
-        auditRequestFromNhin(request, assertion);
+    @InboundProcessingEvent(beforeBuilder = PRPAIN201305UV02EventDescriptionBuilder.class, afterReturningBuilder
+        = MCCIIN000002UV01EventDescriptionBuilder.class, serviceType = "Patient Discovery Deferred Request", version
+        = "1.0")
+    public MCCIIN000002UV01 respondingGatewayPRPAIN201305UV02(PRPAIN201305UV02 request, AssertionType assertion,
+        Properties webContextProperties) {
 
         MCCIIN000002UV01 response = process(request, assertion);
-
-        auditResponseToNhin(response, assertion);
-
+        auditResponse(request, response, assertion, webContextProperties);
         return response;
     }
 
     @Override
     MCCIIN000002UV01 process(PRPAIN201305UV02 request, AssertionType assertion) {
-        MCCIIN000002UV01 response = null;
+        MCCIIN000002UV01 response;
+        String errMsg;
 
-        auditRequestToAdapter(request, assertion);
-
-        String errMsg = null;
         if (isPolicyValid(request, assertion)) {
             LOG.debug("Adapter patient discovery deferred policy check successful");
             response = sendToAdapter(request, assertion);
@@ -108,13 +106,11 @@ public class StandardInboundPatientDiscoveryDeferredRequest extends AbstractInbo
             LOG.error(errMsg);
             response = sendErrorToAdapter(request, assertion, errMsg);
         }
-
-        auditResponseFromAdapter(response, assertion);
-
         return response;
     }
 
-    PatientDiscoveryAuditor getAuditLogger() {
+    @Override
+    PatientDiscoveryDeferredRequestAuditLogger getAuditLogger() {
         return auditLogger;
     }
 
@@ -125,9 +121,7 @@ public class StandardInboundPatientDiscoveryDeferredRequest extends AbstractInbo
     private MCCIIN000002UV01 sendErrorToAdapter(PRPAIN201305UV02 request, AssertionType assertion, String errMsg) {
         PRPAIN201306UV02 response = new HL7PRPA201306Transforms().createPRPA201306ForPatientNotFound(request);
 
-        MCCIIN000002UV01 adapterResp = proxyErrorFactory.create().processPatientDiscoveryAsyncReqError(request,
-                response, assertion, errMsg);
-
-        return adapterResp;
+        return proxyErrorFactory.create().processPatientDiscoveryAsyncReqError(request,
+            response, assertion, errMsg);
     }
 }

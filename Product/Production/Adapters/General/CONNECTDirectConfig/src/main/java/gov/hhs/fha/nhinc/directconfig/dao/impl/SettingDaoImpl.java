@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2014, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -35,6 +35,7 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.Query;
@@ -77,15 +78,13 @@ public class SettingDaoImpl implements SettingDao {
             try {
                 session = DaoUtils.getSession();
 
-                if (session != null) {
-                    tx = session.beginTransaction();
-                    session.persist(setting);
-                    tx.commit();
-                }
+                tx = session.beginTransaction();
+                session.persist(setting);
+                tx.commit();
 
                 log.debug("Setting added successfully");
             } catch (Exception e) {
-                DaoUtils.rollbackTransaction(tx);
+                DaoUtils.rollbackTransaction(tx, e);
                 throw new ConfigurationStoreException(e);
             } finally {
                 DaoUtils.closeSession(session);
@@ -101,26 +100,25 @@ public class SettingDaoImpl implements SettingDao {
         if (names != null && names.size() > 0) {
             Session session = null;
             Transaction tx = null;
-            Query query = null;
+            Query query;
 
-            int count = 0;
+            int count;
 
             try {
                 session = DaoUtils.getSession();
 
-                if (session != null) {
-                    tx = session.beginTransaction();
+                tx = session.beginTransaction();
 
-                    query = session.createQuery("DELETE FROM Setting s WHERE UPPER(s.name) IN (:names)");
-                    query.setParameterList("names", names);
+                query = session.createQuery("DELETE FROM Setting s WHERE UPPER(s.name) IN (:names)");
+                query.setParameterList("names", names);
 
-                    count = query.executeUpdate();
-                    tx.commit();
+                count = query.executeUpdate();
+                tx.commit();
 
-                    log.debug("Exit: " + count + " setting records deleted");
-                }
+                log.debug("Exit: " + count + " setting records deleted");
+
             } catch (Exception e) {
-                DaoUtils.rollbackTransaction(tx);
+                DaoUtils.rollbackTransaction(tx, e);
                 throw new ConfigurationStoreException(e);
             } finally {
                 DaoUtils.closeSession(session);
@@ -141,15 +139,13 @@ public class SettingDaoImpl implements SettingDao {
         try {
             session = DaoUtils.getSession();
 
-            if (session != null) {
-                results = session.getNamedQuery("getAllSettings").list();
+            results = session.getNamedQuery("getAllSettings").list();
 
-                if (results == null) {
-                    results = Collections.emptyList();
-                }
-
-                log.debug("Settings found: " + results.size());
+            if (results == null) {
+                results = Collections.emptyList();
             }
+
+            log.debug("Settings found: " + results.size());
         } finally {
             DaoUtils.closeSession(session);
         }
@@ -165,27 +161,25 @@ public class SettingDaoImpl implements SettingDao {
     public Collection<Setting> getByNames(Collection<String> names) {
         Collection<Setting> results = null;
 
-        if (names == null || names.size() == 0) {
+        if (CollectionUtils.isEmpty(names)) {
             results = getAll();
         } else {
             Session session = null;
-            Query query = null;
+            Query query;
 
             try {
                 session = DaoUtils.getSession();
 
-                if (session != null) {
-                    query = session.getNamedQuery("getSettings");
-                    query.setParameterList("nameList", names);
+                query = session.getNamedQuery("getSettings");
+                query.setParameterList("nameList", names);
 
-                    results = query.list();
+                results = query.list();
 
-                    if (results == null) {
-                        results = Collections.emptyList();
-                    }
-
-                    log.debug("Settings found: " + results.size());
+                if (results == null) {
+                    results = Collections.emptyList();
                 }
+
+                log.debug("Settings found: " + results.size());
             } finally {
                 DaoUtils.closeSession(session);
             }
@@ -208,19 +202,18 @@ public class SettingDaoImpl implements SettingDao {
             try {
                 session = DaoUtils.getSession();
 
-                if (session != null) {
-                    tx = session.beginTransaction();
+                tx = session.beginTransaction();
 
-                    for (Setting setting : settings) {
-                        setting.setValue(value);
-                        setting.setUpdateTime(Calendar.getInstance());
-                        session.merge(setting);
-                    }
-
-                    tx.commit();
+                for (Setting setting : settings) {
+                    setting.setValue(value);
+                    setting.setUpdateTime(Calendar.getInstance());
+                    session.merge(setting);
                 }
+
+                tx.commit();
+
             } catch (Exception e) {
-                DaoUtils.rollbackTransaction(tx);
+                DaoUtils.rollbackTransaction(tx, e);
                 throw new ConfigurationStoreException(e);
             } finally {
                 DaoUtils.closeSession(session);

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,8 +29,10 @@ package gov.hhs.fha.nhinc.docsubmission._11.entity.deferred.response;
 import gov.hhs.fha.nhinc.common.nhinccommon.AssertionType;
 import gov.hhs.fha.nhinc.common.nhinccommonentity.RespondingGatewayProvideAndRegisterDocumentSetResponseRequestType;
 import gov.hhs.fha.nhinc.common.nhinccommonentity.RespondingGatewayProvideAndRegisterDocumentSetSecuredResponseRequestType;
+import gov.hhs.fha.nhinc.docsubmission.DocSubmissionUtils;
 import gov.hhs.fha.nhinc.docsubmission.outbound.deferred.response.OutboundDocSubmissionDeferredResponse;
 import gov.hhs.fha.nhinc.messaging.server.BaseService;
+import gov.hhs.fha.nhinc.nhinclib.NhincConstants.UDDI_SPEC_VERSION;
 import gov.hhs.healthit.nhin.XDRAcknowledgementType;
 
 import javax.xml.ws.WebServiceContext;
@@ -48,23 +50,22 @@ public class EntityDocSubmissionDeferredResponseImpl extends BaseService {
             RespondingGatewayProvideAndRegisterDocumentSetSecuredResponseRequestType provideAndRegisterDocumentSetSecuredResponseRequest,
             WebServiceContext context) {
         AssertionType assertion = getAssertion(context, null);
-
-        XDRAcknowledgementType response = outboundDocSubmissionResponse.provideAndRegisterDocumentSetBAsyncResponse(
+        DocSubmissionUtils.getInstance().setTargetCommunitiesVersion(
+                provideAndRegisterDocumentSetSecuredResponseRequest.getNhinTargetCommunities(),
+                UDDI_SPEC_VERSION.SPEC_1_1);
+        return outboundDocSubmissionResponse.provideAndRegisterDocumentSetBAsyncResponse(
                 provideAndRegisterDocumentSetSecuredResponseRequest.getRegistryResponse(), assertion,
                 provideAndRegisterDocumentSetSecuredResponseRequest.getNhinTargetCommunities());
-
-        return response;
     }
 
     public XDRAcknowledgementType provideAndRegisterDocumentSetBAsyncResponse(
             RespondingGatewayProvideAndRegisterDocumentSetResponseRequestType provideAndRegisterDocumentSetAsyncRespRequest,
             WebServiceContext context) {
         AssertionType assertion = getAssertion(context, provideAndRegisterDocumentSetAsyncRespRequest.getAssertion());
-
-        XDRAcknowledgementType response = outboundDocSubmissionResponse.provideAndRegisterDocumentSetBAsyncResponse(
+        DocSubmissionUtils.getInstance().setTargetCommunitiesVersion(
+                provideAndRegisterDocumentSetAsyncRespRequest.getNhinTargetCommunities(), UDDI_SPEC_VERSION.SPEC_1_1);
+        return outboundDocSubmissionResponse.provideAndRegisterDocumentSetBAsyncResponse(
                 provideAndRegisterDocumentSetAsyncRespRequest.getRegistryResponse(), assertion,
                 provideAndRegisterDocumentSetAsyncRespRequest.getNhinTargetCommunities());
-
-        return response;
     }
 }

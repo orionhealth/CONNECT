@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,45 +26,70 @@
  */
 package gov.hhs.fha.nhinc.docretrieve.inbound;
 
-import gov.hhs.fha.nhinc.aspect.InboundProcessingEvent;
 import gov.hhs.fha.nhinc.common.nhinccommon.AssertionType;
-import gov.hhs.fha.nhinc.docretrieve.aspect.RetrieveDocumentSetRequestTypeDescriptionBuilder;
-import gov.hhs.fha.nhinc.docretrieve.aspect.RetrieveDocumentSetResponseTypeDescriptionBuilder;
+import gov.hhs.fha.nhinc.docretrieve.audit.DocRetrieveAuditLogger;
 import gov.hhs.fha.nhinc.docretrieve.nhin.InboundDocRetrieveOrchestratable;
+import gov.hhs.fha.nhinc.nhinclib.NhincConstants;
 import gov.hhs.fha.nhinc.orchestration.CONNECTInboundOrchestrator;
 import ihe.iti.xds_b._2007.RetrieveDocumentSetRequestType;
 import ihe.iti.xds_b._2007.RetrieveDocumentSetResponseType;
+import java.util.Properties;
 
 /**
  * @author akong
- * 
+ *
  */
 public abstract class BaseInboundDocRetrieve implements InboundDocRetrieve {
 
+    private DocRetrieveAuditLogger docRetrieveAuditLogger;
+
     /**
      * Returns the orchestrator.
-     * 
+     *
      * @return orchestrator instance
      */
     abstract CONNECTInboundOrchestrator getOrchestrator();
 
+    public BaseInboundDocRetrieve() {
+        docRetrieveAuditLogger = new DocRetrieveAuditLogger();
+    }
+
+    public BaseInboundDocRetrieve(DocRetrieveAuditLogger auditLogger) {
+        docRetrieveAuditLogger = auditLogger;
+    }
+
     /**
      * Creates the inbound orchestratable instance to be used by the orchestrator.
-     * 
+     *
      * @param body
      * @param assertion
+     * @param webContextProperties
+     * @return
      */
     abstract public InboundDocRetrieveOrchestratable createInboundOrchestrable(RetrieveDocumentSetRequestType body,
-            AssertionType assertion);
+        AssertionType assertion, Properties webContextProperties);
 
-    
+    public void auditResponse(RetrieveDocumentSetRequestType request, RetrieveDocumentSetResponseType response,
+        AssertionType assertion, Properties webContextProperties) {
+        getAuditLogger().auditResponseMessage(request, response, assertion, null,
+            NhincConstants.AUDIT_LOG_INBOUND_DIRECTION, NhincConstants.AUDIT_LOG_NHIN_INTERFACE,
+            Boolean.FALSE, webContextProperties,
+            NhincConstants.DOC_RETRIEVE_SERVICE_NAME);
+    }
+
+    @Override
     public RetrieveDocumentSetResponseType respondingGatewayCrossGatewayRetrieve(RetrieveDocumentSetRequestType body,
-            AssertionType assertion) {
+        AssertionType assertion, Properties webContextProperties) {
 
-        InboundDocRetrieveOrchestratable inboundOrchestrable = createInboundOrchestrable(body, assertion);
+        InboundDocRetrieveOrchestratable inboundOrchestrable = createInboundOrchestrable(body, assertion,
+            webContextProperties);
 
         InboundDocRetrieveOrchestratable orchResponse = (InboundDocRetrieveOrchestratable) getOrchestrator().process(
-                inboundOrchestrable);
+            inboundOrchestrable);
+        auditResponse(body, orchResponse.getResponse(), assertion, webContextProperties);
+
         return orchResponse.getResponse();
     }
+
+    abstract DocRetrieveAuditLogger getAuditLogger();
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,7 +32,6 @@ import gov.hhs.fha.nhinc.messaging.service.ServiceEndpoint;
 import gov.hhs.fha.nhinc.messaging.service.decorator.TimeoutServiceEndpointDecorator;
 import gov.hhs.fha.nhinc.messaging.service.decorator.URLServiceEndpointDecorator;
 import gov.hhs.fha.nhinc.webserviceproxy.WebServiceProxyHelper;
-
 import org.apache.cxf.phase.PhaseInterceptorChain;
 
 /**
@@ -40,17 +39,18 @@ import org.apache.cxf.phase.PhaseInterceptorChain;
  *
  */
 public abstract class CONNECTBaseClient<T> implements CONNECTClient<T> {
-    
+
     private WebServiceProxyHelper proxyHelper;
 
     protected CONNECTBaseClient() {
         proxyHelper = new WebServiceProxyHelper();
     }
 
+    @Override
     public abstract T getPort();
 
     @Override
-    public Object invokePort(Class<T> portClass, String methodName, Object ... operationInput) throws Exception {
+    public Object invokePort(Class<T> portClass, String methodName, Object... operationInput) throws Exception {
         Object response = proxyHelper.invokePort(getPort(), portClass, methodName, operationInput);
 
         SoapResponseInInterceptor.addResponseMessageIdToContext(getPort(), PhaseInterceptorChain.getCurrentMessage());
@@ -60,16 +60,16 @@ public abstract class CONNECTBaseClient<T> implements CONNECTClient<T> {
 
     /**
      * Configures the given port with properties common to all ports.
-     * 
+     *
      * @param port
      * @param url
      * @return
      */
-    protected ServiceEndpoint<T> configureBasePort(T port, String url) {
-        ServiceEndpoint<T> serviceEndpoint = new BaseServiceEndpoint<T>(port);
-        serviceEndpoint = new URLServiceEndpointDecorator<T>(serviceEndpoint, url);
-        serviceEndpoint = new TimeoutServiceEndpointDecorator<T>(serviceEndpoint);
-        
+    protected ServiceEndpoint<T> configureBasePort(T port, String url, Integer timeout) {
+        ServiceEndpoint<T> serviceEndpoint = new BaseServiceEndpoint<>(port);
+        serviceEndpoint = new URLServiceEndpointDecorator<>(serviceEndpoint, url);
+        serviceEndpoint = new TimeoutServiceEndpointDecorator<>(serviceEndpoint, timeout);
+
         return serviceEndpoint;
     }
 }

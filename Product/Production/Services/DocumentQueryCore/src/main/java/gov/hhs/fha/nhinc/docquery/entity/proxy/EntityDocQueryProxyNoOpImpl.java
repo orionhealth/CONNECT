@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -35,13 +35,13 @@ import oasis.names.tc.ebxml_regrep.xsd.rim._3.RegistryObjectListType;
 
 /**
  * @author
- * 
+ *
  */
 public class EntityDocQueryProxyNoOpImpl implements EntityDocQueryProxy {
 
     /**
      * This method does not have any implementation. Hence it returns a empty AdhocQueryResponse without any documents.
-     * 
+     *
      * @param msg
      *            AdhocQUery Request received.
      * @param assertion
@@ -50,6 +50,7 @@ public class EntityDocQueryProxyNoOpImpl implements EntityDocQueryProxy {
      *            TargetCommunities to send request.
      * @return AdhocQueryResponse from Entity Interface.
      */
+    @Override
     public AdhocQueryResponse respondingGatewayCrossGatewayQuery(AdhocQueryRequest msg, AssertionType assertion,
             NhinTargetCommunitiesType targets) {
         AdhocQueryResponse response = new AdhocQueryResponse();

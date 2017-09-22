@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,30 +26,25 @@
  */
 package gov.hhs.fha.nhinc.docsubmission.aspect;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.mock;
+import com.google.common.base.Optional;
 import gov.hhs.fha.nhinc.event.DocumentDescriptionBuilderTest;
 import ihe.iti.xds_b._2007.ProvideAndRegisterDocumentSetRequestType;
-
 import java.util.List;
-
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
-
 import oasis.names.tc.ebxml_regrep.xsd.lcm._3.SubmitObjectsRequest;
 import oasis.names.tc.ebxml_regrep.xsd.rim._3.ExtrinsicObjectType;
 import oasis.names.tc.ebxml_regrep.xsd.rim._3.IdentifiableType;
 import oasis.names.tc.ebxml_regrep.xsd.rim._3.RegistryObjectListType;
-
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import org.junit.Test;
+import static org.mockito.Mockito.mock;
 import org.springframework.util.CollectionUtils;
-
-import com.google.common.base.Optional;
 
 /**
  * @author akong
- * 
+ *
  */
 public class ProvideAndRegisterDocumentSetDescriptionExtractorTest extends DocumentDescriptionBuilderTest {
 
@@ -66,7 +61,7 @@ public class ProvideAndRegisterDocumentSetDescriptionExtractorTest extends Docum
         ProvideAndRegisterDocumentSetRequestType request = new ProvideAndRegisterDocumentSetRequestType();
 
         ProvideAndRegisterDocumentSetDescriptionExtractor extractor = new ProvideAndRegisterDocumentSetDescriptionExtractor();
-        
+
         assertTrue(CollectionUtils.isEmpty(extractor.getPayloadTypes(request)));
         assertTrue(CollectionUtils.isEmpty(extractor.getPayloadSize(request)));
     }
@@ -80,10 +75,10 @@ public class ProvideAndRegisterDocumentSetDescriptionExtractorTest extends Docum
         addPayloadToRequest(submitRequest, Optional.of("payloadType1"), Optional.of(123));
 
         ProvideAndRegisterDocumentSetDescriptionExtractor extractor = new ProvideAndRegisterDocumentSetDescriptionExtractor();
-        
+
         List<String> payloadTypes = extractor.getPayloadTypes(request);
         List<String> payloadSizes = extractor.getPayloadSize(request);
-        
+
         assertEquals(1, payloadTypes.size());
         assertEquals(1, payloadSizes.size());
         assertEquals("payloadType1", payloadTypes.get(0));
@@ -103,7 +98,7 @@ public class ProvideAndRegisterDocumentSetDescriptionExtractorTest extends Docum
         addPayloadToRequest(submitRequest, Optional.of("payloadType5"), Optional.of(5));
 
         ProvideAndRegisterDocumentSetDescriptionExtractor extractor = new ProvideAndRegisterDocumentSetDescriptionExtractor();
-        
+
         List<String> payloadTypes = extractor.getPayloadTypes(request);
         List<String> payloadSizes = extractor.getPayloadSize(request);
 
@@ -141,7 +136,7 @@ public class ProvideAndRegisterDocumentSetDescriptionExtractorTest extends Docum
 
     private void addExtrinsicObjectToRequest(SubmitObjectsRequest request, ExtrinsicObjectType extrinsicObject) {
         QName qName = mock(QName.class);
-        JAXBElement<ExtrinsicObjectType> jaxbWrapper = new JAXBElement<ExtrinsicObjectType>(qName,
+        JAXBElement<ExtrinsicObjectType> jaxbWrapper = new JAXBElement<>(qName,
                 ExtrinsicObjectType.class, extrinsicObject);
 
         RegistryObjectListType registryObjectList = request.getRegistryObjectList();

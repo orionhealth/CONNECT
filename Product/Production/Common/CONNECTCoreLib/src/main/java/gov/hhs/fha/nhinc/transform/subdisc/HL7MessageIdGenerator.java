@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,8 +30,9 @@ import gov.hhs.fha.nhinc.nhinclib.NullChecker;
 import gov.hhs.fha.nhinc.properties.PropertyAccessException;
 import gov.hhs.fha.nhinc.properties.PropertyAccessor;
 import gov.hhs.fha.nhinc.util.HomeCommunityMap;
-import org.apache.log4j.Logger;
 import org.hl7.v3.II;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -39,7 +40,7 @@ import org.hl7.v3.II;
  */
 public class HL7MessageIdGenerator {
 
-    private static final Logger LOG = Logger.getLogger(HL7MessageIdGenerator.class);
+    private static final Logger LOG = LoggerFactory.getLogger(HL7MessageIdGenerator.class);
     private static final String PROPERTY_FILE = "adapter";
     private static final String PROPERTY_NAME = "assigningAuthorityId";
 
@@ -49,7 +50,7 @@ public class HL7MessageIdGenerator {
      * @param myDeviceId
      * @return messageId
      */
-    public static II generateHL7MessageId(String myDeviceId) {
+    public II generateHL7MessageId(String myDeviceId) {
         II messageId = new II();
 
         if (NullChecker.isNullish(myDeviceId)) {
@@ -67,21 +68,21 @@ public class HL7MessageIdGenerator {
      *
      * @return messageId
      */
-    public static II generateHL7MessageId() {
+    public II generateHL7MessageId() {
         String deviceId = getDefaultLocalDeviceId();
 
         return generateHL7MessageId(deviceId);
     }
 
-    private static String getDefaultLocalDeviceId() {
+    protected String getDefaultLocalDeviceId() {
         String defaultLocalId = "";
 
         try {
             defaultLocalId = PropertyAccessor.getInstance().getProperty(PROPERTY_FILE, PROPERTY_NAME);
         } catch (PropertyAccessException e) {
             LOG.error(
-                "PropertyAccessException - Default Assigning Authority property not defined in adapter.properties",
-                e);
+                    "PropertyAccessException - Default Assigning Authority property not defined in adapter.properties",
+                    e);
         }
 
         return defaultLocalId;

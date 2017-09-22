@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,18 +26,15 @@
  */
 package gov.hhs.fha.nhinc.messaging.service.decorator;
 
-import static org.junit.Assert.assertTrue;
 import gov.hhs.fha.nhinc.messaging.client.CONNECTClient;
 import gov.hhs.fha.nhinc.messaging.client.CONNECTTestClient;
 import gov.hhs.fha.nhinc.messaging.service.ServiceEndpoint;
 import gov.hhs.fha.nhinc.messaging.service.port.TestServicePortDescriptor;
 import gov.hhs.fha.nhinc.messaging.service.port.TestServicePortType;
-
 import java.util.Map;
-
 import javax.xml.ws.soap.SOAPBinding;
-
 import org.apache.cxf.transports.http.configuration.HTTPClientPolicy;
+import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 
 /**
@@ -49,30 +46,30 @@ public class MTOMServiceEndpointDecoratorTest {
     @Test
     public void testMTOMEnabled() {
         CONNECTClient<TestServicePortType> client = createClient();
-        
+
         verifyMTOMEnabled(client);
     }
-    
+
     /**
      * Verifies that the client has MTOM enabled.
-     * 
+     *
      * @param client
      */
     public void verifyMTOMEnabled(CONNECTClient<?> client) {
         Map<String, Object> requestContext = ((javax.xml.ws.BindingProvider) client.getPort()).getRequestContext();
         HTTPClientPolicy clientPolicy = (HTTPClientPolicy) requestContext.get(HTTPClientPolicy.class.getName());
         assertTrue(clientPolicy.isAllowChunking());
-        
+
         SOAPBinding binding = (SOAPBinding) ((javax.xml.ws.BindingProvider) client.getPort()).getBinding();
         assertTrue(binding.isMTOMEnabled());
     }
-    
+
     private CONNECTClient<TestServicePortType> createClient() {
-        CONNECTTestClient<TestServicePortType> testClient = new CONNECTTestClient<TestServicePortType>(
+        CONNECTTestClient<TestServicePortType> testClient = new CONNECTTestClient<>(
                 new TestServicePortDescriptor());
 
         ServiceEndpoint<TestServicePortType> serviceEndpoint = testClient.getServiceEndpoint();
-        serviceEndpoint = new MTOMServiceEndpointDecorator<TestServicePortType>(serviceEndpoint);
+        serviceEndpoint = new MTOMServiceEndpointDecorator<>(serviceEndpoint);
         serviceEndpoint.configure();
 
         return testClient;

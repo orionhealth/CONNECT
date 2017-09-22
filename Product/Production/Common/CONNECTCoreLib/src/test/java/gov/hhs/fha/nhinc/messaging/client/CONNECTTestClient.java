@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -36,21 +36,21 @@ import gov.hhs.fha.nhinc.messaging.service.port.ServicePortDescriptor;
 
 /**
  * @author akong
- * 
+ *
  */
 public class CONNECTTestClient<T> implements CONNECTClient<T> {
 
     protected ServiceEndpoint<T> serviceEndpoint = null;
-    
+
     /**
      * Constructor for a client used solely for unit tests. This class will only do the base configuration for the
      * endpoint, but it will expose the service endpoint for test classes to use. This class will also use the caching
      * mechanism that will single instance the port.
-     * 
+     *
      * @param portDescriptor
      */
     public CONNECTTestClient(ServicePortDescriptor<T> portDescriptor) {
-        serviceEndpoint = new BaseServiceEndpoint<T>(new CachingCXFSecuredServicePortBuilder<T>(portDescriptor).createPort());
+        serviceEndpoint = new BaseServiceEndpoint<>(new CachingCXFSecuredServicePortBuilder<>(portDescriptor).createPort());
     }
 
     public ServiceEndpoint<T> getServiceEndpoint() {
@@ -78,7 +78,7 @@ public class CONNECTTestClient<T> implements CONNECTClient<T> {
      */
     @Override
     public void enableMtom() {
-        serviceEndpoint = new MTOMServiceEndpointDecorator<T>(serviceEndpoint);
+        serviceEndpoint = new MTOMServiceEndpointDecorator<>(serviceEndpoint);
     }
 
     /* (non-Javadoc)
@@ -86,6 +86,6 @@ public class CONNECTTestClient<T> implements CONNECTClient<T> {
      */
     @Override
     public void enableWSA(AssertionType assertion, String wsAddressingTo, String wsAddressingActionId) {
-        serviceEndpoint = new WsAddressingServiceEndpointDecorator<T>(serviceEndpoint, wsAddressingTo, wsAddressingActionId, assertion);
+        serviceEndpoint = new WsAddressingServiceEndpointDecorator<>(serviceEndpoint, wsAddressingTo, wsAddressingActionId, assertion);
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,49 +29,61 @@ package gov.hhs.fha.nhinc.patientdiscovery.outbound.deferred.response;
 import gov.hhs.fha.nhinc.common.nhinccommon.AssertionType;
 import gov.hhs.fha.nhinc.common.nhinccommon.NhinTargetCommunitiesType;
 import gov.hhs.fha.nhinc.common.nhinccommon.NhinTargetSystemType;
-import gov.hhs.fha.nhinc.patientdiscovery.PatientDiscoveryAuditor;
+import gov.hhs.fha.nhinc.nhinclib.NhincConstants;
+import gov.hhs.fha.nhinc.patientdiscovery.MessageGeneratorUtils;
+import gov.hhs.fha.nhinc.patientdiscovery.audit.PatientDiscoveryDeferredResponseAuditLogger;
 import gov.hhs.fha.nhinc.patientdiscovery.entity.deferred.response.OutboundPatientDiscoveryDeferredResponseDelegate;
 import gov.hhs.fha.nhinc.patientdiscovery.entity.deferred.response.OutboundPatientDiscoveryDeferredResponseOrchestratable;
-
 import org.hl7.v3.MCCIIN000002UV01;
 import org.hl7.v3.PRPAIN201306UV02;
 
 /**
  * @author akong
- * 
+ *
  */
 public abstract class AbstractOutboundPatientDiscoveryDeferredResponse implements
-        OutboundPatientDiscoveryDeferredResponse {
+    OutboundPatientDiscoveryDeferredResponse {
 
-    abstract PatientDiscoveryAuditor getAuditLogger();
+    abstract PatientDiscoveryDeferredResponseAuditLogger getAuditLogger();
 
     abstract MCCIIN000002UV01 process(PRPAIN201306UV02 request, AssertionType assertion,
-            NhinTargetCommunitiesType target);
+        NhinTargetCommunitiesType target);
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see gov.hhs.fha.nhinc.patientdiscovery.outbound.deferred.response.OutboundPatientDiscoveryDeferredResponse#
      * processPatientDiscoveryAsyncResp(org.hl7.v3.PRPAIN201306UV02, gov.hhs.fha.nhinc.common.nhinccommon.AssertionType,
      * gov.hhs.fha.nhinc.common.nhinccommon.NhinTargetCommunitiesType)
      */
     @Override
     public MCCIIN000002UV01 processPatientDiscoveryAsyncResp(PRPAIN201306UV02 request, AssertionType assertion,
-            NhinTargetCommunitiesType target) {
-        MCCIIN000002UV01 response = process(request, assertion, target);
+        NhinTargetCommunitiesType target) {
 
-        return response;
+        return process(request, MessageGeneratorUtils.getInstance().generateMessageId(assertion),
+            target);
     }
 
     protected MCCIIN000002UV01 sendToNhin(OutboundPatientDiscoveryDeferredResponseDelegate delegate,
-            PRPAIN201306UV02 request, AssertionType assertion, NhinTargetSystemType target) {
-        OutboundPatientDiscoveryDeferredResponseOrchestratable orchestratable = new OutboundPatientDiscoveryDeferredResponseOrchestratable(
-                delegate);
+        PRPAIN201306UV02 request, AssertionType assertion, NhinTargetSystemType target) {
+        OutboundPatientDiscoveryDeferredResponseOrchestratable orchestratable
+            = new OutboundPatientDiscoveryDeferredResponseOrchestratable(delegate);
         orchestratable.setAssertion(assertion);
         orchestratable.setRequest(request);
         orchestratable.setTarget(target);
         return ((OutboundPatientDiscoveryDeferredResponseOrchestratable) delegate.process(orchestratable))
-                .getResponse();
+            .getResponse();
     }
 
+    public void auditRequest(PRPAIN201306UV02 message, AssertionType assertion,
+        NhinTargetCommunitiesType targets) {
+        getAuditLogger().auditRequestMessage(message, assertion,
+            MessageGeneratorUtils.getInstance().convertFirstToNhinTargetSystemType(targets),
+            NhincConstants.AUDIT_LOG_OUTBOUND_DIRECTION, NhincConstants.AUDIT_LOG_NHIN_INTERFACE, Boolean.TRUE,
+            null, NhincConstants.PATIENT_DISCOVERY_DEFERRED_RESP_SERVICE_NAME);
+    }
+
+    protected NhinTargetSystemType convertToNhinTargetSystemType(NhinTargetCommunitiesType targets) {
+        return MessageGeneratorUtils.getInstance().convertFirstToNhinTargetSystemType(targets);
+    }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,9 +30,7 @@ import gov.hhs.fha.nhinc.common.nhinccommon.AssertionType;
 import gov.hhs.fha.nhinc.docsubmission.inbound.InboundDocSubmission;
 import gov.hhs.fha.nhinc.messaging.server.BaseService;
 import ihe.iti.xds_b._2007.ProvideAndRegisterDocumentSetRequestType;
-
 import javax.xml.ws.WebServiceContext;
-
 import oasis.names.tc.ebxml_regrep.xsd.rs._3.RegistryResponseType;
 
 /**
@@ -40,17 +38,18 @@ import oasis.names.tc.ebxml_regrep.xsd.rs._3.RegistryResponseType;
  * @author dunnek
  */
 public class NhinDocSubmissionImpl extends BaseService {
-    
+
     private InboundDocSubmission inboundDocSubmission;
-    
+
     public NhinDocSubmissionImpl(InboundDocSubmission inboundDocSubmission) {
         this.inboundDocSubmission = inboundDocSubmission;
     }
 
     public RegistryResponseType documentRepositoryProvideAndRegisterDocumentSetB(
-            ProvideAndRegisterDocumentSetRequestType body, WebServiceContext context) {
+        ProvideAndRegisterDocumentSetRequestType body, WebServiceContext context) {
         AssertionType assertion = getAssertion(context, null);
 
-        return inboundDocSubmission.documentRepositoryProvideAndRegisterDocumentSetB(body, assertion);
+        return inboundDocSubmission.documentRepositoryProvideAndRegisterDocumentSetB(body, assertion,
+            getWebContextProperties(context));
     }
 }

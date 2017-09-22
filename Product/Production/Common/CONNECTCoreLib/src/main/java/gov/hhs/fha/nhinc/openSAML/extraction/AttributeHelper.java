@@ -1,5 +1,28 @@
-/**
+/*
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
+ * All rights reserved.
  *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *     * Redistributions of source code must retain the above
+ *       copyright notice, this list of conditions and the following disclaimer.
+ *     * Redistributions in binary form must reproduce the above copyright
+ *       notice, this list of conditions and the following disclaimer in the documentation
+ *       and/or other materials provided with the distribution.
+ *     * Neither the name of the United States Government nor the
+ *       names of its contributors may be used to endorse or promote products
+ *       derived from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE UNITED STATES GOVERNMENT BE LIABLE FOR ANY
+ * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 package gov.hhs.fha.nhinc.openSAML.extraction;
 
@@ -9,11 +32,12 @@ import gov.hhs.fha.nhinc.common.nhinccommon.PersonNameType;
 import gov.hhs.fha.nhinc.nhinclib.NhincConstants;
 import java.util.ArrayList;
 import java.util.List;
-import org.apache.log4j.Logger;
 import org.opensaml.saml2.core.Attribute;
 import org.opensaml.xml.XMLObject;
 import org.opensaml.xml.schema.impl.XSAnyImpl;
 import org.opensaml.xml.schema.impl.XSStringImpl;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -24,7 +48,7 @@ import org.w3c.dom.NodeList;
  */
 public class AttributeHelper {
 
-    private static final Logger LOG = Logger.getLogger(AttributeHelper.class);
+    private static final Logger LOG = LoggerFactory.getLogger(AttributeHelper.class);
 
     /**
      * The value of the UserRole and PurposeOfUse attributes are formatted according to the specifications of an
@@ -46,7 +70,7 @@ public class AttributeHelper {
 
         List<XMLObject> attrVals = attrib.getAttributeValues();
 
-        if ((attrVals != null) && (attrVals.size() > 0)) {
+        if (attrVals != null && attrVals.size() > 0) {
             if (LOG.isTraceEnabled()) {
                 LOG.trace("AttributeValue is: " + attrVals.get(0).getClass());
             }
@@ -60,20 +84,20 @@ public class AttributeHelper {
                 nodelist = elem.getDOM().getChildNodes();
             } else {
                 LOG.error("The value for the " + codeId + " attribute is a: " + attrVals.get(0).getClass()
-                    + " expected an XSAnyImpl");
+                        + " expected an XSAnyImpl");
             }
-            if ((nodelist != null) && (nodelist.getLength() > 0)) {
+            if (nodelist != null && nodelist.getLength() > 0) {
                 int numNodes = nodelist.getLength();
                 for (int idx = 0; idx < numNodes; idx++) {
                     if (nodelist.item(idx) != null) {
                         Node node = nodelist.item(idx);
                         NamedNodeMap attrMap = node.getAttributes();
-                        if ((attrMap != null) && (attrMap.getLength() > 0)) {
+                        if (attrMap != null && attrMap.getLength() > 0) {
                             int numMapNodes = attrMap.getLength();
                             for (int attrIdx = 0; attrIdx < numMapNodes; attrIdx++) {
                                 Node attrNode = attrMap.item(attrIdx);
-                                if ((attrNode != null) && (attrNode.getNodeName() != null)
-                                    && (!attrNode.getNodeName().isEmpty())) {
+                                if (attrNode != null && attrNode.getNodeName() != null
+                                        && !attrNode.getNodeName().isEmpty()) {
                                     if (attrNode.getNodeName().equalsIgnoreCase(NhincConstants.CE_CODE_ID)) {
                                         ce.setCode(attrNode.getNodeValue());
                                         if (LOG.isTraceEnabled()) {
@@ -141,7 +165,7 @@ public class AttributeHelper {
                     // we break here because per the nhin specification, there should only be one attribute value.
                     break;
                 } else if (o instanceof String) {
-                    strBuf.append((String) o + " ");
+                    strBuf.append(o + " ");
 
                     // we DO NOT break here despite the nhin specification because the previous algorithm for handling
                     // these Strings handled multiple values. Until I understand
@@ -168,7 +192,7 @@ public class AttributeHelper {
         // Assumption is that before the 1st space reflects the first name,
         // after the last space is the last name, anything between is the middle name
         List<XMLObject> attrVals = attrib.getAttributeValues();
-        if ((attrVals != null) && (attrVals.size() >= 1)) {
+        if (attrVals != null && attrVals.size() >= 1) {
             PersonNameType personName = assertOut.getUserInfo().getPersonName();
 
             // Although SAML allows for multiple attribute values, the NHIN Specification
@@ -183,7 +207,7 @@ public class AttributeHelper {
             }
 
             String[] nameTokens = completeName.split("\\s");
-            ArrayList<String> nameParts = new ArrayList<String>();
+            ArrayList<String> nameParts = new ArrayList<>();
 
             // remove blank tokens
             for (String tok : nameTokens) {
@@ -222,7 +246,7 @@ public class AttributeHelper {
                 personName.setSecondNameOrInitials(midName.toString());
                 if (LOG.isTraceEnabled()) {
                     LOG.trace("Assertion.userInfo.personName.secondNameOrInitials = "
-                        + personName.getSecondNameOrInitials());
+                            + personName.getSecondNameOrInitials());
                 }
             }
         } else {

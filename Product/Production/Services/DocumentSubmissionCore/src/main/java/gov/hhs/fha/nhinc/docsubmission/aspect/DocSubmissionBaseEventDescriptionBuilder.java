@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -28,18 +28,18 @@ package gov.hhs.fha.nhinc.docsubmission.aspect;
 
 import gov.hhs.fha.nhinc.event.TargetEventDescriptionBuilder;
 import gov.hhs.fha.nhinc.event.builder.AssertionDescriptionExtractor;
+import gov.hhs.healthit.nhin.XDRAcknowledgementType;
 import ihe.iti.xds_b._2007.ProvideAndRegisterDocumentSetRequestType;
 import oasis.names.tc.ebxml_regrep.xsd.rs._3.RegistryResponseType;
 
 /**
  * @author akong
- * 
+ *
  */
 public class DocSubmissionBaseEventDescriptionBuilder extends TargetEventDescriptionBuilder {
 
     private final ProvideAndRegisterDocumentSetDescriptionExtractor REQUEST_EXTRACTOR;
     private final RegistryResponseDescriptionExtractor RESPONSE_EXTRACTOR;
-
     private ProvideAndRegisterDocumentSetRequestType request;
     private RegistryResponseType response;
 
@@ -49,9 +49,9 @@ public class DocSubmissionBaseEventDescriptionBuilder extends TargetEventDescrip
     }
 
     public DocSubmissionBaseEventDescriptionBuilder(
-            final ProvideAndRegisterDocumentSetDescriptionExtractor requestExtractor,
-            final AssertionDescriptionExtractor assertionExtractor,
-            final RegistryResponseDescriptionExtractor responseExtractor) {
+        final ProvideAndRegisterDocumentSetDescriptionExtractor requestExtractor,
+        final AssertionDescriptionExtractor assertionExtractor,
+        final RegistryResponseDescriptionExtractor responseExtractor) {
         REQUEST_EXTRACTOR = requestExtractor;
         RESPONSE_EXTRACTOR = responseExtractor;
         super.setAssertionExtractor(assertionExtractor);
@@ -59,7 +59,7 @@ public class DocSubmissionBaseEventDescriptionBuilder extends TargetEventDescrip
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see gov.hhs.fha.nhinc.event.EventDescriptionBuilder#buildTimeStamp()
      */
     @Override
@@ -69,7 +69,7 @@ public class DocSubmissionBaseEventDescriptionBuilder extends TargetEventDescrip
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see gov.hhs.fha.nhinc.event.EventDescriptionBuilder#buildStatuses()
      */
     @Override
@@ -79,7 +79,7 @@ public class DocSubmissionBaseEventDescriptionBuilder extends TargetEventDescrip
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see gov.hhs.fha.nhinc.event.EventDescriptionBuilder#buildPayloadTypes()
      */
     @Override
@@ -89,7 +89,7 @@ public class DocSubmissionBaseEventDescriptionBuilder extends TargetEventDescrip
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see gov.hhs.fha.nhinc.event.EventDescriptionBuilder#buildPayloadSize()
      */
     @Override
@@ -99,7 +99,7 @@ public class DocSubmissionBaseEventDescriptionBuilder extends TargetEventDescrip
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see gov.hhs.fha.nhinc.event.EventDescriptionBuilder#buildErrorCodes()
      */
     @Override
@@ -109,7 +109,7 @@ public class DocSubmissionBaseEventDescriptionBuilder extends TargetEventDescrip
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see gov.hhs.fha.nhinc.event.BaseEventDescriptionBuilder#setArguments(java.lang.Object[])
      */
     @Override
@@ -133,13 +133,15 @@ public class DocSubmissionBaseEventDescriptionBuilder extends TargetEventDescrip
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see gov.hhs.fha.nhinc.event.BaseEventDescriptionBuilder#setReturnValue(java.lang.Object)
      */
     @Override
     public void setReturnValue(Object returnValue) {
         if (returnValue != null && returnValue instanceof RegistryResponseType) {
             this.response = (RegistryResponseType) returnValue;
+        } else if (returnValue != null && returnValue instanceof XDRAcknowledgementType) {
+            this.response = ((XDRAcknowledgementType) returnValue).getMessage();
         }
     }
 

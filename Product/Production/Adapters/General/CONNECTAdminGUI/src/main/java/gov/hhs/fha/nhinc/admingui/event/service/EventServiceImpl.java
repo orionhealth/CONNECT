@@ -1,28 +1,28 @@
 /*
- *  Copyright (c) 2009-2014, United States Government, as represented by the Secretary of Health and Human Services.
- *  All rights reserved.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
+ * All rights reserved.
  *
- *  Redistribution and use in source and binary forms, with or without
- *  modification, are permitted provided that the following conditions are met:
- *      * Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following disclaimer.
- *      * Redistributions in binary form must reproduce the above copyright
- *        notice, this list of conditions and the following disclaimer in the documentation
- *        and/or other materials provided with the distribution.
- *      * Neither the name of the United States Government nor the
- *        names of its contributors may be used to endorse or promote products
- *        derived from this software without specific prior written permission.
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *     * Redistributions of source code must retain the above
+ *       copyright notice, this list of conditions and the following disclaimer.
+ *     * Redistributions in binary form must reproduce the above copyright
+ *       notice, this list of conditions and the following disclaimer in the documentation
+ *       and/or other materials provided with the distribution.
+ *     * Neither the name of the United States Government nor the
+ *       names of its contributors may be used to endorse or promote products
+ *       derived from this software without specific prior written permission.
  *
- *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
- *  ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- *  WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- *  DISCLAIMED. IN NO EVENT SHALL THE UNITED STATES GOVERNMENT BE LIABLE FOR ANY
- *  DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- *  (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- *  LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- *  ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- *  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE UNITED STATES GOVERNMENT BE LIABLE FOR ANY
+ * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 package gov.hhs.fha.nhinc.admingui.event.service;
 
@@ -35,7 +35,8 @@ import gov.hhs.fha.nhinc.event.model.DatabaseEvent;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 /**
@@ -45,8 +46,8 @@ import org.springframework.stereotype.Service;
 @Service
 public class EventServiceImpl implements EventService {
 
-    private static final HashMap<String, EventNwhinOrganization> inboundOrganizations = new HashMap<String, EventNwhinOrganization>();
-    private static final HashMap<String, EventNwhinOrganization> outboundOrganizations = new HashMap<String, EventNwhinOrganization>();
+    private static final HashMap<String, EventNwhinOrganization> inboundOrganizations = new HashMap<>();
+    private static final HashMap<String, EventNwhinOrganization> outboundOrganizations = new HashMap<>();
 
     public static final String INBOUND_EVENT_TYPE = "END_INBOUND_MESSAGE";
     public static final String OUTBOUND_EVENT_TYPE = "END_INVOCATION_TO_NWHIN";
@@ -66,11 +67,11 @@ public class EventServiceImpl implements EventService {
     private static final String AD_SERVICE_TYPE = "Admin Distribution";
     private static final String DIRECT_SERVICE_TYPE = "Direct";
 
-    private static final Logger LOG = Logger.getLogger(EventServiceImpl.class);
+    private static final Logger LOG = LoggerFactory.getLogger(EventServiceImpl.class);
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see gov.hhs.fha.nhinc.admingui.event.service.EventCountService#setCounts
      */
     @Override
@@ -102,20 +103,20 @@ public class EventServiceImpl implements EventService {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see gov.hhs.fha.nhinc.admingui.event.service.EventCountService#getTotalOrganizations
      */
     @Override
     public List<EventNwhinOrganization> getTotalOrganizations() {
-        HashMap<String, EventNwhinOrganization> totalEvents = new HashMap<String, EventNwhinOrganization>();
+        HashMap<String, EventNwhinOrganization> totalEvents = new HashMap<>();
         for (String hcid : inboundOrganizations.keySet()) {
             totalEvents.put(hcid, inboundOrganizations.get(hcid));
         }
 
         for (String hcid : outboundOrganizations.keySet()) {
             if (totalEvents.containsKey(hcid)) {
-                EventNwhinOrganization combinedOrg
-                    = combineOrganizations(outboundOrganizations.get(hcid), totalEvents.remove(hcid));
+                EventNwhinOrganization combinedOrg = combineOrganizations(outboundOrganizations.get(hcid),
+                        totalEvents.remove(hcid));
                 totalEvents.put(hcid, combinedOrg);
             } else {
                 totalEvents.put(hcid, outboundOrganizations.get(hcid));
@@ -127,7 +128,7 @@ public class EventServiceImpl implements EventService {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see gov.hhs.fha.nhinc.admingui.event.service.EventCountService#getInboundOrganizations
      */
     @Override
@@ -137,7 +138,7 @@ public class EventServiceImpl implements EventService {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see gov.hhs.fha.nhinc.admingui.event.service.EventCountService#getOutboundOrganizations
      */
     @Override
@@ -148,11 +149,10 @@ public class EventServiceImpl implements EventService {
     private void setEvents(List results, HashMap<String, EventNwhinOrganization> organizations) {
         organizations.clear();
         for (Object result : results) {
-            if (result instanceof Object[]
-                && ((Object[]) result).length == 3) {
+            if (result instanceof Object[] && ((Object[]) result).length == 3) {
                 Object[] resultArray = (Object[]) result;
                 String hcid = setHcid((String) resultArray[1]);
-                Integer count = (Integer) resultArray[0];
+                Long count = (Long) resultArray[0];
                 String serviceType = (String) resultArray[2];
 
                 if (hcid == null) {
@@ -177,13 +177,13 @@ public class EventServiceImpl implements EventService {
         return resultHcid;
     }
 
-    private EventNwhinOrganization updateEvent(String serviceType, Integer count, String hcid) {
+    private EventNwhinOrganization updateEvent(String serviceType, Long count, String hcid) {
         EventNwhinOrganization organization = new EventNwhinOrganization();
         organization.setOrganizationName(hcid);
         return updateEvent(organization, serviceType, count);
     }
 
-    private EventNwhinOrganization updateEvent(EventNwhinOrganization organization, String serviceType, Integer count) {
+    private EventNwhinOrganization updateEvent(EventNwhinOrganization organization, String serviceType, Long count) {
 
         if (serviceType.equalsIgnoreCase(PD_SERVICE_TYPE)) {
             organization.setPdSyncCount(count);
@@ -205,7 +205,7 @@ public class EventServiceImpl implements EventService {
             organization.setAdCount(count);
         } else if (serviceType.equalsIgnoreCase(DIRECT_SERVICE_TYPE)) {
             organization.setDirectCount(count);
-        }//else do nothing
+        } // else do nothing
 
         return organization;
     }

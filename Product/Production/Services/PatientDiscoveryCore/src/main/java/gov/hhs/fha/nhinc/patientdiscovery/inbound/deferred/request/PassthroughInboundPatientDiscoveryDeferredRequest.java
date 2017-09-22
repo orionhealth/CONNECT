@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2014, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,49 +27,48 @@
 package gov.hhs.fha.nhinc.patientdiscovery.inbound.deferred.request;
 
 import gov.hhs.fha.nhinc.common.nhinccommon.AssertionType;
-import gov.hhs.fha.nhinc.patientdiscovery.PatientDiscoveryAuditLogger;
-import gov.hhs.fha.nhinc.patientdiscovery.PatientDiscoveryAuditor;
 import gov.hhs.fha.nhinc.patientdiscovery.adapter.deferred.request.proxy.AdapterPatientDiscoveryDeferredReqProxyObjectFactory;
-
+import gov.hhs.fha.nhinc.patientdiscovery.audit.PatientDiscoveryDeferredRequestAuditLogger;
 import org.hl7.v3.MCCIIN000002UV01;
 import org.hl7.v3.PRPAIN201305UV02;
 
 /**
  * @author akong
- * 
+ *
  */
 public class PassthroughInboundPatientDiscoveryDeferredRequest extends AbstractInboundPatientDiscoveryDeferredRequest {
 
-    private final PatientDiscoveryAuditor auditLogger;
+    private final PatientDiscoveryDeferredRequestAuditLogger auditLogger;
 
     /**
      * Constructor.
      */
     public PassthroughInboundPatientDiscoveryDeferredRequest() {
         super(new AdapterPatientDiscoveryDeferredReqProxyObjectFactory());
-        this.auditLogger = new PatientDiscoveryAuditLogger();
+        this.auditLogger = new PatientDiscoveryDeferredRequestAuditLogger();
     }
 
     /**
      * Constructor with dependency injection.
-     * 
+     *
      * @param adapterFactory
      * @param auditLogger
      */
     public PassthroughInboundPatientDiscoveryDeferredRequest(
-            AdapterPatientDiscoveryDeferredReqProxyObjectFactory adapterFactory, PatientDiscoveryAuditor auditLogger) {
+        AdapterPatientDiscoveryDeferredReqProxyObjectFactory adapterFactory,
+        PatientDiscoveryDeferredRequestAuditLogger auditLogger) {
         super(adapterFactory);
         this.auditLogger = auditLogger;
     }
 
+    @Override
     MCCIIN000002UV01 process(PRPAIN201305UV02 request, AssertionType assertion) {
 
-        MCCIIN000002UV01 response = sendToAdapter(request, assertion);
-
-        return response;
+        return sendToAdapter(request, assertion);
     }
 
-    PatientDiscoveryAuditor getAuditLogger() {
+    @Override
+    PatientDiscoveryDeferredRequestAuditLogger getAuditLogger() {
         return auditLogger;
     }
 

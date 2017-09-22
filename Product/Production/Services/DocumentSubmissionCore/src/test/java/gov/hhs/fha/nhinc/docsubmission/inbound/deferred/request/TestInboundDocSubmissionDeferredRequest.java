@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,23 +26,24 @@
  */
 package gov.hhs.fha.nhinc.docsubmission.inbound.deferred.request;
 
-import oasis.names.tc.ebxml_regrep.xsd.rs._3.RegistryResponseType;
 import gov.hhs.fha.nhinc.common.nhinccommon.AssertionType;
 import gov.hhs.healthit.nhin.XDRAcknowledgementType;
 import ihe.iti.xds_b._2007.ProvideAndRegisterDocumentSetRequestType;
+import java.util.Properties;
+import oasis.names.tc.ebxml_regrep.xsd.rs._3.RegistryResponseType;
 
 /**
  * @author akong
  *
  */
-public class TestInboundDocSubmissionDeferredRequest implements InboundDocSubmissionDeferredRequest{
+public class TestInboundDocSubmissionDeferredRequest implements InboundDocSubmissionDeferredRequest {
 
     @Override
     public XDRAcknowledgementType provideAndRegisterDocumentSetBRequest(ProvideAndRegisterDocumentSetRequestType body,
-            AssertionType assertion) {
+        AssertionType assertion, Properties webContextProperties) {
         XDRAcknowledgementType response = new XDRAcknowledgementType();
         response.setMessage(new RegistryResponseType());
-        
+
         return response;
     }
 

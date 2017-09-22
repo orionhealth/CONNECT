@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services.
+/*
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,7 +27,6 @@
 package gov.hhs.fha.nhinc.docsubmission.entity;
 
 import gov.hhs.fha.nhinc.common.nhinccommon.AssertionType;
-import gov.hhs.fha.nhinc.orchestration.AuditTransformer;
 import gov.hhs.fha.nhinc.orchestration.NhinAggregator;
 import gov.hhs.fha.nhinc.orchestration.OutboundDelegate;
 import gov.hhs.fha.nhinc.orchestration.OutboundOrchestratable;
@@ -37,32 +36,34 @@ import gov.hhs.fha.nhinc.orchestration.PolicyTransformer;
  * @author zmelnick
  *
  */
-public class TestOrchestratable implements OutboundOrchestratable{
+public class TestOrchestratable implements OutboundOrchestratable {
 
+    @Override
     public boolean isPassthru() {
         return false;
     }
 
-    public AuditTransformer getAuditTransformer() {
-        return null;
-    }
-
+    @Override
     public PolicyTransformer getPolicyTransformer() {
         return null;
     }
 
+    @Override
     public AssertionType getAssertion() {
         return null;
     }
 
+    @Override
     public String getServiceName() {
         return null;
     }
 
+    @Override
     public OutboundDelegate getDelegate() {
         return null;
     }
 
+    @Override
     public NhinAggregator getAggregator() {
         return null;
     }

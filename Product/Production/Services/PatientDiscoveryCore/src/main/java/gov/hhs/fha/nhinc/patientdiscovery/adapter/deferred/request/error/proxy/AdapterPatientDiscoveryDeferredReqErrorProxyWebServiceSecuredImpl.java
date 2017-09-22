@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,7 +27,6 @@
 package gov.hhs.fha.nhinc.patientdiscovery.adapter.deferred.request.error.proxy;
 //CheckStyle:OFF
 import gov.hhs.fha.nhinc.adapterpatientdiscoverysecuredasyncreqerror.AdapterPatientDiscoverySecuredAsyncReqErrorPortType;
-//CheckStyle:ON
 import gov.hhs.fha.nhinc.aspect.AdapterDelegationEvent;
 import gov.hhs.fha.nhinc.common.nhinccommon.AssertionType;
 import gov.hhs.fha.nhinc.messaging.client.CONNECTClient;
@@ -35,25 +34,25 @@ import gov.hhs.fha.nhinc.messaging.client.CONNECTClientFactory;
 import gov.hhs.fha.nhinc.messaging.service.port.ServicePortDescriptor;
 import gov.hhs.fha.nhinc.nhinclib.NhincConstants;
 import gov.hhs.fha.nhinc.nhinclib.NullChecker;
+import gov.hhs.fha.nhinc.patientdiscovery.aspect.MCCIIN000002UV01EventDescriptionBuilder;
+import gov.hhs.fha.nhinc.patientdiscovery.aspect.PRPAIN201305UV02EventDescriptionBuilder;
 import gov.hhs.fha.nhinc.transform.subdisc.HL7AckTransforms;
 import gov.hhs.fha.nhinc.webserviceproxy.WebServiceProxyHelper;
-import gov.hhs.fha.nhinc.patientdiscovery.aspect.PRPAIN201305UV02EventDescriptionBuilder;
-import gov.hhs.fha.nhinc.patientdiscovery.aspect.MCCIIN000002UV01EventDescriptionBuilder;
-
-import org.apache.log4j.Logger;
 import org.hl7.v3.AsyncAdapterPatientDiscoveryErrorSecuredRequestType;
 import org.hl7.v3.MCCIIN000002UV01;
 import org.hl7.v3.PRPAIN201305UV02;
 import org.hl7.v3.PRPAIN201306UV02;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
- * 
+ *
  * @author jhoppesc
  */
 public class AdapterPatientDiscoveryDeferredReqErrorProxyWebServiceSecuredImpl implements
         AdapterPatientDiscoveryDeferredReqErrorProxy {
 
-    private static final Logger LOG = Logger.getLogger(AdapterPatientDiscoveryDeferredReqErrorProxyWebServiceSecuredImpl.class);
+    private static final Logger LOG = LoggerFactory.getLogger(AdapterPatientDiscoveryDeferredReqErrorProxyWebServiceSecuredImpl.class);
     private WebServiceProxyHelper oProxyHelper = null;
 
     public AdapterPatientDiscoveryDeferredReqErrorProxyWebServiceSecuredImpl() {
@@ -65,9 +64,10 @@ public class AdapterPatientDiscoveryDeferredReqErrorProxyWebServiceSecuredImpl i
     }
 
     @AdapterDelegationEvent(beforeBuilder = PRPAIN201305UV02EventDescriptionBuilder.class,
-            afterReturningBuilder = MCCIIN000002UV01EventDescriptionBuilder.class, 
+            afterReturningBuilder = MCCIIN000002UV01EventDescriptionBuilder.class,
             serviceType = "Patient Discovery Deferred Request",
             version = "1.0")
+    @Override
     public MCCIIN000002UV01 processPatientDiscoveryAsyncReqError(PRPAIN201305UV02 request, PRPAIN201306UV02 response,
             AssertionType assertion, String errMsg) {
         LOG.debug("Begin processPatientDiscoveryAsyncReqError");
@@ -85,12 +85,12 @@ public class AdapterPatientDiscoveryDeferredReqErrorProxyWebServiceSecuredImpl i
                 } else if (NullChecker.isNullish(errMsg)) {
                     LOG.error("errMsg was null");
                 } else {
-                    ServicePortDescriptor<AdapterPatientDiscoverySecuredAsyncReqErrorPortType> portDescriptor = 
+                    ServicePortDescriptor<AdapterPatientDiscoverySecuredAsyncReqErrorPortType> portDescriptor =
                             new PatientDiscoveryDeferredReqErrorSecuredServicePortDescriptor();
                     CONNECTClient<AdapterPatientDiscoverySecuredAsyncReqErrorPortType> client = CONNECTClientFactory
                             .getInstance().getCONNECTClientSecured(portDescriptor, url, assertion);
 
-                    AsyncAdapterPatientDiscoveryErrorSecuredRequestType securedRequest = 
+                    AsyncAdapterPatientDiscoveryErrorSecuredRequestType securedRequest =
                             new AsyncAdapterPatientDiscoveryErrorSecuredRequestType();
                     securedRequest.setPRPAIN201305UV02(request);
                     securedRequest.setErrorMsg(errMsg);

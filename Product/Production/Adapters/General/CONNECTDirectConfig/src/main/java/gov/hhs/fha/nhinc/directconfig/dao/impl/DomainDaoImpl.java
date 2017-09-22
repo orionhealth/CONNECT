@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2014, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -54,11 +54,14 @@ import gov.hhs.fha.nhinc.directconfig.entity.Address;
 import gov.hhs.fha.nhinc.directconfig.entity.Domain;
 import gov.hhs.fha.nhinc.directconfig.entity.helpers.EntityStatus;
 import gov.hhs.fha.nhinc.directconfig.exception.ConfigurationStoreException;
+
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
+
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.Query;
@@ -66,10 +69,12 @@ import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import org.springframework.util.StringUtils;
 
 /**
  * Default Spring/JPA implemenation
- *
+ * In case the parameter passes as null, do not convert into empty String to allow AutomatedDirectTest
+ * SoapUI test to finish
  * @author ppyette
  */
 @Repository
@@ -92,9 +97,8 @@ public class DomainDaoImpl implements DomainDao {
         try {
             session = DaoUtils.getSession();
 
-            if (session != null) {
-                count = ((Long) session.createQuery("SELECT count(*) FROM Domain").uniqueResult()).intValue();
-            }
+            count = ((Long) session.createQuery("SELECT count(*) FROM Domain").uniqueResult()).intValue();
+
         } finally {
             DaoUtils.closeSession(session);
         }
@@ -130,15 +134,14 @@ public class DomainDaoImpl implements DomainDao {
             try {
                 session = DaoUtils.getSession();
 
-                if (session != null) {
-                    tx = session.beginTransaction();
-                    session.persist(item);
-                    tx.commit();
+                tx = session.beginTransaction();
+                session.persist(item);
+                tx.commit();
 
-                    saveAddresses(addresses);
-                }
+                saveAddresses(addresses);
+
             } catch (Exception e) {
-                DaoUtils.rollbackTransaction(tx);
+                DaoUtils.rollbackTransaction(tx, e);
                 throw new ConfigurationStoreException(e);
             } finally {
                 DaoUtils.closeSession(session);
@@ -162,13 +165,12 @@ public class DomainDaoImpl implements DomainDao {
 
                 session = DaoUtils.getSession();
 
-                if (session != null) {
-                    tx = session.beginTransaction();
-                    session.merge(item);
-                    tx.commit();
-                }
+                tx = session.beginTransaction();
+                session.merge(item);
+                tx.commit();
+
             } catch (Exception e) {
-                DaoUtils.rollbackTransaction(tx);
+                DaoUtils.rollbackTransaction(tx, e);
                 throw new ConfigurationStoreException(e);
             } finally {
                 DaoUtils.closeSession(session);
@@ -198,13 +200,12 @@ public class DomainDaoImpl implements DomainDao {
             try {
                 session = DaoUtils.getSession();
 
-                if (session != null) {
-                    tx = session.beginTransaction();
-                    session.delete(domain);
-                    tx.commit();
-                }
+                tx = session.beginTransaction();
+                session.delete(domain);
+                tx.commit();
+
             } catch (Exception e) {
-                DaoUtils.rollbackTransaction(tx);
+                DaoUtils.rollbackTransaction(tx, e);
                 throw new ConfigurationStoreException(e);
             } finally {
                 DaoUtils.closeSession(session);
@@ -228,13 +229,12 @@ public class DomainDaoImpl implements DomainDao {
             try {
                 session = DaoUtils.getSession();
 
-                if (session != null) {
-                    tx = session.beginTransaction();
-                    session.delete(domain);
-                    tx.commit();
-                }
+                tx = session.beginTransaction();
+                session.delete(domain);
+                tx.commit();
+
             } catch (Exception e) {
-                DaoUtils.rollbackTransaction(tx);
+                DaoUtils.rollbackTransaction(tx, e);
                 throw new ConfigurationStoreException(e);
             } finally {
                 DaoUtils.closeSession(session);
@@ -253,19 +253,17 @@ public class DomainDaoImpl implements DomainDao {
 
         if (name != null) {
             Session session = null;
-            Query query = null;
+            Query query;
 
             try {
                 session = DaoUtils.getSession();
 
-                if (session != null) {
-                    query = session
-                            .createQuery("SELECT DISTINCT d FROM Domain d WHERE UPPER(d.domainName) = :domainName");
+                query = session.createQuery("SELECT DISTINCT d FROM Domain d WHERE UPPER(d.domainName) = :domainName");
 
-                    query.setParameter("domainName", name.toUpperCase(Locale.getDefault()));
+                query.setParameter("domainName", name.toUpperCase(Locale.getDefault()));
 
-                    result = (Domain) query.uniqueResult();
-                }
+                result = (Domain) query.uniqueResult();
+
             } finally {
                 DaoUtils.closeSession(session);
             }
@@ -283,30 +281,28 @@ public class DomainDaoImpl implements DomainDao {
         List<Domain> results = null;
 
         Session session = null;
-        Query query = null;
+        Query query;
 
         try {
             session = DaoUtils.getSession();
 
-            if (session != null) {
-                if (names != null && names.size() > 0) {
-                    query = session.getNamedQuery("getDomains");
+            if (CollectionUtils.isNotEmpty(names)) {
+                query = session.getNamedQuery("getDomains");
 
-                    query.setParameterList("nameList", names);
-                } else {
-                    query = session.getNamedQuery("getDomainsByStatus");
-                }
-
-                query.setParameter("status", status == null ? status : status.ordinal());
-
-                results = query.list();
+                query.setParameterList("nameList", names);
+            } else {
+                query = session.getNamedQuery("getDomainsByStatus");
             }
+
+            query.setParameter("status", status == null ? status : status.ordinal());
+
+            results = query.list();
         } finally {
             DaoUtils.closeSession(session);
         }
 
         if (results == null) {
-            results = new ArrayList<Domain>();
+            results = new ArrayList<>();
         }
 
         return results;
@@ -318,38 +314,29 @@ public class DomainDaoImpl implements DomainDao {
     @Override
     @SuppressWarnings("unchecked")
     public List<Domain> listDomains(String name, int count) {
-        // Direct RI Comment:
-        // TODO I'm not sure if this is doing the right thing. I suspect that the
-        // real intent is to do some kind of db paging
-
+        // Direct RI Comment: Use by Direct third party component
+        //(org.nhindirect.gateway.smtp.config.WSSmtpAgentConfig), it will pass null,maxcount
         List<Domain> results = null;
-        Query query = null;
+        Query query;
 
         Session session = null;
 
         try {
             session = DaoUtils.getSession();
+            log.debug("Calling listDomain");
+            query = session.getNamedQuery("getDomainsByName");
+            query.setParameter("domainName", StringUtils.hasText(name) ? name.toUpperCase(Locale.getDefault()): null);
 
-            if (session != null) {
-                query = session.getNamedQuery("getDomainsByName");
+            // Direct RI Comment:
+            // assuming that a count of zero really means no limit
+            if (count > 0) {
+                query.setMaxResults(count);
+            }
 
-                if (name != null) {
-                    name = name.toUpperCase(Locale.getDefault());
-                }
+            results = query.list();
 
-                query.setParameter("domainName", name);
-
-                // Direct RI Comment:
-                // assuming that a count of zero really means no limit
-                if (count > 0) {
-                    query.setMaxResults(count);
-                }
-
-                results = query.list();
-
-                if (results.size() == 0) {
-                    results = null;
-                }
+            if (results.isEmpty()) {
+                results = null;
             }
         } finally {
             DaoUtils.closeSession(session);
@@ -367,28 +354,26 @@ public class DomainDaoImpl implements DomainDao {
         List<Domain> result = null;
 
         Session session = null;
-        Query query = null;
+        Query query;
 
         String fuzzyName = null;
 
         try {
             session = DaoUtils.getSession();
 
-            if (session != null) {
-                query = session.getNamedQuery("searchDomains");
+            query = session.getNamedQuery("searchDomains");
 
-                if (name != null) {
-                    fuzzyName = name.toUpperCase(Locale.getDefault()).replace('*', '%').replace('?', '_');
-                }
+            if (name != null) {
+                fuzzyName = name.toUpperCase(Locale.getDefault()).replace('*', '%').replace('?', '_');
+            }
 
-                query.setParameter("domainName", fuzzyName);
-                query.setParameter("status", status == null ? status : status.ordinal());
+            query.setParameter("domainName", fuzzyName);
+            query.setParameter("status", status == null ? status : status.ordinal());
 
-                result = query.list();
+            result = query.list();
 
-                if (result == null) {
-                    result = new ArrayList<Domain>();
-                }
+            if (result == null) {
+                result = new ArrayList<>();
             }
         } finally {
             DaoUtils.closeSession(session);
@@ -410,9 +395,8 @@ public class DomainDaoImpl implements DomainDao {
             try {
                 session = DaoUtils.getSession();
 
-                if (session != null) {
-                    result = (Domain) session.get(Domain.class, id);
-                }
+                result = (Domain) session.get(Domain.class, id);
+
             } finally {
                 DaoUtils.closeSession(session);
             }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2014, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,10 +26,10 @@
  */
 package gov.hhs.fha.nhinc.direct.receiver.proxy;
 
-import gov.hhs.fha.nhinc.direct.DirectAdapterEntity;
 import gov.hhs.fha.nhinc.direct.DirectReceiver;
 import javax.mail.internet.MimeMessage;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -42,8 +42,8 @@ public class DirectReceiverProxyJavaImpl {
     /**
      * The Constant LOG.
      */
-    private static final Logger LOG = Logger.getLogger(DirectReceiverProxyJavaImpl.class);
-    
+    private static final Logger LOG = LoggerFactory.getLogger(DirectReceiverProxyJavaImpl.class);
+
     /** The direct receiver. */
     @Autowired
     private DirectReceiver directReceiver;

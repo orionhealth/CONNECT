@@ -1,7 +1,5 @@
-/**
- * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
- *
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services.
+/*
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -28,11 +26,6 @@
  */
 package gov.hhs.fha.nhinc.docquery.aspect;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 import gov.hhs.fha.nhinc.common.nhinccommon.AssertionType;
 import gov.hhs.fha.nhinc.event.BaseDescriptionBuilderTest;
 import gov.hhs.fha.nhinc.event.EventDescription;
@@ -40,10 +33,14 @@ import gov.hhs.fha.nhinc.event.builder.AssertionDescriptionExtractor;
 import gov.hhs.fha.nhinc.properties.PropertyAccessException;
 import gov.hhs.fha.nhinc.properties.PropertyAccessor;
 import oasis.names.tc.ebxml_regrep.xsd.query._3.AdhocQueryRequest;
-
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.Test;
 import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 import org.springframework.util.CollectionUtils;
 
 public class AdhocQueryRequestDescriptionBuilderTest extends BaseDescriptionBuilderTest {
@@ -57,23 +54,23 @@ public class AdhocQueryRequestDescriptionBuilderTest extends BaseDescriptionBuil
     public void before() throws PropertyAccessException {
         request = new AdhocQueryRequest();
         final PropertyAccessor mockProperties = mock(PropertyAccessor.class);
-        builder = new AdhocQueryRequestDescriptionBuilder(){
+        builder = new AdhocQueryRequestDescriptionBuilder() {
             @Override
-            protected PropertyAccessor getPropertyAccessor(String fileName){
+            protected PropertyAccessor getPropertyAccessor() {
                 return mockProperties;
             }
         };
         assertion = new AssertionType();
         assertionExtractor = mock(AssertionDescriptionExtractor.class);
-        
-        when(mockProperties.getProperty(anyString())).thenReturn(null);
+        when(assertionExtractor.getAssertion(assertion)).thenReturn(assertion);
+        when(mockProperties.getProperty(anyString(), anyString())).thenReturn(null);
         when(assertionExtractor.getInitiatingHCID(assertion)).thenReturn("hcid");
         when(assertionExtractor.getNPI(assertion)).thenReturn("npi");
     }
 
     @Test
     public void noAssertion() {
-        Object[] arguments = { request };
+        Object[] arguments = {request};
         builder.setArguments(arguments);
         EventDescription eventDescription = assertBasicBuild(builder);
         assertNull(eventDescription.getNPI());
@@ -83,7 +80,7 @@ public class AdhocQueryRequestDescriptionBuilderTest extends BaseDescriptionBuil
     @Test
     public void withAssertion() {
         builder.setAssertionExtractor(assertionExtractor);
-        Object[] arguments = { request, assertion };
+        Object[] arguments = {request, assertion};
         builder.setArguments(arguments);
         EventDescription eventDescription = assertBasicBuild(builder);
         assertEquals("hcid", eventDescription.getInitiatingHCID());

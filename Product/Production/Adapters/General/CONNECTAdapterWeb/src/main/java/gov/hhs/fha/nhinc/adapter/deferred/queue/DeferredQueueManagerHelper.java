@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -48,7 +48,8 @@ import gov.hhs.fha.nhinc.util.format.XMLDateUtil;
 import java.util.ArrayList;
 import java.util.List;
 import javax.xml.ws.WebServiceContext;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Helper class for the web service.
@@ -57,7 +58,7 @@ import org.apache.log4j.Logger;
  */
 public class DeferredQueueManagerHelper {
 
-    private static final Logger LOG = Logger.getLogger(DeferredQueueManagerHelper.class);
+    private static final Logger LOG = LoggerFactory.getLogger(DeferredQueueManagerHelper.class);
     private static final String GATEWAY_PROPERTY_FILE = "gateway";
     private static final String DEFERRED_QUEUE_GLOBAL_THRESHOLD = "DeferredQueueGlobalThreshold";
     private static final int DEFERRED_QUEUE_GLOBAL_THRESHOLD_DEFAULT = 100;
@@ -176,8 +177,8 @@ public class DeferredQueueManagerHelper {
         oResponse.getSuccessOrFail().setSuccess(false);
 
         try {
-            oResponse.getDeferredQueueStatisticsData().addAll(
-                    queryDeferredQueueStatistics(deferredQueueStatisticsRequest));
+            oResponse.getDeferredQueueStatisticsData()
+                    .addAll(queryDeferredQueueStatistics(deferredQueueStatisticsRequest));
             oResponse.getSuccessOrFail().setSuccess(true);
         } catch (DeferredQueueException e) {
             String sErrorMessage = "Failed to query the Deferred Queue Statistics.  Error: " + e.getMessage();
@@ -206,14 +207,14 @@ public class DeferredQueueManagerHelper {
         LOG.debug("***** Retrieve queue message records that were previously selected *****");
         List<AsyncMsgRecord> queueRecords = queueDao.queryForDeferredQueueSelected();
 
-        if (queueRecords == null || queueRecords.size() == 0) {
+        if (queueRecords == null || queueRecords.isEmpty()) {
             LOG.debug("***** Retrieve queue message records that are received and not processed *****");
             queueRecords = queueDao.queryForDeferredQueueProcessing();
         }
 
         if (NullChecker.isNotNullish(queueRecords) && queueRecords.size() > 0) {
             int count = 0;
-            int maxCount = (queueRecords.size() > iGlobalThreshold ? iGlobalThreshold : queueRecords.size());
+            int maxCount = queueRecords.size() > iGlobalThreshold ? iGlobalThreshold : queueRecords.size();
             LOG.debug("***** Found " + queueRecords.size() + " queue message records; will process " + maxCount
                     + " records. *****");
 
@@ -253,7 +254,8 @@ public class DeferredQueueManagerHelper {
      * @throws DeferredQueueException
      */
     public boolean forceProcessOnRequest(String messageId) throws DeferredQueueException {
-        LOG.debug("Start: DeferredQueueManagerHelper.forceProcessOnRequest method - processing deferred request by messageId.");
+        LOG.debug(
+                "Start: DeferredQueueManagerHelper.forceProcessOnRequest method - processing deferred request by messageId.");
         boolean result = false;
 
         AsyncMsgRecordDao queueDao = new AsyncMsgRecordDao();
@@ -275,7 +277,8 @@ public class DeferredQueueManagerHelper {
             LOG.warn("Queue record not found for message id [" + messageId + "]");
         }
 
-        LOG.debug("End: DeferredQueueManagerHelper.forceProcessOnRequest method - processing deferred request by messageId.");
+        LOG.debug(
+                "End: DeferredQueueManagerHelper.forceProcessOnRequest method - processing deferred request by messageId.");
 
         return result;
     }
@@ -288,12 +291,14 @@ public class DeferredQueueManagerHelper {
      * @throws DeferredQueueException
      */
     public boolean forceProcessOnRequest(AsyncMsgRecord queueRecord) throws DeferredQueueException {
-        LOG.debug("Start: DeferredQueueManagerHelper.forceProcessOnRequest method - processing deferred request by record.");
+        LOG.debug(
+                "Start: DeferredQueueManagerHelper.forceProcessOnRequest method - processing deferred request by record.");
         boolean result = false;
 
         // Call processing based on the service name
         if (queueRecord.getServiceName().equals(NhincConstants.PATIENT_DISCOVERY_SERVICE_NAME)) {
-            PatientDiscoveryDeferredReqQueueProcessResponseType pdResponse = processDeferredPatientDiscovery(queueRecord);
+            PatientDiscoveryDeferredReqQueueProcessResponseType pdResponse = processDeferredPatientDiscovery(
+                    queueRecord);
 
             if (pdResponse != null && pdResponse.getSuccessOrFail() != null
                     && pdResponse.getSuccessOrFail().isSuccess()) {
@@ -304,7 +309,8 @@ public class DeferredQueueManagerHelper {
             LOG.warn("Service processing not implemented, Please check the Service Name.");
         }
 
-        LOG.debug("End: DeferredQueueManagerHelper.forceProcessOnRequest method - processing deferred request by record.");
+        LOG.debug(
+                "End: DeferredQueueManagerHelper.forceProcessOnRequest method - processing deferred request by record.");
 
         return result;
     }
@@ -317,7 +323,7 @@ public class DeferredQueueManagerHelper {
         try {
             String sGlobalThreshold = PropertyAccessor.getInstance().getProperty(GATEWAY_PROPERTY_FILE,
                     DEFERRED_QUEUE_GLOBAL_THRESHOLD);
-            if ((sGlobalThreshold != null) && (sGlobalThreshold.length() > 0)) {
+            if (sGlobalThreshold != null && sGlobalThreshold.length() > 0) {
                 iGlobalThreshold = Integer.parseInt(sGlobalThreshold);
             }
         } catch (PropertyAccessException e) {
@@ -338,13 +344,15 @@ public class DeferredQueueManagerHelper {
      */
     private PatientDiscoveryDeferredReqQueueProcessResponseType processDeferredPatientDiscovery(
             AsyncMsgRecord queueRecord) throws DeferredQueueException {
-        LOG.debug("Start: DeferredQueueManagerHelper.processDeferredPatientDiscovery method - processing deferred message.");
+        LOG.debug(
+                "Start: DeferredQueueManagerHelper.processDeferredPatientDiscovery method - processing deferred message.");
 
         PatientDiscoveryDeferredReqQueueClient reqClient = new PatientDiscoveryDeferredReqQueueClient();
         PatientDiscoveryDeferredReqQueueProcessResponseType response = reqClient
                 .processPatientDiscoveryDeferredReqQueue(queueRecord.getMessageId());
 
-        LOG.debug("End: DeferredQueueManagerHelper.processDeferredPatientDiscovery method - processing deferred message.");
+        LOG.debug(
+                "End: DeferredQueueManagerHelper.processDeferredPatientDiscovery method - processing deferred message.");
 
         return response;
     }
@@ -360,7 +368,7 @@ public class DeferredQueueManagerHelper {
             throws DeferredQueueException {
         LOG.debug("Start: DeferredQueueManagerHelper.queryDeferredQueue method - query deferred messages.");
 
-        List<DeferredQueueRecordType> response = new ArrayList<DeferredQueueRecordType>();
+        List<DeferredQueueRecordType> response = new ArrayList<>();
 
         try {
             AsyncMsgRecordDao queueDao = new AsyncMsgRecordDao();
@@ -461,7 +469,7 @@ public class DeferredQueueManagerHelper {
             DeferredQueueStatisticsRequestType deferredQueueStatisticsRequest) throws DeferredQueueException {
         LOG.debug("Start: DeferredQueueManagerHelper.queryDeferredQueueStatistics method - query deferred statistics.");
 
-        List<DeferredQueueStatisticsDataType> response = new ArrayList<DeferredQueueStatisticsDataType>();
+        List<DeferredQueueStatisticsDataType> response = new ArrayList<>();
 
         // TODO: Logic goes here
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,9 +26,9 @@
  */
 package gov.hhs.fha.nhinc.mpilib;
 
-import org.apache.log4j.Logger;
-
 import gov.hhs.fha.nhinc.nhinclib.NullChecker;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -38,7 +38,7 @@ public class PatientMatcher {
 
     private static final String TELEPHONE_PREFIX_STRING = "tel:";
 
-    private static final Logger LOG = Logger.getLogger(PatientMatcher.class);
+    private static final Logger LOG = LoggerFactory.getLogger(PatientMatcher.class);
     private static PatientMatcher instance = null;
 
     /**

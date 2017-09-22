@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-13, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,32 +26,26 @@
  */
 package gov.hhs.fha.nhinc.docquery.entity;
 
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 import gov.hhs.fha.nhinc.common.nhinccommon.AssertionType;
-import gov.hhs.fha.nhinc.common.nhinccommon.HomeCommunityType;
-import gov.hhs.fha.nhinc.common.nhinccommon.NhinTargetSystemType;
-import gov.hhs.fha.nhinc.docquery.DocQueryAuditLog;
 import gov.hhs.fha.nhinc.docquery.MessageGeneratorUtils;
 import oasis.names.tc.ebxml_regrep.xsd.query._3.AdhocQueryRequest;
 import oasis.names.tc.ebxml_regrep.xsd.query._3.AdhocQueryResponse;
-
 import org.junit.Test;
+import static org.mockito.Matchers.any;
 import org.mockito.Mockito;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 /**
  * @author akong
- * 
+ *
  */
 public class OutboundDocQueryStrategyTest {
 
     final AdhocQueryRequest mockRequest = mock(AdhocQueryRequest.class);
     final AdhocQueryResponse mockResponse = mock(AdhocQueryResponse.class);
     final AssertionType mockAssertion = mock(AssertionType.class);
-
     private static final String TARGET_HCID = "urn:oid:3.4";
     private static final String TARGET_HCID_FORMATTED = "3.4";
 
@@ -70,75 +64,4 @@ public class OutboundDocQueryStrategyTest {
         verify(mockUtils).createRepositoryErrorResponse(any(String.class));
         verify(message).setResponse(mockResponse);
     }
-
-    /**
-     * Test {@link OutboundDocQueryStrategy#execute(OutboundDocQueryOrchestratable)} uses the target hcid for audit repo
-     * logging.
-     * 
-     * @throws Exception
-     *             on exception.
-     */
-    @Test
-    public void willAuditRepoLogHcidFromTargetAllStrategies() throws Exception {
-        willAuditRepoLogHcidFromTarget(getOutboundDocQueryStrategyG0());
-        willAuditRepoLogHcidFromTarget(getOutboundDocQueryStrategyG1());
-    }
-
-    private void willAuditRepoLogHcidFromTarget(final OutboundDocQueryStrategy strategy) throws Exception {
-
-        NhinTargetSystemType nhinTargetSystem = getMockNhinTargetSystem();
-        OutboundDocQueryOrchestratable message = getMockOutboundDocQueryOrchestratable(nhinTargetSystem);
-        when(message.getRequest()).thenReturn(mockRequest);
-        when(message.getResponse()).thenReturn(mockResponse);
-        when(message.getAssertion()).thenReturn(mockAssertion);
-
-        strategy.execute(message);
-
-        verify(strategy.getAuditLogger()).auditOutboundDocQueryStrategyRequest(eq(mockRequest), eq(mockAssertion),
-                eq(TARGET_HCID_FORMATTED));
-
-        verify(strategy.getAuditLogger()).auditOutboundDocQueryStrategyResponse(eq(mockResponse), eq(mockAssertion),
-                eq(TARGET_HCID_FORMATTED));
-
-    }
-
-    private OutboundDocQueryOrchestratable getMockOutboundDocQueryOrchestratable(NhinTargetSystemType nhinTargetSystem) {
-        OutboundDocQueryOrchestratable message = mock(OutboundDocQueryOrchestratable.class);
-        when(message.getTarget()).thenReturn(nhinTargetSystem);
-        return message;
-    }
-
-    private NhinTargetSystemType getMockNhinTargetSystem() {
-        NhinTargetSystemType nhinTargetSystem = mock(NhinTargetSystemType.class);
-        HomeCommunityType homeCommunity = getMockTargetHomeCommunity();
-        when(nhinTargetSystem.getHomeCommunity()).thenReturn(homeCommunity);
-        return nhinTargetSystem;
-    }
-
-    private HomeCommunityType getMockTargetHomeCommunity() {
-        HomeCommunityType homeCommunity = mock(HomeCommunityType.class);
-        when(homeCommunity.getHomeCommunityId()).thenReturn(TARGET_HCID);
-        return homeCommunity;
-    }
-
-    private OutboundDocQueryStrategy getOutboundDocQueryStrategyG0() {
-        final DocQueryAuditLog mockAuditLogger = mock(DocQueryAuditLog.class);
-        return new OutboundDocQueryStrategyImpl_g0() {
-            @Override
-            protected DocQueryAuditLog getAuditLogger() {
-                return mockAuditLogger;
-            }
-        };
-    }
-
-    private OutboundDocQueryStrategy getOutboundDocQueryStrategyG1() {
-        final DocQueryAuditLog mockAuditLogger = mock(DocQueryAuditLog.class);
-        return new OutboundDocQueryStrategyImpl_g1() {
-            @Override
-            protected DocQueryAuditLog getAuditLogger() {
-                return mockAuditLogger;
-            }
-        };
-    }
-
 }

@@ -1,30 +1,39 @@
 /*
- *  Copyright (c) 2009-2014, United States Government, as represented by the Secretary of Health and Human Services.
- *  All rights reserved.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
+ * All rights reserved.
  *
- *  Redistribution and use in source and binary forms, with or without
- *  modification, are permitted provided that the following conditions are met:
- *      * Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following disclaimer.
- *      * Redistributions in binary form must reproduce the above copyright
- *        notice, this list of conditions and the following disclaimer in the documentation
- *        and/or other materials provided with the distribution.
- *      * Neither the name of the United States Government nor the
- *        names of its contributors may be used to endorse or promote products
- *        derived from this software without specific prior written permission.
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *     * Redistributions of source code must retain the above
+ *       copyright notice, this list of conditions and the following disclaimer.
+ *     * Redistributions in binary form must reproduce the above copyright
+ *       notice, this list of conditions and the following disclaimer in the documentation
+ *       and/or other materials provided with the distribution.
+ *     * Neither the name of the United States Government nor the
+ *       names of its contributors may be used to endorse or promote products
+ *       derived from this software without specific prior written permission.
  *
- *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
- *  ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- *  WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- *  DISCLAIMED. IN NO EVENT SHALL THE UNITED STATES GOVERNMENT BE LIABLE FOR ANY
- *  DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- *  (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- *  LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- *  ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- *  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE UNITED STATES GOVERNMENT BE LIABLE FOR ANY
+ * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 package gov.hhs.fha.nhinc.admingui.event.service;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import gov.hhs.fha.nhinc.admingui.event.model.EventNwhinOrganization;
 import gov.hhs.fha.nhinc.connectmgr.ConnectionManager;
@@ -34,15 +43,10 @@ import java.util.ArrayList;
 import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.*;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.times;
 
 /**
  * Tests the ability to sort event results into displayable organizations by total, inbound, and outbound.
+ *
  * @author jasonasmith
  */
 public class EventCountImplTest {
@@ -77,28 +81,32 @@ public class EventCountImplTest {
         };
 
         daoInboundResults = new ArrayList();
-        daoInboundResults.add(new Object[]{2, "1.1", "Patient Discovery"});
-        daoInboundResults.add(new Object[]{2, "1.1", "Document Query"});
+        daoInboundResults.add(new Object[] { new Long("2"), "1.1", "Patient Discovery" });
+        daoInboundResults.add(new Object[] { new Long("2"), "1.1", "Document Query" });
 
         daoOutboundResults = new ArrayList();
-        daoOutboundResults.add(new Object[]{2, "1.1", "Patient Discovery"});
-        daoOutboundResults.add(new Object[]{2, "2.2", "Retrieve Document"});
-        
+        daoOutboundResults.add(new Object[] { new Long("2"), "1.1", "Patient Discovery" });
+        daoOutboundResults.add(new Object[] { new Long("2"), "2.2", "Retrieve Document" });
+
         daoInboundDirectResults = new ArrayList();
-        daoInboundDirectResults.add(new Object[]{2, "1.1", "Direct"});
-        daoInboundDirectResults.add(new Object[]{2, "1.1", "Direct"});
-        
+        daoInboundDirectResults.add(new Object[] { new Long("2"), "1.1", "Direct" });
+        daoInboundDirectResults.add(new Object[] { new Long("2"), "1.1", "Direct" });
+
         daoOutboundDirectResults = new ArrayList();
-        daoOutboundDirectResults.add(new Object[]{2, "1.1", "Direct"});
-        daoOutboundDirectResults.add(new Object[]{2, "2.2", "Direct"});
+        daoOutboundDirectResults.add(new Object[] { new Long("2"), "1.1", "Direct" });
+        daoOutboundDirectResults.add(new Object[] { new Long("2"), "2.2", "Direct" });
     }
 
     private void setMockCounts() throws ConnectionManagerException {
 
-        when(mockDao.getCounts(EventServiceImpl.INBOUND_EVENT_TYPE, EventServiceImpl.INBOUND_HCID_TYPE)).thenReturn(daoInboundResults);
-        when(mockDao.getCounts(EventServiceImpl.OUTBOUND_EVENT_TYPE, EventServiceImpl.OUTBOUND_HCID_TYPE)).thenReturn(daoOutboundResults);
-        when(mockDao.getCounts(EventServiceImpl.INBOUND_DIRECT_EVENT_TYPE, EventServiceImpl.INBOUND_HCID_TYPE)).thenReturn(daoInboundDirectResults);
-        when(mockDao.getCounts(EventServiceImpl.OUTBOUND_DIRECT_EVENT_TYPE, EventServiceImpl.OUTBOUND_HCID_TYPE)).thenReturn(daoOutboundDirectResults);
+        when(mockDao.getCounts(EventServiceImpl.INBOUND_EVENT_TYPE, EventServiceImpl.INBOUND_HCID_TYPE))
+                .thenReturn(daoInboundResults);
+        when(mockDao.getCounts(EventServiceImpl.OUTBOUND_EVENT_TYPE, EventServiceImpl.OUTBOUND_HCID_TYPE))
+                .thenReturn(daoOutboundResults);
+        when(mockDao.getCounts(EventServiceImpl.INBOUND_DIRECT_EVENT_TYPE, EventServiceImpl.INBOUND_HCID_TYPE))
+                .thenReturn(daoInboundDirectResults);
+        when(mockDao.getCounts(EventServiceImpl.OUTBOUND_DIRECT_EVENT_TYPE, EventServiceImpl.OUTBOUND_HCID_TYPE))
+                .thenReturn(daoOutboundDirectResults);
         when(mockCM.getBusinessEntityName("1.1")).thenReturn(ORG_1);
         when(mockCM.getBusinessEntityName("2.2")).thenReturn(ORG_2);
 
@@ -136,12 +144,12 @@ public class EventCountImplTest {
     }
 
     private void assertTotals(EventNwhinOrganization org1, EventNwhinOrganization org2) {
-        assertEquals(org1.getPdCount(), 4);
-        assertEquals(org1.getDqCount(), 2);
-        assertEquals(org1.getTotalCount(), 10);
+        assertEquals(org1.getPdCount().longValue(), 4);
+        assertEquals(org1.getDqCount().longValue(), 2);
+        assertEquals(org1.getTotalCount().longValue(), 10);
 
-        assertEquals(org2.getDrCount(), 2);
-        assertEquals(org2.getTotalCount(), 4);
+        assertEquals(org2.getDrCount().longValue(), 2);
+        assertEquals(org2.getTotalCount().longValue(), 4);
     }
 
     /**
@@ -156,9 +164,9 @@ public class EventCountImplTest {
         assertNotNull(inboundOrgs);
         assertEquals(inboundOrgs.size(), 1);
 
-        assertEquals(inboundOrgs.get(0).getPdCount(), 2);
-        assertEquals(inboundOrgs.get(0).getDqCount(), 2);
-        assertEquals(inboundOrgs.get(0).getTotalCount(), 6);
+        assertEquals(inboundOrgs.get(0).getPdCount().longValue(), 2);
+        assertEquals(inboundOrgs.get(0).getDqCount().longValue(), 2);
+        assertEquals(inboundOrgs.get(0).getTotalCount().longValue(), 6);
     }
 
     /**
@@ -181,15 +189,15 @@ public class EventCountImplTest {
         assertTrue(org2.getOrganizationName().equals(ORG_1) || org2.getOrganizationName().equals(ORG_2));
 
         if (org1.getOrganizationName().equals(ORG_1)) {
-            assertEquals(org1.getPdCount(), 2);
-            assertEquals(org2.getDrCount(), 2);
+            assertEquals(org1.getPdCount().longValue(), 2);
+            assertEquals(org2.getDrCount().longValue(), 2);
         } else {
-            assertEquals(org1.getDrCount(), 2);
-            assertEquals(org2.getPdCount(), 2);
+            assertEquals(org1.getDrCount().longValue(), 2);
+            assertEquals(org2.getPdCount().longValue(), 2);
         }
 
-        assertEquals(org1.getTotalCount(), 4);
-        assertEquals(org2.getTotalCount(), 4);
+        assertEquals(org1.getTotalCount().longValue(), 4);
+        assertEquals(org2.getTotalCount().longValue(), 4);
     }
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -38,15 +38,15 @@ import gov.hhs.fha.nhinc.nhinclib.NhincConstants;
 import gov.hhs.fha.nhinc.webserviceproxy.WebServiceProxyHelper;
 import oasis.names.tc.ebxml_regrep.xsd.query._3.AdhocQueryRequest;
 import oasis.names.tc.ebxml_regrep.xsd.query._3.AdhocQueryResponse;
-
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author
  *
  */
 public class EntityDocQueryProxyWebServiceUnsecuredImpl implements EntityDocQueryProxy {
-    private static final Logger LOG = Logger.getLogger(EntityDocQueryProxyWebServiceUnsecuredImpl.class);
+    private static final Logger LOG = LoggerFactory.getLogger(EntityDocQueryProxyWebServiceUnsecuredImpl.class);
 
     private WebServiceProxyHelper oProxyHelper = null;
 
@@ -56,7 +56,7 @@ public class EntityDocQueryProxyWebServiceUnsecuredImpl implements EntityDocQuer
     public EntityDocQueryProxyWebServiceUnsecuredImpl() {
         oProxyHelper = createWebServiceProxyHelper();
     }
-    
+
     /**
      * @return WebServiceProxyHelper Object.
      */
@@ -70,12 +70,7 @@ public class EntityDocQueryProxyWebServiceUnsecuredImpl implements EntityDocQuer
      */
     public ServicePortDescriptor<EntityDocQueryPortType> getServicePortDescriptor(
             NhincConstants.ADAPTER_API_LEVEL apiLevel) {
-        switch (apiLevel) {
-        case LEVEL_a0:
-            return new EntityDocQueryServicePortDescriptor();
-        default:
-            return new EntityDocQueryServicePortDescriptor();
-        }
+        return new EntityDocQueryServicePortDescriptor();
     }
 
     /** This method returns AdhocQueryResponse from entity Interface.
@@ -84,6 +79,7 @@ public class EntityDocQueryProxyWebServiceUnsecuredImpl implements EntityDocQuer
      * @param targets TargetCommunities to send request.
      * @return AdhocQueryResponse from Entity Interface.
      */
+    @Override
     public AdhocQueryResponse respondingGatewayCrossGatewayQuery(AdhocQueryRequest msg, AssertionType assertion,
             NhinTargetCommunitiesType targets) {
         LOG.debug("Begin respondingGatewayCrossGatewayQuery");

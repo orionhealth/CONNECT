@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -36,22 +36,25 @@ import gov.hhs.fha.nhinc.patientdiscovery.inbound.InboundPatientDiscovery;
 import gov.hhs.healthit.nhin.PatientDiscoveryFaultType;
 import ihe.iti.xcpd._2009.PRPAIN201305UV02Fault;
 import ihe.iti.xcpd._2009.RespondingGatewayPortType;
-
 import javax.annotation.Resource;
 import javax.xml.ws.BindingType;
 import javax.xml.ws.WebServiceContext;
 import javax.xml.ws.soap.Addressing;
-
+import javax.xml.ws.soap.SOAPBinding;
 import org.hl7.v3.PRPAIN201305UV02;
 import org.hl7.v3.PRPAIN201306UV02;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Addressing(enabled = true)
-@BindingType(value = javax.xml.ws.soap.SOAPBinding.SOAP12HTTP_BINDING)
+@BindingType(value = SOAPBinding.SOAP12HTTP_BINDING)
 public class NhinPatientDiscovery extends BaseService implements RespondingGatewayPortType {
 
     private InboundPatientDiscovery inboundPatientDiscovery;
 
     private WebServiceContext context;
+
+    private static final Logger LOG = LoggerFactory.getLogger(NhinPatientDiscovery.class);
 
     /**
      * Constructor.
@@ -62,20 +65,21 @@ public class NhinPatientDiscovery extends BaseService implements RespondingGatew
 
     /**
      * The web service implementation of Patient Discovery.
-     * 
+     *
      * @param body the body of the request
      * @return the Patient discovery Response
      * @throws PRPAIN201305UV02Fault a fault if there's an exception
      */
-    @InboundMessageEvent(beforeBuilder = PRPAIN201305UV02EventDescriptionBuilder.class, 
-            afterReturningBuilder = PRPAIN201306UV02EventDescriptionBuilder.class, 
-            serviceType = "Patient Discovery", version = "1.0")
+    @InboundMessageEvent(beforeBuilder = PRPAIN201305UV02EventDescriptionBuilder.class,
+        afterReturningBuilder = PRPAIN201306UV02EventDescriptionBuilder.class,
+        serviceType = "Patient Discovery", version = "1.0")
+    @Override
     public PRPAIN201306UV02 respondingGatewayPRPAIN201305UV02(PRPAIN201305UV02 body) throws PRPAIN201305UV02Fault {
         try {
             AssertionType assertion = getAssertion(context, null);
-
-            return inboundPatientDiscovery.respondingGatewayPRPAIN201305UV02(body, assertion);
+            return inboundPatientDiscovery.respondingGatewayPRPAIN201305UV02(body, assertion, getWebContextProperties(context));
         } catch (PatientDiscoveryException e) {
+            LOG.trace("Nhin PD exception: {}", e.getLocalizedMessage(), e);
             PatientDiscoveryFaultType type = new PatientDiscoveryFaultType();
             type.setErrorCode("920");
             type.setMessage(e.getLocalizedMessage());

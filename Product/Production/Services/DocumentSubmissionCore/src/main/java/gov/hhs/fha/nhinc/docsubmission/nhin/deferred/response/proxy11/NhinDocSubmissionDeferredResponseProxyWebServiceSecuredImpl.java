@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -41,18 +41,17 @@ import gov.hhs.fha.nhinc.nhinclib.NhincConstants.GATEWAY_API_LEVEL;
 import gov.hhs.fha.nhinc.webserviceproxy.WebServiceProxyHelper;
 import gov.hhs.healthit.nhin.XDRAcknowledgementType;
 import ihe.iti.xdr._2007.XDRDeferredResponsePortType;
-
 import oasis.names.tc.ebxml_regrep.xsd.rs._3.RegistryResponseType;
-
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
- * 
+ *
  * @author JHOPPESC
  */
 public class NhinDocSubmissionDeferredResponseProxyWebServiceSecuredImpl implements
         NhinDocSubmissionDeferredResponseProxy {
-    private static final Logger LOG = Logger.getLogger(NhinDocSubmissionDeferredResponseProxyWebServiceSecuredImpl.class);
+    private static final Logger LOG = LoggerFactory.getLogger(NhinDocSubmissionDeferredResponseProxyWebServiceSecuredImpl.class);
 
     private WebServiceProxyHelper oProxyHelper = null;
 
@@ -72,14 +71,14 @@ public class NhinDocSubmissionDeferredResponseProxyWebServiceSecuredImpl impleme
             ServicePortDescriptor<XDRDeferredResponsePortType> portDescriptor, String url, AssertionType assertion,
               String target, String serviceName) {
 
-        CONNECTClient<XDRDeferredResponsePortType> client = CONNECTClientFactory.getInstance().getCONNECTClientSecured(portDescriptor, assertion, url, target,
+        return CONNECTClientFactory.getInstance().getCONNECTClientSecured(portDescriptor, assertion, url, target,
                 serviceName);
-        return client;
     }
 
     @NwhinInvocationEvent(beforeBuilder = DeferredResponseDescriptionBuilder.class,
             afterReturningBuilder = DeferredResponseDescriptionBuilder.class,
             serviceType = "Document Submission Deferred Response", version = "")
+    @Override
     public XDRAcknowledgementType provideAndRegisterDocumentSetBDeferredResponse11(RegistryResponseType request,
             AssertionType assertion, NhinTargetSystemType target) {
         LOG.debug("Begin provideAndRegisterDocumentSetBDeferredResponse");
@@ -110,9 +109,9 @@ public class NhinDocSubmissionDeferredResponseProxyWebServiceSecuredImpl impleme
 
     /**
      * @return
-     * @throws Exception 
-     * @throws ConnectionManagerException 
-     * @throws IllegalArgumentException 
+     * @throws Exception
+     * @throws ConnectionManagerException
+     * @throws IllegalArgumentException
      */
     protected String getUrl(NhinTargetSystemType target) throws IllegalArgumentException, ConnectionManagerException, Exception {
         return oProxyHelper.getUrlFromTargetSystemByGatewayAPILevel(target,

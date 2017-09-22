@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2014, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -38,13 +38,14 @@ public class DirectReceiverProxyObjectFactory extends ComponentProxyObjectFactor
 
     /** The Constant CONFIG_FILE_NAME. */
     private static final String CONFIG_FILE_NAME = "DirectProcessorClientProxyConfig.xml";
-    
+
     /** The Constant BEAN_NAME. */
     private static final String BEAN_NAME = "directReceiverClient";
 
     /**
      * {@inheritDoc}
      */
+    @Override
     protected String getConfigFileName() {
         return CONFIG_FILE_NAME;
     }
@@ -57,5 +58,5 @@ public class DirectReceiverProxyObjectFactory extends ComponentProxyObjectFactor
     public DirectReceiver getDirectSenderProxy() {
         return getBean(BEAN_NAME, DirectReceiver.class);
     }
-    
+
 }

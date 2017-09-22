@@ -1,4 +1,33 @@
+/*
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *     * Redistributions of source code must retain the above
+ *       copyright notice, this list of conditions and the following disclaimer.
+ *     * Redistributions in binary form must reproduce the above copyright
+ *       notice, this list of conditions and the following disclaimer in the documentation
+ *       and/or other materials provided with the distribution.
+ *     * Neither the name of the United States Government nor the
+ *       names of its contributors may be used to endorse or promote products
+ *       derived from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE UNITED STATES GOVERNMENT BE LIABLE FOR ANY
+ * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
 package gov.hhs.fha.nhinc.callback.openSAML;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import gov.hhs.fha.nhinc.callback.SamlConstants;
 import gov.hhs.fha.nhinc.nhinclib.NhincConstants;
@@ -9,8 +38,6 @@ import java.util.List;
 import java.util.Map;
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -27,13 +54,13 @@ public class CallbackMapPropertiesTest {
     private final String SERVICE = "Patient Discovery";
     private final String TEST_DATE = "2013-01-01T01:01:01.000";
     private final String TEST_NPI = "npi";
-    private List<String> testList = new ArrayList<String>();
+    private List<String> testList = new ArrayList<>();
     private CallbackMapProperties callbackProperties;
 
     @Before
     public void setUp() {
         testList.add(TEST_VALUE);
-        properties = new HashMap<String, Object>();
+        properties = new HashMap<>();
 
         properties.put(SamlConstants.ASSERTION_ISSUER_FORMAT_PROP, TEST_VALUE);
         properties.put(SamlConstants.ASSERTION_ISSUER_PROP, TEST_VALUE);
@@ -50,13 +77,10 @@ public class CallbackMapPropertiesTest {
         properties.put(SamlConstants.EVIDENCE_INSTANT_PROP, TEST_DATE);
         properties.put(SamlConstants.EVIDENCE_ISSUER_FORMAT_PROP, TEST_VALUE);
         properties.put(SamlConstants.EVIDENCE_ISSUER_PROP, TEST_VALUE);
-        properties.put(SamlConstants.EVIDENCE_CONDITION_NOT_BEFORE_PROP,
-            TEST_DATE);
-        properties.put(SamlConstants.EVIDENCE_CONDITION_NOT_AFTER_PROP,
-            TEST_DATE);
+        properties.put(SamlConstants.EVIDENCE_CONDITION_NOT_BEFORE_PROP, TEST_DATE);
+        properties.put(SamlConstants.EVIDENCE_CONDITION_NOT_AFTER_PROP, TEST_DATE);
         properties.put(SamlConstants.EVIDENCE_ACCESS_CONSENT_PROP, testList);
-        properties.put(SamlConstants.EVIDENCE_INST_ACCESS_CONSENT_PROP,
-            testList);
+        properties.put(SamlConstants.EVIDENCE_INST_ACCESS_CONSENT_PROP, testList);
         properties.put(SamlConstants.EVIDENCE_SUBJECT_PROP, TEST_VALUE);
         properties.put(SamlConstants.USER_CODE_PROP, TEST_VALUE);
         properties.put(SamlConstants.USER_SYST_PROP, TEST_VALUE);
@@ -72,14 +96,11 @@ public class CallbackMapPropertiesTest {
         properties.put(SamlConstants.USER_FIRST_PROP, FIRST_NAME);
         properties.put(SamlConstants.USER_MIDDLE_PROP, MIDDLE_NAME);
         properties.put(SamlConstants.USER_LAST_PROP, LAST_NAME);
-        properties.put(NhincConstants.WS_SOAP_TARGET_HOME_COMMUNITY_ID,
-            TARGET_HCID);
+        properties.put(NhincConstants.WS_SOAP_TARGET_HOME_COMMUNITY_ID, TARGET_HCID);
         properties.put(NhincConstants.ACTION_PROP, ACTION);
         properties.put(NhincConstants.SERVICE_NAME, SERVICE);
-        properties.put(NhincConstants.TARGET_API_LEVEL,
-            GATEWAY_API_LEVEL.LEVEL_g1);
-        properties.put(SamlConstants.ATTRIBUTE_NAME_NPI,
-            TEST_NPI);
+        properties.put(NhincConstants.TARGET_API_LEVEL, GATEWAY_API_LEVEL.LEVEL_g1);
+        properties.put(SamlConstants.ATTRIBUTE_NAME_NPI, TEST_NPI);
         callbackProperties = new CallbackMapProperties(properties);
     }
 
@@ -88,10 +109,8 @@ public class CallbackMapPropertiesTest {
         assertEquals(callbackProperties.getAssertionIssuerFormat(), TEST_VALUE);
         assertEquals(callbackProperties.getAuthenicationDecision(), TEST_VALUE);
         assertTrue(callbackProperties.getAuthenicationStatementExists());
-        assertEquals(callbackProperties.getAuthenticationContextClass(),
-            TEST_VALUE);
-        assertEquals(callbackProperties.getAuthenticationSessionIndex(),
-            TEST_VALUE);
+        assertEquals(callbackProperties.getAuthenticationContextClass(), TEST_VALUE);
+        assertEquals(callbackProperties.getAuthenticationSessionIndex(), TEST_VALUE);
         assertEquals(callbackProperties.getAuthnicationResource(), TEST_VALUE);
         assertEquals(callbackProperties.getEvidenceID(), TEST_VALUE);
         assertEquals(callbackProperties.getEvidenceIssuer(), TEST_VALUE);
@@ -107,8 +126,7 @@ public class CallbackMapPropertiesTest {
         assertEquals(callbackProperties.getServiceName(), SERVICE);
         assertEquals(callbackProperties.getSubjectDNS(), TEST_VALUE);
         assertEquals(callbackProperties.getSubjectLocality(), TEST_VALUE);
-        assertEquals(callbackProperties.getTargetApiLevel(),
-            GATEWAY_API_LEVEL.LEVEL_g1);
+        assertEquals(callbackProperties.getTargetApiLevel(), GATEWAY_API_LEVEL.LEVEL_g1);
         assertEquals(callbackProperties.getTargetHomeCommunityId(), TARGET_HCID);
         assertEquals(callbackProperties.getUserCode(), TEST_VALUE);
         assertEquals(callbackProperties.getUserDisplay(), TEST_VALUE);
@@ -120,30 +138,24 @@ public class CallbackMapPropertiesTest {
         assertEquals(callbackProperties.getAction(), ACTION);
         assertEquals(callbackProperties.getNPI(), TEST_NPI);
 
-        List<Object> evidenceAccess = callbackProperties
-            .getEvidenceAccessConstent();
-        assertEquals((String) evidenceAccess.get(0), TEST_VALUE);
+        List<Object> evidenceAccess = callbackProperties.getEvidenceAccessConstent();
+        assertEquals(evidenceAccess.get(0), TEST_VALUE);
 
-        List<Object> evidenceInstAccess = callbackProperties
-            .getEvidenceInstantAccessConsent();
-        assertEquals((String) evidenceInstAccess.get(0), TEST_VALUE);
+        List<Object> evidenceInstAccess = callbackProperties.getEvidenceInstantAccessConsent();
+        assertEquals(evidenceInstAccess.get(0), TEST_VALUE);
 
         DateTime authnInstant = callbackProperties.getAuthenticationInstant();
-        assertTrue(StringUtils.lowerCase(authnInstant.toString()).contains(
-            StringUtils.lowerCase(TEST_DATE)));
+        assertTrue(StringUtils.lowerCase(authnInstant.toString()).contains(StringUtils.lowerCase(TEST_DATE)));
 
         DateTime evidenceInstant = callbackProperties.getEvidenceInstant();
-        assertTrue(StringUtils.lowerCase(evidenceInstant.toString()).contains(
-            StringUtils.lowerCase(TEST_DATE)));
+        assertTrue(StringUtils.lowerCase(evidenceInstant.toString()).contains(StringUtils.lowerCase(TEST_DATE)));
 
-        DateTime evidenceConditionNotBefore = callbackProperties
-            .getEvidenceConditionNotBefore();
+        DateTime evidenceConditionNotBefore = callbackProperties.getEvidenceConditionNotBefore();
         assertTrue(StringUtils.lowerCase(evidenceConditionNotBefore.toString())
-            .contains(StringUtils.lowerCase(TEST_DATE)));
+                .contains(StringUtils.lowerCase(TEST_DATE)));
 
-        DateTime evidenceConditionNotAfter = callbackProperties
-            .getEvidenceConditionNotAfter();
-        assertTrue(StringUtils.lowerCase(evidenceConditionNotAfter.toString())
-            .contains(StringUtils.lowerCase(TEST_DATE)));
+        DateTime evidenceConditionNotAfter = callbackProperties.getEvidenceConditionNotAfter();
+        assertTrue(
+                StringUtils.lowerCase(evidenceConditionNotAfter.toString()).contains(StringUtils.lowerCase(TEST_DATE)));
     }
 }

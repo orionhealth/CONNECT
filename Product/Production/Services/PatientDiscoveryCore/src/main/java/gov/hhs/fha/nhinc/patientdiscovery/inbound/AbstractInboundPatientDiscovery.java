@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2014, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -28,50 +28,42 @@ package gov.hhs.fha.nhinc.patientdiscovery.inbound;
 
 import gov.hhs.fha.nhinc.common.nhinccommon.AssertionType;
 import gov.hhs.fha.nhinc.nhinclib.NhincConstants;
-import gov.hhs.fha.nhinc.patientdiscovery.PatientDiscoveryAuditor;
 import gov.hhs.fha.nhinc.patientdiscovery.PatientDiscoveryException;
-
+import gov.hhs.fha.nhinc.patientdiscovery.audit.PatientDiscoveryAuditLogger;
+import java.util.Properties;
 import org.hl7.v3.PRPAIN201305UV02;
 import org.hl7.v3.PRPAIN201306UV02;
 
 public abstract class AbstractInboundPatientDiscovery implements InboundPatientDiscovery {
 
-    abstract PRPAIN201306UV02 process(PRPAIN201305UV02 body, AssertionType assertion) throws PatientDiscoveryException;
+    abstract PRPAIN201306UV02 process(PRPAIN201305UV02 body, AssertionType assertion, Properties webContextProperties)
+        throws PatientDiscoveryException;
 
-    abstract PatientDiscoveryAuditor getAuditLogger();
+    abstract PatientDiscoveryAuditLogger getAuditLogger();
 
     /**
      * Method that processes the Patient Discovery request
-     * 
+     *
      * @param body the body of the PD request
      * @param assertion the assertion of the PD request
+     * @param webContextProperties
      * @return PRPAIN201306UV02 response message
+     * @throws gov.hhs.fha.nhinc.patientdiscovery.PatientDiscoveryException
      */
     @Override
-    public PRPAIN201306UV02 respondingGatewayPRPAIN201305UV02(PRPAIN201305UV02 body, AssertionType assertion)
-            throws PatientDiscoveryException {
-          auditRequestFromNhin(body, assertion);
+    public PRPAIN201306UV02 respondingGatewayPRPAIN201305UV02(PRPAIN201305UV02 body, AssertionType assertion,
+        Properties webContextProperties) throws PatientDiscoveryException {
 
-          PRPAIN201306UV02 response = process(body, assertion);
-
-          auditResponseToNhin(response, assertion);
-
-          return response;
+        PRPAIN201306UV02 response = process(body, assertion, webContextProperties);
+        auditResponse(body, response, assertion, webContextProperties);
+        return response;
     }
 
-    protected void auditRequestFromNhin(PRPAIN201305UV02 body, AssertionType assertion) {
-        getAuditLogger().auditNhin201305(body, assertion, NhincConstants.AUDIT_LOG_INBOUND_DIRECTION);
-    }
+    protected void auditResponse(PRPAIN201305UV02 request, PRPAIN201306UV02 response, AssertionType assertion,
+        Properties webContextProperties) {
 
-    protected void auditResponseToNhin(PRPAIN201306UV02 response, AssertionType assertion) {
-        getAuditLogger().auditNhin201306(response, assertion, NhincConstants.AUDIT_LOG_OUTBOUND_DIRECTION);
-    }
-
-    protected void auditRequestToAdapter(PRPAIN201305UV02 body, AssertionType assertion) {
-        getAuditLogger().auditAdapter201305(body, assertion, NhincConstants.AUDIT_LOG_OUTBOUND_DIRECTION);
-    }
-
-    protected void auditResponseFromAdapter(PRPAIN201306UV02 response, AssertionType assertion) {
-        getAuditLogger().auditAdapter201306(response, assertion, NhincConstants.AUDIT_LOG_INBOUND_DIRECTION);
+        getAuditLogger().auditResponseMessage(request, response, assertion, null,
+            NhincConstants.AUDIT_LOG_INBOUND_DIRECTION, NhincConstants.AUDIT_LOG_NHIN_INTERFACE, Boolean.FALSE,
+            webContextProperties, NhincConstants.PATIENT_DISCOVERY_SERVICE_NAME);
     }
 }

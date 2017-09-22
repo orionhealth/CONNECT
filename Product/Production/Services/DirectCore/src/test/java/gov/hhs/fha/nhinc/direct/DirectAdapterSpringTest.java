@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,18 +27,17 @@
 package gov.hhs.fha.nhinc.direct;
 
 import static gov.hhs.fha.nhinc.direct.DirectUnitTestUtil.removeSmtpAgentConfig;
-import static gov.hhs.fha.nhinc.direct.DirectUnitTestUtil.writeSmtpAgentConfig;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import gov.hhs.fha.nhinc.mail.MailReceiver;
 
-import org.apache.log4j.Logger;
+import gov.hhs.fha.nhinc.mail.MailReceiver;
 import org.junit.AfterClass;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.AbstractApplicationContext;
@@ -52,39 +51,27 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration("/direct.appcontext.xml")
 public class DirectAdapterSpringTest {
-    
-    private static final Logger LOG = Logger.getLogger(DirectAdapterSpringTest.class);
-    
-    @Autowired
-    private DirectSender directSender;
+
+    private static final Logger LOG = LoggerFactory.getLogger(DirectAdapterSpringTest.class);
 
     @Autowired
-    private DirectReceiver directReceiver;
+    private DirectSender directSender;
 
     @Autowired
     private MailReceiver extMailReceiver;
 
     @Autowired
     private MailReceiver intMailReceiver;
-    
-    
+
     @Autowired
     private ApplicationContext applicationContext;
-    
-    @Autowired 
-    private ThreadPoolTaskScheduler scheduler;    
+
+    @Autowired
+    private ThreadPoolTaskScheduler scheduler;
 
     // these need to be static so we can shut them down in an AfterClass annotation.
     private static ApplicationContext staticContext;
     private static ThreadPoolTaskScheduler staticScheduler;
-
-    /**
-     * Set up keystore for test.
-     */
-    @BeforeClass
-    public static void setUpClass() {
-        writeSmtpAgentConfig();
-    }
 
     /**
      * Capture the app context and scheduler so we can shut them down later.
@@ -92,28 +79,27 @@ public class DirectAdapterSpringTest {
     @Before
     public void setUp() {
         staticContext = applicationContext;
-        staticScheduler = scheduler;        
+        staticScheduler = scheduler;
     }
-    
+
     /**
-     * Tear down keystore created in setup. Cleanup the context and scheduler, so they don't interfere with other
-     * tests.
+     * Tear down keystore created in setup. Cleanup the context and scheduler, so they don't interfere with other tests.
      */
     @AfterClass
-    public static void tearDownClass() {        
+    public static void tearDownClass() {
         removeSmtpAgentConfig();
 
-        if (staticScheduler != null) {            
+        if (staticScheduler != null) {
             LOG.debug("shutting down scheduler");
-            staticScheduler.shutdown();   
+            staticScheduler.shutdown();
         }
         if (staticContext != null) {
             LOG.debug("closing context");
             ((AbstractApplicationContext) staticContext).close();
             ((AbstractApplicationContext) staticContext).destroy();
         }
-    }    
-    
+    }
+
     /**
      * Test that we can get an external mail client with spring.
      */
@@ -121,20 +107,24 @@ public class DirectAdapterSpringTest {
     public void canGetDirectSender() {
         assertNotNull(directSender);
     }
-    
+
     /**
      * Test that we can use spring task scheduler to run the polling mail handlers.
+     *
      * @throws InterruptedException on failure.
      */
     @Test
     @Ignore
     public void canRunScheduledTaskEveryOneSec() throws InterruptedException {
-        Thread.sleep(DirectUnitTestUtil.WAIT_TIME_FOR_MAIL_HANDLER);
-        
+        /*
+         * NOTE: Add Thread.sleep(DirectUnitTestUtil.WAIT_TIME_FOR_MAIL_HANDLER) right below this comment when running
+         * this test method.
+         */
+
         int internalInvocations = intMailReceiver.getHandlerInvocations();
         int externalInvocations = extMailReceiver.getHandlerInvocations();
-        
+
         assertTrue(internalInvocations >= 2);
         assertTrue(externalInvocations >= 2);
-    }    
+    }
 }

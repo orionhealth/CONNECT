@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services.
+/*
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,22 +24,20 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-
 package gov.hhs.fha.nhinc.docsubmission.entity.deferred.request;
 
 import gov.hhs.fha.nhinc.common.nhinccommon.AssertionType;
 import gov.hhs.fha.nhinc.common.nhinccommon.NhinTargetSystemType;
-import ihe.iti.xds_b._2007.ProvideAndRegisterDocumentSetRequestType;
 import gov.hhs.fha.nhinc.nhinclib.NhincConstants;
-import gov.hhs.fha.nhinc.orchestration.AuditTransformer;
-import gov.hhs.fha.nhinc.orchestration.OutboundOrchestratable;
 import gov.hhs.fha.nhinc.orchestration.NhinAggregator;
 import gov.hhs.fha.nhinc.orchestration.OutboundDelegate;
+import gov.hhs.fha.nhinc.orchestration.OutboundOrchestratable;
 import gov.hhs.fha.nhinc.orchestration.PolicyTransformer;
 import gov.hhs.healthit.nhin.XDRAcknowledgementType;
+import ihe.iti.xds_b._2007.ProvideAndRegisterDocumentSetRequestType;
 
 /**
- * 
+ *
  * @author akong
  */
 public class OutboundDocSubmissionDeferredRequestOrchestratable implements OutboundOrchestratable {
@@ -55,7 +53,7 @@ public class OutboundDocSubmissionDeferredRequestOrchestratable implements Outbo
     }
 
     public OutboundDocSubmissionDeferredRequestOrchestratable(OutboundDelegate delegate,
-            ProvideAndRegisterDocumentSetRequestType request, NhinTargetSystemType target, AssertionType assertion) {
+        ProvideAndRegisterDocumentSetRequestType request, NhinTargetSystemType target, AssertionType assertion) {
         this(delegate);
         this.assertion = assertion;
         this.request = request;
@@ -76,6 +74,7 @@ public class OutboundDocSubmissionDeferredRequestOrchestratable implements Outbo
         throw new UnsupportedOperationException("Document Submission Deferred Request does not support aggregation.");
     }
 
+    @Override
     public AssertionType getAssertion() {
         return assertion;
     }
@@ -108,18 +107,17 @@ public class OutboundDocSubmissionDeferredRequestOrchestratable implements Outbo
         this.target = target;
     }
 
+    @Override
     public String getServiceName() {
         return NhincConstants.NHINC_XDR_REQUEST_SERVICE_NAME;
     }
 
+    @Override
     public boolean isPassthru() {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
-    public AuditTransformer getAuditTransformer() {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
+    @Override
     public PolicyTransformer getPolicyTransformer() {
         throw new UnsupportedOperationException("Not supported yet.");
     }

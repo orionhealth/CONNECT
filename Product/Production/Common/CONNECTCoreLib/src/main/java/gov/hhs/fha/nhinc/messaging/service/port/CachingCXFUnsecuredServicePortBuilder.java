@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-13, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -31,22 +31,24 @@ import java.util.Map;
 
 /**
  * @author akong
- * 
+ *
  */
 public class CachingCXFUnsecuredServicePortBuilder<T> extends CachingCXFServicePortBuilder<T> {
 
-    private static Map<Class<?>, Object> CACHED_PORTS = new HashMap<Class<?>, Object>();
+    private static Map<Class<?>, Object> CACHED_PORTS = new HashMap<>();
 
     /**
      * Constructor.
-     * 
+     *
      * @param portDescriptor
      */
     public CachingCXFUnsecuredServicePortBuilder(ServicePortDescriptor<T> portDescriptor) {
         super(portDescriptor);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see gov.hhs.fha.nhinc.messaging.service.port.CachingCXFServicePortBuilder#getCache()
      */
     @Override

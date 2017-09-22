@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,14 +26,8 @@
  */
 package gov.hhs.fha.nhinc.direct;
 
-import static org.junit.Assert.fail;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 import gov.hhs.fha.nhinc.mail.MailUtils;
 import ihe.iti.xds_b._2007.ProvideAndRegisterDocumentSetRequestType.Document;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -44,20 +38,21 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
-
 import javax.activation.DataHandler;
 import javax.mail.Address;
-import javax.mail.Flags;
 import javax.mail.MessagingException;
 import javax.mail.Session;
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMessage.RecipientType;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import org.apache.log4j.Logger;
+import static org.junit.Assert.fail;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 import org.nhindirect.gateway.smtp.MessageProcessResult;
 import org.nhindirect.stagent.MessageEnvelope;
 import org.nhindirect.stagent.mail.Message;
@@ -73,14 +68,11 @@ import org.nhindirect.xd.common.type.PracticeSettingCodeEnum;
 import org.nhindirect.xd.transform.pojo.SimplePerson;
 import org.nhindirect.xd.transform.util.type.MimeType;
 
-
 /**
  * Utilities for running Direct Core Unit Tests.
  */
 public class DirectUnitTestUtil {
 
-    private static final Logger LOG = Logger.getLogger(DirectUnitTestUtil.class);
-    
     /**
      * email for the sender at the initiating gateway.
      */
@@ -94,12 +86,12 @@ public class DirectUnitTestUtil {
      * Maximum number of messages in a batch.
      */
     protected static final int MAX_NUM_MSGS_IN_BATCH = 5;
-    
+
     /**
      * Dummy port.
      */
     public static final int DUMMY_PORT = 998;
-    
+
     /**
      * Connection Timeout in Milliseconds.
      */
@@ -114,12 +106,12 @@ public class DirectUnitTestUtil {
      * Time to wait for the mail handlers to run.
      */
     protected static final long WAIT_TIME_FOR_MAIL_HANDLER = TimeUnit.SECONDS.toMillis(3);
-    
+
     /**
      * content type for encrypted messages.
      */
-    protected static final String CONTENT_TYPE_ENCRYPTED =
-            "application/pkcs7-mime; smime-type=enveloped-data; name=\"smime.p7m\"";
+    protected static final String CONTENT_TYPE_ENCRYPTED
+        = "application/pkcs7-mime; smime-type=enveloped-data; name=\"smime.p7m\"";
 
     /**
      * content type for multi-part mixed mime messages.
@@ -129,13 +121,12 @@ public class DirectUnitTestUtil {
     /**
      * content type for mdn messages.
      */
-    protected static final String CONTENT_TYPE_MDN = 
-            "multipart/report; report-type=disposition-notification; boundary=\"";    
+    protected static final String CONTENT_TYPE_MDN
+        = "multipart/report; report-type=disposition-notification; boundary=\"";
 
-    
     /**
      * Sets up the properties in order to connect to the green mail test server.
-     * 
+     *
      * @param toAddress is used for the username and password.
      * @param smtpPort for smtps
      * @param imapPort for imaps
@@ -144,13 +135,13 @@ public class DirectUnitTestUtil {
     public static Properties getMailServerProps(String toAddress, int smtpPort, int imapPort) {
 
         Properties props = new Properties();
-        
+
         props.setProperty("connect.mail.user", toAddress);
         props.setProperty("connect.mail.pass", toAddress);
         props.setProperty("connect.max.msgs.in.batch", Integer.toString(MAX_NUM_MSGS_IN_BATCH));
         props.setProperty("connect.delete.unhandled.msgs", "false");
         props.setProperty("connect.mail.session.debug", "true");
-                        
+
         props.setProperty("mail.smtp.host", "localhost");
         props.setProperty("mail.smtp.auth", "TRUE");
         props.setProperty("mail.smtp.port", Integer.toString(smtpPort));
@@ -160,7 +151,7 @@ public class DirectUnitTestUtil {
         props.setProperty("mail.imaps.port", Integer.toString(imapPort));
         props.setProperty("mail.imaps.connectiontimeout", TIMEOUT_CONNECTION_MILLIS);
         props.setProperty("mail.imaps.timeout", TIMEOUT_MILLIS);
-        
+
         // this allows us to run the test using a dummy in-memory keystore provided by GreenMail... don't use in prod.
         props.setProperty("mail.smtps.ssl.socketFactory.class", "com.icegreen.greenmail.util.DummySSLSocketFactory");
         props.setProperty("mail.smtps.ssl.socketFactory.port", Integer.toString(smtpPort));
@@ -174,10 +165,11 @@ public class DirectUnitTestUtil {
 
     /**
      * Mock document for testing direct messages.
+     *
      * @return the mocked document.
      * @throws IOException possible error.
      */
-    public static Document getMockDocument() throws IOException {        
+    public static Document getMockDocument() throws IOException {
 
         Document mockDocument = mock(Document.class);
         DataHandler mockDataHandler = mock(DataHandler.class);
@@ -185,9 +177,9 @@ public class DirectUnitTestUtil {
         when(mockDocument.getValue()).thenReturn(mockDataHandler);
         when(mockDataHandler.getInputStream()).thenReturn(dummyInputStream);
 
-        return mockDocument;        
+        return mockDocument;
     }
-    
+
     /**
      * @return mock direct documents.
      */
@@ -195,28 +187,28 @@ public class DirectUnitTestUtil {
         DirectDocuments mockDirectDocuments = mock(DirectDocuments.class);
         XdmPackage mockXdm = mock(XdmPackage.class);
         File mockFile = mock(File.class);
-        
+
         when(mockDirectDocuments.toXdmPackage(anyString())).thenReturn(mockXdm);
         when(mockXdm.toFile()).thenReturn(mockFile);
         when(mockFile.getName()).thenReturn("fileName");
-        
+
         return mockDirectDocuments;
     }
-    
+
     /**
      * @return sender.
      */
     public static Address getSender() {
         return toInternetAddress(SENDER_AT_INITIATING_GW);
     }
-    
+
     /**
      * @return recipients.
      */
     public static Address[] getRecipients() {
-        return new InternetAddress[] {toInternetAddress(RECIP_AT_RESPONDING_GW)};
+        return new InternetAddress[]{toInternetAddress(RECIP_AT_RESPONDING_GW)};
     }
-    
+
     /**
      * @return mime message with sample generic content.
      */
@@ -224,8 +216,8 @@ public class DirectUnitTestUtil {
         MimeMessage mimeMessage = null;
         try {
             Session session = MailUtils.getMailSession(
-                    getMailServerProps(RECIP_AT_RESPONDING_GW, DUMMY_PORT, DUMMY_PORT), RECIP_AT_RESPONDING_GW,
-                    RECIP_AT_RESPONDING_GW);
+                getMailServerProps(RECIP_AT_RESPONDING_GW, DUMMY_PORT, DUMMY_PORT), RECIP_AT_RESPONDING_GW,
+                RECIP_AT_RESPONDING_GW);
             mimeMessage = getMimeMessageBuilder(session).build();
         } catch (IOException e) {
             fail(e.getMessage());
@@ -233,9 +225,9 @@ public class DirectUnitTestUtil {
         return mimeMessage;
     }
 
-
     /**
      * Return a stubbed out mime message builder.
+     *
      * @param session mail session
      * @return Mime Message Builder
      * @throws IOException on io error.
@@ -243,7 +235,7 @@ public class DirectUnitTestUtil {
     public static MimeMessageBuilder getMimeMessageBuilder(Session session) throws IOException {
         MimeMessageBuilder testBuilder = new MimeMessageBuilder(session, getSender(), getRecipients());
         testBuilder.text("text").subject("subject").attachment(getMockDocument()).attachmentName("attachmentName")
-                .documents(getMockDirectDocuments()).messageId("1234");
+            .documents(getMockDirectDocuments()).messageId("1234");
         return testBuilder;
     }
 
@@ -254,42 +246,25 @@ public class DirectUnitTestUtil {
         } catch (AddressException e) {
             fail(e.getMessage());
         }
-        return address;        
+        return address;
     }
-    
-    /**
-     * The keystores references in smtp.agent.config.xml are fully qualified, so we have to make an absolute path
-     * for them from a relative path in order to use inside a junit test. The template config file references the 
-     * keystore with a placeholder {jks.keystore.path} which we will replace with the classpath used by this test.
-     */
-    public static void writeSmtpAgentConfig() {
-        try {
-            String smtpAgentConfigTmpl = getFileAsString("smtp.agent.config.tmpl.xml");
-            File path = getClassPath();
-            FileUtils.writeStringToFile(new File(path + "/smtp.agent.config.xml"),
-                    smtpAgentConfigTmpl.replace("{jks.keystore.path}", path.getPath() + "/"));
-            LOG.debug("smtp.agent.config.xml: "
-                    + smtpAgentConfigTmpl.replace("{jks.keystore.path}", path.getPath() + "/"));
-        } catch (Exception e) {
-            fail(e.getMessage());
-        }
-    }
-    
+
     /**
      * Retrieve the contents of the resource file (relative to classpath) as a string .
+     *
      * @param filename resource file name to be stringified
      * @return String representation of the contents of the file
      */
     public static String getFileAsString(String filename) {
         String fileAsString = null;
         try {
-            fileAsString =  FileUtils.readFileToString(new File(getClassPath() + "/" + filename));
+            fileAsString = FileUtils.readFileToString(new File(getClassPath() + "/" + filename));
         } catch (Exception e) {
-            fail(e.getMessage());            
+            fail(e.getMessage());
         }
         return fileAsString;
     }
-    
+
     /**
      * Delete the auto-generated smtp.agent.config.xml once the test is complete.
      */
@@ -297,18 +272,19 @@ public class DirectUnitTestUtil {
         try {
             FileUtils.deleteQuietly(new File(getClassPath() + "/smtp.agent.config.xml"));
         } catch (Exception e) {
-            fail(e.getMessage());                        
+            fail(e.getMessage());
         }
     }
-    
+
     /**
      * Used when calling code requires absolute paths to test resources.
+     *
      * @return absolute classpath.
      */
     public static File getClassPath() throws URISyntaxException {
         return new File(DirectUnitTestUtil.class.getProtectionDomain().getCodeSource().getLocation().toURI());
-    }    
-    
+    }
+
     /**
      * @return mock direct documents.
      */
@@ -351,7 +327,7 @@ public class DirectUnitTestUtil {
         metadata1.setAuthorSpecialty("1.13");
         metadata1.setClassCode(ClassCodeEnum.HISTORY_AND_PHYSICAL.getValue());
         metadata1.setClassCode_localized(ClassCodeEnum.HISTORY_AND_PHYSICAL
-                .getValue());
+            .getValue());
         metadata1.setConfidentialityCode("1.16");
         metadata1.setConfidentialityCode_localized("1.17");
         metadata1.setFormatCode(FormatCodeEnum.CARE_MANAGEMENT_CM);
@@ -398,21 +374,20 @@ public class DirectUnitTestUtil {
         documents.getDocuments().add(doc2);
         return documents;
     }
-    
-        
+
     /**
      * @param numNotificationMessages number of notification messages expected.
      * @return mocked message process result.
      * @throws MessagingException on error.
      */
     public static MessageProcessResult getMockMessageProcessResult(int numNotificationMessages)
-            throws MessagingException {
+        throws MessagingException {
 
         MessageProcessResult mockMessageProcessResult = mock(MessageProcessResult.class);
         MessageEnvelope mockMessageEnvelope = mock(MessageEnvelope.class);
         Message mockMessage = mock(Message.class);
 
-        Collection<NotificationMessage> notificationCollection = new ArrayList<NotificationMessage>();
+        Collection<NotificationMessage> notificationCollection = new ArrayList<>();
         NotificationMessage mockNotificationMessage = mock(NotificationMessage.class);
         Address senderAddress = new InternetAddress(SENDER_AT_INITIATING_GW);
         Address recipAddress = new InternetAddress(RECIP_AT_RESPONDING_GW);
@@ -425,13 +400,13 @@ public class DirectUnitTestUtil {
         when(mockMessageEnvelope.getMessage()).thenReturn(mockMessage);
         when(mockMessage.getContentType()).thenReturn(CONTENT_TYPE_MULTIPART);
         when(mockMessageProcessResult.getNotificationMessages()).thenReturn(notificationCollection);
-        when(mockMessage.getRecipients(any(RecipientType.class))).thenReturn(new Address[] {recipAddress});
-        when(mockMessage.getAllRecipients()).thenReturn(new Address[] {recipAddress});
-        when(mockMessage.getFrom()).thenReturn(new Address[] {senderAddress});
-        
-        when(mockNotificationMessage.getRecipients(any(RecipientType.class))).thenReturn(new Address[] {senderAddress});
-        when(mockNotificationMessage.getAllRecipients()).thenReturn(new Address[] {senderAddress});
-        when(mockNotificationMessage.getFrom()).thenReturn(new Address[] {recipAddress});
+        when(mockMessage.getRecipients(any(RecipientType.class))).thenReturn(new Address[]{recipAddress});
+        when(mockMessage.getAllRecipients()).thenReturn(new Address[]{recipAddress});
+        when(mockMessage.getFrom()).thenReturn(new Address[]{senderAddress});
+
+        when(mockNotificationMessage.getRecipients(any(RecipientType.class))).thenReturn(new Address[]{senderAddress});
+        when(mockNotificationMessage.getAllRecipients()).thenReturn(new Address[]{senderAddress});
+        when(mockNotificationMessage.getFrom()).thenReturn(new Address[]{recipAddress});
 
         return mockMessageProcessResult;
     }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2014, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -48,7 +48,6 @@ THE POSSIBILITY OF SUCH DAMAGE.
 package gov.hhs.fha.nhinc.directconfig.service.jaxws;
 
 import gov.hhs.fha.nhinc.directconfig.entity.CertPolicyGroup;
-
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
@@ -64,7 +63,7 @@ public class AddPolicyGroup {
     private CertPolicyGroup policyGroup;
 
     /**
-     * 
+     *
      * @return
      *     returns CertPolicyGroup
      */
@@ -73,7 +72,7 @@ public class AddPolicyGroup {
     }
 
     /**
-     * 
+     *
      * @param policyGroup
      *     the value for the policyGroup property
      */

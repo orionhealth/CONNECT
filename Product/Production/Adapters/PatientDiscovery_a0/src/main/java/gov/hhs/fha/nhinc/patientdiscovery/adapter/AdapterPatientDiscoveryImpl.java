@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -28,25 +28,24 @@ package gov.hhs.fha.nhinc.patientdiscovery.adapter;
 
 import gov.hhs.fha.nhinc.common.nhinccommon.AssertionType;
 import gov.hhs.fha.nhinc.messaging.server.BaseService;
-
 import javax.xml.ws.WebServiceContext;
-
-import org.apache.log4j.Logger;
 import org.hl7.v3.PRPAIN201306UV02;
 import org.hl7.v3.RespondingGatewayPRPAIN201305UV02RequestType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The implementation of the AdapterPatientDiscovery (Secured and unsecured) web service.
- * 
+ *
  * @author jhoppesc, Les Westberg
  */
 public class AdapterPatientDiscoveryImpl extends BaseService {
-    private static final Logger LOG = Logger.getLogger(AdapterPatientDiscoveryImpl.class);
+    private static final Logger LOG = LoggerFactory.getLogger(AdapterPatientDiscoveryImpl.class);
 
     /**
      * This method is called by the secure and unsecure Adapter Secure and unsecure web service. It calls the
      * orchestration code.
-     * 
+     *
      * @param bIsSecure TRUE if being called via secure web service.
      * @param request The message payload.
      * @param context The web service context.
@@ -56,7 +55,7 @@ public class AdapterPatientDiscoveryImpl extends BaseService {
             RespondingGatewayPRPAIN201305UV02RequestType request, WebServiceContext context) {
         LOG.debug("Entering AdapterPatientDiscoveryImpl.respondingGatewayPRPAIN201305UV02");
 
-        AssertionType assertion = null;
+        AssertionType assertion;
         if ((bIsSecure) && (context != null)) {
             assertion = extractAssertion(context);
         } else {

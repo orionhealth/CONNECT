@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,36 +26,31 @@
  */
 package gov.hhs.fha.nhinc.admindistribution.inbound;
 
-import org.apache.log4j.Logger;
-
 import gov.hhs.fha.nhinc.admindistribution.AdminDistributionAuditLogger;
 import gov.hhs.fha.nhinc.admindistribution.AdminDistributionUtils;
 import gov.hhs.fha.nhinc.admindistribution.adapter.proxy.AdapterAdminDistributionProxy;
 import gov.hhs.fha.nhinc.admindistribution.adapter.proxy.AdapterAdminDistributionProxyObjectFactory;
-import gov.hhs.fha.nhinc.admindistribution.aspect.EDXLDistributionEventDescriptionBuilder;
-import gov.hhs.fha.nhinc.aspect.InboundProcessingEvent;
 import gov.hhs.fha.nhinc.common.nhinccommon.AssertionType;
-import gov.hhs.fha.nhinc.event.DefaultEventDescriptionBuilder;
 import gov.hhs.fha.nhinc.largefile.LargePayloadException;
 import gov.hhs.fha.nhinc.nhinclib.NhincConstants;
 import oasis.names.tc.emergency.edxl.de._1.EDXLDistribution;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public abstract class AbstractInboundAdminDistribution implements InboundAdminDistribution {
 
-	private static final Logger LOG = Logger.getLogger(AbstractInboundAdminDistribution.class);
-	protected AdminDistributionAuditLogger auditLogger = new AdminDistributionAuditLogger();
-	protected AdminDistributionUtils adminUtils = AdminDistributionUtils.getInstance();
+    private static final Logger LOG = LoggerFactory.getLogger(AbstractInboundAdminDistribution.class);
+    protected AdminDistributionAuditLogger auditLogger = new AdminDistributionAuditLogger();
+    protected AdminDistributionUtils adminUtils = AdminDistributionUtils.getInstance();
     protected AdapterAdminDistributionProxyObjectFactory adapterFactory = new AdapterAdminDistributionProxyObjectFactory();
-	
-	abstract void processAdminDistribution(EDXLDistribution body, AssertionType assertion);
-    
+
+    abstract void processAdminDistribution(EDXLDistribution body, AssertionType assertion);
+
     /**
      * This method sends sendAlertMessage to agency/agencies.
-     * 
-     * @param body
-     *            - Emergency Message Distribution Element transaction message body.
-     * @param assertion
-     *            - Assertion received.
+     *
+     * @param body - Emergency Message Distribution Element transaction message body.
+     * @param assertion - Assertion received.
      */
     @Override
     public void sendAlertMessage(EDXLDistribution body, AssertionType assertion) {
@@ -65,17 +60,17 @@ public abstract class AbstractInboundAdminDistribution implements InboundAdminDi
     }
 
     protected void auditRequestFromNhin(EDXLDistribution body, AssertionType assertion) {
-        auditLogger.auditNhinAdminDist(body, assertion, NhincConstants.AUDIT_LOG_INBOUND_DIRECTION,
-                null, NhincConstants.AUDIT_LOG_NHIN_INTERFACE);
+        auditLogger.auditNhinAdminDist(body, assertion, NhincConstants.AUDIT_LOG_INBOUND_DIRECTION, null,
+                NhincConstants.AUDIT_LOG_NHIN_INTERFACE);
     }
-    
-    protected void sendToAdapter(EDXLDistribution body, AssertionType assertion,
-    		AdminDistributionUtils adminUtils, AdapterAdminDistributionProxyObjectFactory adapterFactory) {
-    	try {
-        	adminUtils.convertDataToFileLocationIfEnabled(body);
-        	AdapterAdminDistributionProxy adapterProxy = adapterFactory.getAdapterAdminDistProxy();
-        	adapterProxy.sendAlertMessage(body, assertion);
-    	} catch (LargePayloadException lpe) {
+
+    protected void sendToAdapter(EDXLDistribution body, AssertionType assertion, AdminDistributionUtils adminUtils,
+            AdapterAdminDistributionProxyObjectFactory adapterFactory) {
+        try {
+            adminUtils.convertDataToFileLocationIfEnabled(body);
+            AdapterAdminDistributionProxy adapterProxy = adapterFactory.getAdapterAdminDistProxy();
+            adapterProxy.sendAlertMessage(body, assertion);
+        } catch (LargePayloadException lpe) {
             LOG.error("Failed to retrieve payload document.", lpe);
         }
     }

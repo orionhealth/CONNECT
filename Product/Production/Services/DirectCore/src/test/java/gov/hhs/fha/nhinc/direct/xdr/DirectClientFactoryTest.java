@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2016, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,33 +26,22 @@
  */
 package gov.hhs.fha.nhinc.direct.xdr;
 
-import static org.junit.Assert.assertNotNull;
-
-import java.net.URISyntaxException;
-
 import gov.hhs.fha.nhinc.direct.DirectAdapterFactory;
 import gov.hhs.fha.nhinc.direct.DirectUnitTestUtil;
-
-import org.apache.log4j.Logger;
+import java.net.URISyntaxException;
 import org.junit.AfterClass;
-import org.junit.BeforeClass;
+import static org.junit.Assert.assertNotNull;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Test {@link DirectAdapterFactory}.
  */
 public class DirectClientFactoryTest {
 
-    private static final Logger LOG = Logger.getLogger(DirectClientFactoryTest.class);
-    
-    /**
-     * Set up keystore for test.
-     */
-    @BeforeClass
-    public static void setUpClass() {
-        DirectUnitTestUtil.writeSmtpAgentConfig();
-    }
+    private static final Logger LOG = LoggerFactory.getLogger(DirectClientFactoryTest.class);
 
     /**
      * Tear down keystore created in setup.
@@ -61,13 +50,13 @@ public class DirectClientFactoryTest {
     public static void tearDownClass() {
         DirectUnitTestUtil.removeSmtpAgentConfig();
     }
-    
+
     /**
-     * Test {@link DirectAdapterFactory#getDirectAdapter()}.
-     * Note: This test fails when run as part of the suite - it seems that the config is loaded in another test before
-     * we are setting the system property for the nhinc.properties.dir. Ignoring for now til more time can be spent on
-     * it.
-     * @throws URISyntaxException 
+     * Test {@link DirectAdapterFactory#getDirectAdapter()}. Note: This test fails when run as part of the suite - it
+     * seems that the config is loaded in another test before we are setting the system property for the
+     * nhinc.properties.dir. Ignoring for now til more time can be spent on it.
+     *
+     * @throws URISyntaxException
      */
     @Test
     @Ignore

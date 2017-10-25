@@ -1,13 +1,22 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
     <parent>
         <groupId>org.connectopensource</groupId>
         <artifactId>Production</artifactId>
-        <version>4.4.1</version>
+        <version>4.5.0-OrionHealth</version>
     </parent>
-    <modelVersion>4.0.0</modelVersion>
+
     <artifactId>Adapters</artifactId>
     <name>${project.artifactId}</name>
     <packaging>pom</packaging>
+    <modelVersion>4.0.0</modelVersion>
+
+    <properties>
+        <skip.unpack>false</skip.unpack>
+    </properties>
+
     <modules>
         <module>General</module>
         <module>AdminDistribution_a0</module>
@@ -17,36 +26,20 @@
         <module>PatientDiscovery_a0</module>
         <module>CORE_X12DocSubmission_a0</module>
     </modules>
-    <properties>
-        <skip.unpack>false</skip.unpack>
-    </properties>
-    <dependencies>
-        <dependency>
-            <groupId>org.connectopensource</groupId>
-            <artifactId>Properties</artifactId>
-            <version>${project.parent.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.connectopensource</groupId>
-            <artifactId>CONNECTCommonTypesLib</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.connectopensource</groupId>
-            <artifactId>CONNECTCoreLib</artifactId>
-            <version>${project.parent.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>commons-lang</groupId>
-            <artifactId>commons-lang</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>commons-collections</groupId>
-            <artifactId>commons-collections</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-        </dependency>
-    </dependencies>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.connectopensource</groupId>
+                <artifactId>CONNECTCoreLib</artifactId>
+                <version>${project.parent.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.owasp.esapi</groupId>
+                        <artifactId>esapi</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 </project>

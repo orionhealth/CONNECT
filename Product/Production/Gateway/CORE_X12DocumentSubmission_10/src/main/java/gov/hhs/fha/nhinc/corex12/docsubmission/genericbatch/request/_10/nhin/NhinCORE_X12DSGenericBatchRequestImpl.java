@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2015, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -40,24 +40,25 @@ import org.caqh.soap.wsdl.corerule2_2_0.COREEnvelopeBatchSubmissionResponse;
  */
 public class NhinCORE_X12DSGenericBatchRequestImpl extends BaseService {
     private InboundCORE_X12DSGenericBatchRequest inboundCORE_X12DSGenericBatchRequest;
-    
+
     /**
      * Constructor
-     * @param inboundCORE_X12DSGenericBatchRequest 
+     * @param inboundCORE_X12DSGenericBatchRequest
      */
     public NhinCORE_X12DSGenericBatchRequestImpl(InboundCORE_X12DSGenericBatchRequest inboundCORE_X12DSGenericBatchRequest)
     {
         this.inboundCORE_X12DSGenericBatchRequest = inboundCORE_X12DSGenericBatchRequest;
     }
-    
+
     /**
-     * 
+     *
      * @param body
      * @param context
      * @return COREEnvelopeBatchSubmissionResponse
      */
     public COREEnvelopeBatchSubmissionResponse batchSubmitTransaction(COREEnvelopeBatchSubmission body, WebServiceContext context) {
         AssertionType assertion = getAssertion(context, null);
-        return inboundCORE_X12DSGenericBatchRequest.batchSubmitTransaction(body, assertion);
-    }  
+        return inboundCORE_X12DSGenericBatchRequest.batchSubmitTransaction(body, assertion, getWebContextProperties(context));
+    }
+
 }

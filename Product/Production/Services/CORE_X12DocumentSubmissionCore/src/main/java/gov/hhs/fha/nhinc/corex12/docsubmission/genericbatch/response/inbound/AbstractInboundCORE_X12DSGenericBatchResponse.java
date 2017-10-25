@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2015, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,10 +27,13 @@
 package gov.hhs.fha.nhinc.corex12.docsubmission.genericbatch.response.inbound;
 
 import gov.hhs.fha.nhinc.common.nhinccommon.AssertionType;
+import gov.hhs.fha.nhinc.corex12.docsubmission.audit.CORE_X12AuditLogger;
 import gov.hhs.fha.nhinc.corex12.docsubmission.genericbatch.response.adapter.proxy.AdapterCORE_X12DGenericBatchResponseProxy;
 import gov.hhs.fha.nhinc.corex12.docsubmission.genericbatch.response.adapter.proxy.AdapterCORE_X12DSGenericBatchResponseProxyObjectFactory;
 import gov.hhs.fha.nhinc.corex12.docsubmission.utils.CORE_X12DSLargePayloadUtils;
 import gov.hhs.fha.nhinc.largefile.LargePayloadException;
+import gov.hhs.fha.nhinc.nhinclib.NhincConstants;
+import java.util.Properties;
 import org.apache.log4j.Logger;
 import org.caqh.soap.wsdl.corerule2_2_0.COREEnvelopeBatchSubmission;
 import org.caqh.soap.wsdl.corerule2_2_0.COREEnvelopeBatchSubmissionResponse;
@@ -43,13 +46,16 @@ public abstract class AbstractInboundCORE_X12DSGenericBatchResponse implements I
 
     private static final Logger LOG = Logger.getLogger(AbstractInboundCORE_X12DSGenericBatchResponse.class);
     private AdapterCORE_X12DSGenericBatchResponseProxyObjectFactory oAdapterFactory;
+    private CORE_X12AuditLogger auditLogger;
 
     /**
      *
      * @param adapterFactory
+     * @param auditLogger
      */
-    public AbstractInboundCORE_X12DSGenericBatchResponse(AdapterCORE_X12DSGenericBatchResponseProxyObjectFactory adapterFactory) {
+    public AbstractInboundCORE_X12DSGenericBatchResponse(AdapterCORE_X12DSGenericBatchResponseProxyObjectFactory adapterFactory, CORE_X12AuditLogger auditLogger) {
         oAdapterFactory = adapterFactory;
+        this.auditLogger = auditLogger;
     }
 
     /**
@@ -65,12 +71,17 @@ public abstract class AbstractInboundCORE_X12DSGenericBatchResponse implements I
      *
      * @param msg
      * @param assertion
+     * @param webContextProperties
+     *
      * @return COREEnvelopeBatchSubmissionResponse
      */
     @Override
     public COREEnvelopeBatchSubmissionResponse batchSubmitTransaction(COREEnvelopeBatchSubmission msg,
-        AssertionType assertion) {
-        return processGenericBatchSubmitTransaction(msg, assertion);
+        AssertionType assertion, Properties webContextProperties) {
+        auditRequestFromNhin(msg, assertion,webContextProperties);
+        COREEnvelopeBatchSubmissionResponse oResponse = processGenericBatchSubmitTransaction(msg, assertion);
+        auditResponseToNhin(oResponse, assertion,webContextProperties);
+        return oResponse;
     }
 
     /**
@@ -91,5 +102,13 @@ public abstract class AbstractInboundCORE_X12DSGenericBatchResponse implements I
             LOG.error("Failed to retrieve data from the file uri in the payload.", e);
         }
         return oResponse;
+    }
+
+    protected void auditRequestFromNhin(COREEnvelopeBatchSubmission request, AssertionType assertion,  Properties webContextProperties) {
+        auditLogger.auditNhinCoreX12BatchMessage(request, assertion, null, NhincConstants.AUDIT_LOG_INBOUND_DIRECTION, Boolean.FALSE, webContextProperties, NhincConstants.CORE_X12DS_GENERICBATCH_RESPONSE_SERVICE_NAME);
+    }
+
+    protected void auditResponseToNhin(COREEnvelopeBatchSubmissionResponse oResponsse, AssertionType assertion,  Properties webContextProperties) {
+        auditLogger.auditNhinCoreX12BatchMessage(oResponsse, assertion, null, NhincConstants.AUDIT_LOG_OUTBOUND_DIRECTION, Boolean.FALSE, webContextProperties, NhincConstants.CORE_X12DS_GENERICBATCH_RESPONSE_SERVICE_NAME);
     }
 }

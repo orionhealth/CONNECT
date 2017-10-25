@@ -1,28 +1,28 @@
 /*
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services. 
- * All rights reserved. 
+ * Copyright (c) 2009-2015, United States Government, as represented by the Secretary of Health and Human Services.
+ * All rights reserved.
  *
- * Redistribution and use in source and binary forms, with or without 
- * modification, are permitted provided that the following conditions are met: 
- *     * Redistributions of source code must retain the above 
- *       copyright notice, this list of conditions and the following disclaimer. 
- *     * Redistributions in binary form must reproduce the above copyright 
- *       notice, this list of conditions and the following disclaimer in the documentation 
- *       and/or other materials provided with the distribution. 
- *     * Neither the name of the United States Government nor the 
- *       names of its contributors may be used to endorse or promote products 
- *       derived from this software without specific prior written permission. 
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *     * Redistributions of source code must retain the above
+ *       copyright notice, this list of conditions and the following disclaimer.
+ *     * Redistributions in binary form must reproduce the above copyright
+ *       notice, this list of conditions and the following disclaimer in the documentation
+ *       and/or other materials provided with the distribution.
+ *     * Neither the name of the United States Government nor the
+ *       names of its contributors may be used to endorse or promote products
+ *       derived from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
- * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED 
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE 
- * DISCLAIMED. IN NO EVENT SHALL THE UNITED STATES GOVERNMENT BE LIABLE FOR ANY 
- * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES 
- * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; 
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND 
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT 
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS 
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE UNITED STATES GOVERNMENT BE LIABLE FOR ANY
+ * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 package gov.hhs.fha.nhinc.transform.subdisc;
 
@@ -30,6 +30,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import org.junit.Before;
 
 import javax.xml.bind.JAXBElement;
 
@@ -51,20 +52,35 @@ import org.junit.Test;
 
 /**
  * @author achidamb
- * 
+ *
  */
 public class HL7AckTransformsTest {
 
-    /**
-     * This method verifies that Sender OID = Receiver OID in case if message failure occurs before sending to Nwhin.
-     * This unit test is created as part of Gateway-3178.
-     */
+    private final static String TEST_PROPERTIES_NAME = "gatewaytest.properties";
 
+    private HL7MessageIdGenerator idGenerator;
+
+    @Before
+    public void setUpMockGenerator(){
+        idGenerator = new HL7MessageIdGenerator() {
+
+            @Override
+            protected String getDefaultLocalDeviceId() {
+                return "1.1";
+            }
+        };
+    }
+
+    /**
+     * This method verifies that Sender OID = Receiver OID in case if message
+     * failure occurs before sending to Nwhin. This unit test is created as part
+     * of Gateway-3178.
+     */
     @Test
     public void testCreateAckFrom201305WhenRequestNull() {
         PRPAIN201305UV02 request = null;
         String ackMsgText = null;
-        HL7AckTransforms ackTransform = new HL7AckTransforms();
+        HL7AckTransforms ackTransform = new HL7AckTransforms(idGenerator);
         assertNull(ackTransform.createAckFrom201305(request, ackMsgText).getAcceptAckCode());
     }
 
@@ -73,7 +89,7 @@ public class HL7AckTransformsTest {
         String senderOID = "1.1";
         PRPAIN201305UV02 request = createPRPAIN201305UV02(senderOID);
         String ackMsgText = null;
-        HL7AckTransforms ackTransform = new HL7AckTransforms();
+        HL7AckTransforms ackTransform = new HL7AckTransforms(idGenerator);
         assertNotNull(ackTransform.createAckFrom201305(request, ackMsgText).getId().getRoot());
     }
 
@@ -83,7 +99,8 @@ public class HL7AckTransformsTest {
         PRPAIN201305UV02 request = createPRPAIN201305UV02(senderOID);
         setMessageId(request);
         String ackMsgText = "HL7 AckMessage";
-        HL7AckTransforms ackTransform = new HL7AckTransforms();
+        HL7AckTransforms ackTransform = new HL7AckTransforms(idGenerator);
+
         MCCIIN000002UV01 ack = ackTransform.createAckFrom201305(request, ackMsgText);
         assertNotNull(ack.getAcknowledgement().get(0).getAcknowledgementDetail().get(0).getText());
         assertEquals(ack.getReceiver().get(0).getDevice().getAsAgent().getValue().getRepresentedOrganization()
@@ -93,14 +110,16 @@ public class HL7AckTransformsTest {
     }
 
     /* Tests for createAckErrorFrom201305 method of HL7AckTransforms */
-
     @Test
     public void checkOIDOfInitiatorErrorMessage() {
 
         MCCIIN000002UV01 ack = new MCCIIN000002UV01();
         String SenderOID = "1.1";
         String ackMsg = "No targets were found for the Patient Discovery Request";
-        ack = HL7AckTransforms.createAckErrorFrom201305(createPRPAIN201305UV02(SenderOID), ackMsg);
+
+        HL7AckTransforms ackTransform = new HL7AckTransforms(idGenerator);
+
+        ack = ackTransform.createAckErrorFrom201305(createPRPAIN201305UV02(SenderOID), ackMsg);
         assertEquals("1.1", ack.getReceiver().get(0).getDevice().getAsAgent().getValue().getRepresentedOrganization()
                 .getValue().getId().get(0).getRoot());
 
@@ -110,7 +129,7 @@ public class HL7AckTransformsTest {
     public void testCreateAckErrorFrom201305WhenRequestNull() {
         PRPAIN201305UV02 request = null;
         String ackMsgText = null;
-        HL7AckTransforms ackTransform = new HL7AckTransforms();
+        HL7AckTransforms ackTransform = new HL7AckTransforms(idGenerator);
         assertNull(ackTransform.createAckErrorFrom201305(request, ackMsgText).getAcceptAckCode());
     }
 
@@ -119,7 +138,9 @@ public class HL7AckTransformsTest {
         String senderOID = "1.1";
         PRPAIN201305UV02 request = createPRPAIN201305UV02(senderOID);
         String ackMsgText = null;
-        HL7AckTransforms ackTransform = new HL7AckTransforms();
+
+        HL7AckTransforms ackTransform = new HL7AckTransforms(idGenerator);
+
         assertNotNull(ackTransform.createAckErrorFrom201305(request, ackMsgText).getId().getRoot());
     }
 
@@ -129,7 +150,9 @@ public class HL7AckTransformsTest {
         PRPAIN201305UV02 request = createPRPAIN201305UV02(senderOID);
         request = setMessageId(request);
         String ackMsgText = null;
-        HL7AckTransforms ackTransform = new HL7AckTransforms();
+
+        HL7AckTransforms ackTransform = new HL7AckTransforms(idGenerator);
+
         assertTrue(ackTransform.createAckErrorFrom201305(request, ackMsgText).getAcknowledgement().get(0)
                 .getAcknowledgementDetail().isEmpty());
     }
@@ -139,7 +162,9 @@ public class HL7AckTransformsTest {
         String senderOID = "1.1";
         PRPAIN201305UV02 request = createPRPAIN201305UV02(senderOID);
         String ackMsgText = null;
-        HL7AckTransforms ackTransform = new HL7AckTransforms();
+
+        HL7AckTransforms ackTransform = new HL7AckTransforms(idGenerator);
+
         MCCIIN000002UV01 ack = ackTransform.createAckErrorFrom201305(request, ackMsgText);
         assertTrue(ack.getAcknowledgement().isEmpty());
     }
@@ -148,7 +173,9 @@ public class HL7AckTransformsTest {
     public void createAckFrom201306WhenrequestNull() {
         PRPAIN201306UV02 request = null;
         String ackMsgText = null;
-        HL7AckTransforms ackTransform = new HL7AckTransforms();
+
+        HL7AckTransforms ackTransform = new HL7AckTransforms(idGenerator);
+
         assertNull(ackTransform.createAckFrom201306(request, ackMsgText).getAcceptAckCode());
 
     }
@@ -157,7 +184,9 @@ public class HL7AckTransformsTest {
     public void testCreateAckFrom201306WhenMessageIdNull() {
         PRPAIN201306UV02 request = createPRPAIN201306UV02();
         String ackMsgText = null;
-        HL7AckTransforms ackTransform = new HL7AckTransforms();
+
+        HL7AckTransforms ackTransform = new HL7AckTransforms(idGenerator);
+
         assertNotNull(ackTransform.createAckFrom201306(request, ackMsgText).getId().getRoot());
     }
 
@@ -166,7 +195,9 @@ public class HL7AckTransformsTest {
         PRPAIN201306UV02 request = createPRPAIN201306UV02();
         setMessageId(request);
         String ackMsgText = "HL7 AckMessage";
-        HL7AckTransforms ackTransform = new HL7AckTransforms();
+
+        HL7AckTransforms ackTransform = new HL7AckTransforms(idGenerator);
+
         MCCIIN000002UV01 ack = ackTransform.createAckFrom201306(request, ackMsgText);
         assertNotNull(ack.getAcknowledgement().get(0).getAcknowledgementDetail().get(0).getText());
         assertEquals(ack.getSender().getDevice().getAsAgent().getValue().getRepresentedOrganization().getValue()
@@ -179,7 +210,7 @@ public class HL7AckTransformsTest {
     public void createAckErrorFrom201306WhenrequestNull() {
         PRPAIN201306UV02 request = null;
         String ackMsgText = null;
-        HL7AckTransforms ackTransform = new HL7AckTransforms();
+        HL7AckTransforms ackTransform = new HL7AckTransforms(idGenerator);
         assertNull(ackTransform.createAckErrorFrom201306(request, ackMsgText).getAcceptAckCode());
 
     }
@@ -188,7 +219,7 @@ public class HL7AckTransformsTest {
     public void testCreateAckErrorFrom201306WhenMessageIdNull() {
         PRPAIN201306UV02 request = createPRPAIN201306UV02();
         String ackMsgText = null;
-        HL7AckTransforms ackTransform = new HL7AckTransforms();
+        HL7AckTransforms ackTransform = new HL7AckTransforms(idGenerator);
         assertNotNull(ackTransform.createAckErrorFrom201306(request, ackMsgText).getId().getRoot());
     }
 
@@ -197,7 +228,7 @@ public class HL7AckTransformsTest {
         PRPAIN201306UV02 request = createPRPAIN201306UV02();
         setMessageId(request);
         String ackMsgText = "HL7 AckMessage";
-        HL7AckTransforms ackTransform = new HL7AckTransforms();
+        HL7AckTransforms ackTransform = new HL7AckTransforms(idGenerator);
         assertNotNull(ackTransform.createAckErrorFrom201306(request, ackMsgText).getAcknowledgement().get(0)
                 .getAcknowledgementDetail().get(0).getText());
     }

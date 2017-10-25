@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2015, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -35,7 +35,11 @@ import gov.hhs.fha.nhinc.direct.messagemonitoring.dao.impl.MessageMonitoringDAOI
 import gov.hhs.fha.nhinc.direct.messagemonitoring.domain.MonitoredMessage;
 import gov.hhs.fha.nhinc.direct.messagemonitoring.domain.MonitoredMessageNotification;
 import gov.hhs.fha.nhinc.direct.messagemonitoring.util.MessageMonitoringUtil;
+import gov.hhs.fha.nhinc.nhinclib.NhincConstants;
+import gov.hhs.fha.nhinc.properties.PropertyAccessException;
+import gov.hhs.fha.nhinc.properties.PropertyAccessor;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -67,7 +71,7 @@ public class MessageMonitoringAPI {
     private static final String STATUS_ERROR = "Error";
     private static final String STATUS_COMPLETED = "Completed";
     private static final String STATUS_PROCESSED = "Processed";
-    private static final String STATUS_DISPATCHED = "Dispatched";
+    private static final String STATUS_ARCHIVED = "Archived";
 
     public MessageMonitoringAPI() {
         //set the default value
@@ -113,12 +117,8 @@ public class MessageMonitoringAPI {
                 return;
             }
             //get the mail sender
-            InternetAddress sender = (InternetAddress) message.getSender();
-            if (sender == null) {
-                InternetAddress[] fromAddresses = (InternetAddress[]) message.getFrom();
-                sender = fromAddresses[0];
-            }
-            String senderMailId = sender.getAddress();
+
+            String senderMailId = getSenderEmailId(message);
 
             MonitoredMessageNotification tmn = getTrackmessagenotification(tm, senderMailId);
             //check if its a MDN or DSN
@@ -176,10 +176,7 @@ public class MessageMonitoringAPI {
         try {
             //get the all recipients
             InternetAddress recipients[] = (InternetAddress[]) message.getAllRecipients();
-
-            //get the mail sender
-            InternetAddress sender = (InternetAddress) message.getSender();
-            String senderMailId = sender.getAddress();
+            String senderMailId = getSenderEmailId(message);
             //Mail Subject
             String mailSubject = message.getSubject();
             //get the message id
@@ -245,8 +242,12 @@ public class MessageMonitoringAPI {
         clearCache();
         //load the pending outgoing messages to the cache
         for (MonitoredMessage trackMessage : pendingMessages) {
-            messageMonitoringCache.put(trackMessage.getMessageid(), trackMessage);
-            LOG.debug("Total child rows for the messageId:" + trackMessage.getMonitoredmessagenotifications().size());
+            if (!trackMessage.getStatus().equals(STATUS_ARCHIVED)) {
+                messageMonitoringCache.put(trackMessage.getMessageid(), trackMessage);
+                LOG.debug("Total child rows for the messageId:" + trackMessage.getMonitoredmessagenotifications().size());
+            } else {
+                deleteElapsedArchivedMessage(trackMessage);
+            }
         }
         LOG.debug("Exiting buildCache.");
     }
@@ -454,6 +455,7 @@ public class MessageMonitoringAPI {
      *
      */
     public void process() {
+
         LOG.debug("Inside Message Monitoring API process() method.");
 
         //Always check if the message monitoring is enabled
@@ -504,6 +506,10 @@ public class MessageMonitoringAPI {
         LOG.debug("Exiting Message Monitoring API checkAndUpdateMessageStatus() method.");
     }
 
+    /* A new DirectTesting Flag and delayTime Flag are added in gateway.properties
+     It waits for n number of minutes to delete the record from MessageMonitored table.
+     Since the MessageId form MessageMonitored table is used to read MessageId in order to
+     make event assertions for Automated testing */
     public void processAllMessages() throws MessageMonitoringDAOException {
         LOG.debug("Inside Message Monitoring API checkAndUpdateMessageStatus() method.");
         //********FAILED MESSAGES***********
@@ -513,9 +519,14 @@ public class MessageMonitoringAPI {
             //send out a Failed notification to the edge
             sendFailedEdgeNotification(trackMessage);
             //delete the message
-            MessageMonitoringDAOImpl.getInstance().deleteCompletedMessages(trackMessage);
             messageMonitoringCache.remove(trackMessage.getMessageid());
-            LOG.debug("Completed message deleted. Message ID:" + trackMessage.getMessageid());
+            if (getDirectTestFlag(NhincConstants.GATEWAY_PROPERTY_FILE, NhincConstants.DIRECTTESTING_FLAG)) {
+                deleteElapsedArchivedMessageList();
+                trackMessage.setStatus(STATUS_ARCHIVED);
+                getMessageMonitoringDAO().updateOutgoingMessage(trackMessage);
+            } else {
+                deleteFromMessageMonitoringDB(trackMessage);
+            }
         }
         //********COMPLETED MESSAGES********
         //get all the completed messages
@@ -524,10 +535,16 @@ public class MessageMonitoringAPI {
             //send out a successful notification
             sendSuccessEdgeNotification(trackMessage);
             //delete the message
-            MessageMonitoringDAOImpl.getInstance().deleteCompletedMessages(trackMessage);
             messageMonitoringCache.remove(trackMessage.getMessageid());
-            LOG.debug("Completed message deleted. Message ID:" + trackMessage.getMessageid());
+            if (getDirectTestFlag(NhincConstants.GATEWAY_PROPERTY_FILE, NhincConstants.DIRECTTESTING_FLAG)) {
+                deleteElapsedArchivedMessageList();
+                trackMessage.setStatus(STATUS_ARCHIVED);
+                getMessageMonitoringDAO().updateOutgoingMessage(trackMessage);
+            } else {
+                deleteFromMessageMonitoringDB(trackMessage);
+            }
         }
+
         LOG.debug("Exiting Message Monitoring API checkAndUpdateMessageStatus() method.");
     }
 
@@ -605,6 +622,81 @@ public class MessageMonitoringAPI {
         if (message != null) {
             getDirectEventLogger().log(DirectEventType.DIRECT_ERROR, message, errorMessage);
         }
+    }
+
+    private boolean getDirectTestFlag(String fileName, String property) {
+        boolean directTestFlag = false;
+        String directTestingFlag = getDirectTestingParam(fileName, property);
+        if (directTestingFlag != null && !directTestingFlag.isEmpty() && directTestingFlag.equals("true")) {
+            directTestFlag = true;
+        }
+        return directTestFlag;
+    }
+
+    private String getDirectTestingParam(String fileName, String property) {
+        String directTestingParam = null;
+        try {
+            directTestingParam = PropertyAccessor.getInstance().getProperty(fileName, property);
+        } catch (PropertyAccessException e) {
+            LOG.debug("Error while retrieving property from property file", e);
+        }
+        return directTestingParam;
+    }
+
+    private boolean getDirectTestingDelay(String fileName, String property, Date updateDate) {
+        String delayTime = getDirectTestingParam(fileName, property);
+        Date currentDateTime = new Date();
+        int delayInMinutes = Integer.parseInt(delayTime);
+        Date updateDateTime = getupdateDate(updateDate, delayInMinutes);
+        if (currentDateTime.after(updateDateTime)) {
+            return true;
+        }
+        return false;
+    }
+
+    private Date getupdateDate(Date updateDate, int delayUpdateTime) {
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(updateDate);
+        cal.add(Calendar.MINUTE, delayUpdateTime);
+        return cal.getTime();
+    }
+
+    private void deleteFromMessageMonitoringDB(MonitoredMessage trackMessage) {
+        try {
+            MessageMonitoringDAOImpl.getInstance().deleteCompletedMessages(trackMessage);
+        } catch (MessageMonitoringDAOException ex) {
+            LOG.debug("Error While deleting Message from MessageMonitoring Table: " + ex);
+            return;
+        }
+        LOG.debug("Completed message deleted.");
+    }
+
+    private void deleteElapsedArchivedMessageList() {
+        List<MonitoredMessage> pendingDBMessages = getAllPendingMessagesFromDatabase();
+        for (MonitoredMessage trackMessage : pendingDBMessages) {
+            if (trackMessage.getStatus().equals(STATUS_ARCHIVED)) {
+                deleteElapsedArchivedMessage(trackMessage);
+            }
+        }
+    }
+
+    private void deleteElapsedArchivedMessage(MonitoredMessage trackMessage) {
+        if (getDirectTestingDelay(NhincConstants.GATEWAY_PROPERTY_FILE,
+            NhincConstants.MESSAGEMONITORING_DELAYINMINUTES, trackMessage.getUpdatetime())) {
+            deleteFromMessageMonitoringDB(trackMessage);
+        }
+    }
+
+    private String getSenderEmailId(MimeMessage message) throws MessagingException {
+        InternetAddress sender = null;
+        sender = (InternetAddress) message.getSender();
+        if (sender == null) {
+            InternetAddress[] fromAddresses = (InternetAddress[]) message.getFrom();
+            if (fromAddresses.length > 0) {
+                sender = fromAddresses[0];
+            }
+        }
+        return ((sender == null) ? null : sender.getAddress());
     }
 
 }

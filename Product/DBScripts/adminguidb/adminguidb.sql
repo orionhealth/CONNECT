@@ -58,8 +58,16 @@ VALUES
 ("direct.xhtml", "Direct Config", 0, 3),
 ("connectionManager.xhtml", "Connection Management", 0, 1),
 ("connectionManager.xhtml", "Connection Management", 0, 2),
-("connectionManager.xhtml", "Connection Management", 0, 3);
-
+("connectionManager.xhtml", "Connection Management", 0, 3),
+("properties.xhtml", "CONNECT Properties", 0, 1),
+("properties.xhtml", "CONNECT Properties", 0, 2),
+("properties.xhtml", "CONNECT Properties", 0, 3),
+("fhir.xhtml", "FHIR Resources", 0, 1),
+("fhir.xhtml", "FHIR Resources", 0, 2),
+("fhir.xhtml", "FHIR Resources", 0, 3),
+("patientDiscovery.xhtml", "Cross-Query Gateway Client", 0, 1),
+("patientDiscovery.xhtml", "Cross-Query Gateway Client", 0, 2),
+("patientDiscovery.xhtml", "Cross-Query Gateway Client", 0, 3);
 
 INSERT INTO adminguidb.UserLogin
 (id, salt, sha1, userName, userRole)

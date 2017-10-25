@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2015, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,6 +27,7 @@
 package gov.hhs.fha.nhinc.corex12.docsubmission.realtime.inbound;
 
 import gov.hhs.fha.nhinc.common.nhinccommon.AssertionType;
+import gov.hhs.fha.nhinc.corex12.docsubmission.audit.CORE_X12AuditLogger;
 import gov.hhs.fha.nhinc.corex12.docsubmission.realtime.adapter.proxy.AdapterCORE_X12DSRealTimeProxyObjectFactory;
 
 import org.caqh.soap.wsdl.corerule2_2_0.COREEnvelopeRealTimeRequest;
@@ -42,16 +43,17 @@ public class PassthroughInboundCORE_X12DSRealTime extends AbstractInboundCORE_X1
      * Default constructor.
      */
     public PassthroughInboundCORE_X12DSRealTime() {
-        this(new AdapterCORE_X12DSRealTimeProxyObjectFactory());
+        this(new AdapterCORE_X12DSRealTimeProxyObjectFactory(), new CORE_X12AuditLogger());
     }
 
     /**
      * Constructor with dependency injection of strategy components.
      *
      * @param adapterFactory
+     * @param auditLogger
      */
-    public PassthroughInboundCORE_X12DSRealTime(AdapterCORE_X12DSRealTimeProxyObjectFactory adapterFactory) {
-        super(adapterFactory);
+    public PassthroughInboundCORE_X12DSRealTime(AdapterCORE_X12DSRealTimeProxyObjectFactory adapterFactory, CORE_X12AuditLogger auditLogger) {
+        super(adapterFactory, auditLogger);
     }
 
     @Override

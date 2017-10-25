@@ -53,6 +53,30 @@
             <to-view-id>/connectionManager.xhtml</to-view-id>
             <redirect />
         </navigation-case>
+    </navigation-rule>       
+    <navigation-rule>
+        <from-view-id>/*</from-view-id>
+        <navigation-case>
+            <from-outcome>properties</from-outcome>
+            <to-view-id>/properties.xhtml</to-view-id>
+            <redirect />
+        </navigation-case>
+    </navigation-rule>
+    <navigation-rule>
+        <from-view-id>/*</from-view-id>
+        <navigation-case>
+            <from-outcome>fhir</from-outcome>
+            <to-view-id>/fhir.xhtml</to-view-id>
+            <redirect />
+        </navigation-case>
+    </navigation-rule>
+    <navigation-rule>
+        <from-view-id>/*</from-view-id>
+        <navigation-case>
+            <from-outcome>patientDiscovery</from-outcome>
+            <to-view-id>/patientDiscovery.xhtml</to-view-id>
+            <redirect />
+        </navigation-case>
     </navigation-rule>
     
 </faces-config>

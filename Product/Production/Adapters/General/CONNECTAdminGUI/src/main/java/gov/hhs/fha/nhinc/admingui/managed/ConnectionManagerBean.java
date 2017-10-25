@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-2014, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2015, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -206,7 +206,7 @@ public class ConnectionManagerBean {
     private void refresh() {
         try {
             List<BusinessEntity> externalEntityList = ConnectionManagerCache.getInstance().getAllBusinessEntities();
-            String localHcid = PropertyAccessor.getInstance().getProperty(NhincConstants.HOME_COMMUNITY_ID_PROPERTY);
+            String localHcid = PropertyAccessor.getInstance().getProperty(NhincConstants.GATEWAY_PROPERTY_FILE, NhincConstants.HOME_COMMUNITY_ID_PROPERTY);
 
             for (int i = 0; i < externalEntityList.size(); i++) {
                 BusinessEntity entity = externalEntityList.get(i);

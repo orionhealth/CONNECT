@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-13, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2015, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -41,7 +41,6 @@ import gov.hhs.fha.nhinc.common.nhinccommon.NhinTargetCommunityType;
 import gov.hhs.fha.nhinc.docquery.AdhocQueryResponseAsserter;
 import gov.hhs.fha.nhinc.docquery.DocQueryAuditLog;
 import gov.hhs.fha.nhinc.docquery.DocQueryPolicyChecker;
-import gov.hhs.fha.nhinc.docquery.DocQueryUnitTestUtil;
 import gov.hhs.fha.nhinc.docquery.aspect.AdhocQueryRequestDescriptionBuilder;
 import gov.hhs.fha.nhinc.docquery.aspect.AdhocQueryResponseDescriptionBuilder;
 import gov.hhs.fha.nhinc.docquery.entity.Aggregate;
@@ -75,8 +74,6 @@ public class StandardOutboundDocQueryTest {
     @Test
     public void testrespondingGatewayCrossGatewayQueryforNullEndPoint() throws Exception {
 
-        DocQueryUnitTestUtil.setUpGatewayProperties();
-        
         AggregationStrategy strategy = mock(AggregationStrategy.class);
 
         AdhocQueryRequest adhocQueryRequest = new AdhocQueryRequest();
@@ -91,6 +88,11 @@ public class StandardOutboundDocQueryTest {
             @Override
             protected DocQueryAuditLog getAuditLogger() {
                 return mockAuditLogger;
+            }
+
+            @Override
+            protected String getSenderHcid(){
+                return SENDING_HCID_FORMATTED;
             }
         };
 
@@ -120,6 +122,10 @@ public class StandardOutboundDocQueryTest {
             @Override
             protected DocQueryAuditLog getAuditLogger() {
                 return mockAuditLogger;
+            }
+            @Override
+            protected String getSenderHcid(){
+                return SENDING_HCID_FORMATTED;
             }
         };
 
@@ -197,11 +203,10 @@ public class StandardOutboundDocQueryTest {
         assertEquals("Document Query", annotation.serviceType());
         assertEquals("", annotation.version());
     }
-    
+
     @Test
     public void testWithPolicyFailures() throws Exception {
-        DocQueryUnitTestUtil.setUpGatewayProperties();
-        
+
         AggregationStrategy strategy = mock(AggregationStrategy.class);
 
         AdhocQueryRequest adhocQueryRequest = new AdhocQueryRequest();
@@ -217,8 +222,12 @@ public class StandardOutboundDocQueryTest {
             protected DocQueryAuditLog getAuditLogger() {
                 return mockAuditLogger;
             }
+            @Override
+            protected String getSenderHcid(){
+                return SENDING_HCID_FORMATTED;
+            }
         };
-        
+
         when(policyChecker.checkOutgoingPolicy(any(AdhocQueryRequest.class), any(AssertionType.class))).thenReturn(false);
 
         NhinTargetCommunitiesType targets = createNhinTargetCommunites();
@@ -236,11 +245,10 @@ public class StandardOutboundDocQueryTest {
 
         AdhocQueryResponseAsserter.assertSchemaCompliant(response);
     }
-    
+
     @Test
     public void testWithMixOfPolicyFailures() throws Exception {
-        DocQueryUnitTestUtil.setUpGatewayProperties();
-        
+
         AggregationStrategy strategy = mock(AggregationStrategy.class);
 
         AdhocQueryRequest adhocQueryRequest = new AdhocQueryRequest();
@@ -256,12 +264,16 @@ public class StandardOutboundDocQueryTest {
             protected DocQueryAuditLog getAuditLogger() {
                 return mockAuditLogger;
             }
+            @Override
+            protected String getSenderHcid(){
+                return SENDING_HCID_FORMATTED;
+            }
         };
-        
+
         when(policyChecker.checkOutgoingPolicy(any(AdhocQueryRequest.class), any(AssertionType.class))).thenReturn(false).thenReturn(true);
         NhinTargetCommunitiesType targets = createNhinTargetCommunites();
         when(service.createChildRequests(eq(adhocQueryRequest), eq(assertion), eq(targets))).thenReturn(getOutboundOrchestratableList());
-        
+
         AdhocQueryResponse response = entitydocqueryimpl.respondingGatewayCrossGatewayQuery(adhocQueryRequest,
                 assertion, targets);
 
@@ -282,11 +294,11 @@ public class StandardOutboundDocQueryTest {
     private List<OutboundOrchestratable> getOutboundOrchestratableList() {
         OutboundDocQueryOrchestratable orch1 = new OutboundDocQueryOrchestratable();
         OutboundDocQueryOrchestratable orch2 = new OutboundDocQueryOrchestratable();
-        
+
         List<OutboundOrchestratable> list = new ArrayList<OutboundOrchestratable>();
         list.add(orch1);
         list.add(orch2);
         return list;
     }
-    
+
 }

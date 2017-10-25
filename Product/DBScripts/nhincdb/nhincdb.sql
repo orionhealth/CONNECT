@@ -499,9 +499,6 @@ CREATE TABLE IF NOT EXISTS eventdb.event (
 COMMENT = 'Event Logging';
 
 GRANT SELECT,INSERT,UPDATE,DELETE ON eventdb.* to nhincuser;
-
-GRANT SELECT,INSERT,UPDATE,DELETE ON *.* TO 'nhincuser'@'localhost' IDENTIFIED BY 'nhincpass' WITH GRANT OPTION;
-GRANT SELECT,INSERT,UPDATE,DELETE ON *.* TO 'nhincuser'@'127.0.0.1' IDENTIFIED BY 'nhincpass' WITH GRANT OPTION;
 -- end eventdb
 
 -- begin adminguidb
@@ -560,7 +557,17 @@ VALUES
 ("direct.xhtml", "Direct Config", 0, 3),
 ("connectionManager.xhtml", "Connection Management", 0, 1),
 ("connectionManager.xhtml", "Connection Management", 0, 2),
-("connectionManager.xhtml", "Connection Management", 0, 3);
+("connectionManager.xhtml", "Connection Management", 0, 3),
+("properties.xhtml", "CONNECT Properties", 0, 1),
+("properties.xhtml", "CONNECT Properties", 0, 2),
+("properties.xhtml", "CONNECT Properties", 0, 3),
+("fhir.xhtml", "FHIR Resources", 0, 1),
+("fhir.xhtml", "FHIR Resources", 0, 2),
+("fhir.xhtml", "FHIR Resources", 0, 3),
+("patientDiscovery.xhtml", "Cross-Query Gateway Client", 0, 1),
+("patientDiscovery.xhtml", "Cross-Query Gateway Client", 0, 2),
+("patientDiscovery.xhtml", "Cross-Query Gateway Client", 0, 3);
+
 
 INSERT INTO adminguidb.UserLogin
 (id, salt, sha1, userName, userRole)
@@ -569,11 +576,6 @@ VALUES
 
 GRANT SELECT,INSERT,UPDATE,DELETE ON adminguidb.* to nhincuser;
 -- end adminguidb
-
-GRANT ALL PRIVILEGES ON *.* TO 'nhincuser'@'localhost' IDENTIFIED BY 'nhincpass' WITH GRANT OPTION;
-GRANT ALL PRIVILEGES ON *.* TO 'nhincuser'@'127.0.0.1' IDENTIFIED BY 'nhincpass' WITH GRANT OPTION;
-GRANT ALL PRIVILEGES ON *.* TO 'nhincuser'@'{host name}' IDENTIFIED BY 'nhincpass' WITH GRANT OPTION;
-FLUSH PRIVILEGES;
 
 -- begin message monitoringdb
 CREATE DATABASE messagemonitoringdb;
@@ -608,6 +610,11 @@ CREATE TABLE messagemonitoringdb.monitoredmessagenotification (
 GRANT SELECT,INSERT,UPDATE,DELETE ON messagemonitoringdb.* to nhincuser;
 -- end message monitoring db
 
+GRANT ALL PRIVILEGES ON *.* TO 'nhincuser'@'localhost' IDENTIFIED BY 'nhincpass' WITH GRANT OPTION;
+GRANT ALL PRIVILEGES ON *.* TO 'nhincuser'@'127.0.0.1' IDENTIFIED BY 'nhincpass' WITH GRANT OPTION;
+GRANT ALL PRIVILEGES ON *.* TO 'nhincuser'@'{host name}' IDENTIFIED BY 'nhincpass' WITH GRANT OPTION;
+FLUSH PRIVILEGES;
+
 -- -----------------------------------------------------
 -- The following is a workaround that is required for
 -- deployment due to a bug in Direct RI
@@ -628,5 +635,8 @@ VALUES
 UPDATE address SET id = 2 WHERE id = 1;
 
 UPDATE domain SET postmasterAddressId = 2 WHERE id = 1;
+
+USE eventdb;
+LOCK TABLES event WRITE;
 
 UNLOCK TABLES;

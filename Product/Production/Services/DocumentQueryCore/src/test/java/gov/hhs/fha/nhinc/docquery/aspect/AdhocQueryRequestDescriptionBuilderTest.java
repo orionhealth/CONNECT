@@ -1,7 +1,5 @@
-/**
- * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
- *
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services.
+/*
+ * Copyright (c) 2009-2015, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -59,14 +57,14 @@ public class AdhocQueryRequestDescriptionBuilderTest extends BaseDescriptionBuil
         final PropertyAccessor mockProperties = mock(PropertyAccessor.class);
         builder = new AdhocQueryRequestDescriptionBuilder(){
             @Override
-            protected PropertyAccessor getPropertyAccessor(String fileName){
+            protected PropertyAccessor getPropertyAccessor(){
                 return mockProperties;
             }
         };
         assertion = new AssertionType();
         assertionExtractor = mock(AssertionDescriptionExtractor.class);
-        
-        when(mockProperties.getProperty(anyString())).thenReturn(null);
+
+        when(mockProperties.getProperty(anyString(), anyString())).thenReturn(null);
         when(assertionExtractor.getInitiatingHCID(assertion)).thenReturn("hcid");
         when(assertionExtractor.getNPI(assertion)).thenReturn("npi");
     }

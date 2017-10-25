@@ -1,5 +1,5 @@
-  /*
- * Copyright (c) 2009-2014, United States Government, as represented by the Secretary of Health and Human Services.
+/*
+ * Copyright (c) 2009-2015, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,16 +27,17 @@
 package gov.hhs.fha.nhinc.admingui.managed;
 
 import gov.hhs.fha.nhinc.admingui.constant.NavigationConstant;
+import gov.hhs.fha.nhinc.admingui.jee.jsf.UserAuthorizationListener;
 import gov.hhs.fha.nhinc.admingui.model.Login;
 import gov.hhs.fha.nhinc.admingui.services.LoginService;
 import gov.hhs.fha.nhinc.admingui.services.exception.UserLoginException;
 import gov.hhs.fha.nhinc.admingui.services.persistence.jpa.entity.UserLogin;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
+import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
 import javax.servlet.http.HttpSession;
@@ -57,9 +58,9 @@ public class ManageUserBean {
     private String userName = null;
     private String password = null;
     private String role;
-    
+
     private UserLogin selectedUser;
-    
+
     private List<UserLogin> users = new ArrayList<UserLogin>();
 
     /**
@@ -187,8 +188,20 @@ public class ManageUserBean {
                 loginService.deleteUser(selectedUser);
             } catch (UserLoginException ex) {
                FacesContext.getCurrentInstance().addMessage("userDeleteMessages", new FacesMessage(FacesMessage.SEVERITY_WARN,
-                ex.getLocalizedMessage(), "")); 
-            }           
+                ex.getLocalizedMessage(), ""));
+            }
         }
+    }
+
+    /**
+     * Returns the user name in the current session.
+     * @return
+     */
+    public String getCurrentUser() {
+        FacesContext facesContext = FacesContext.getCurrentInstance();
+        ExternalContext externalContext = facesContext.getExternalContext();
+        HttpSession session = (HttpSession) externalContext.getSession(true);
+        UserLogin currentUser = (UserLogin) session.getAttribute(UserAuthorizationListener.USER_INFO_SESSION_ATTRIBUTE);
+        return currentUser.getUserName();
     }
 }

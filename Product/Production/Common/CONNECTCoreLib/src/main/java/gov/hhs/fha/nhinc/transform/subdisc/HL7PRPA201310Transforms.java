@@ -1,28 +1,28 @@
 /*
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services. 
- * All rights reserved. 
+ * Copyright (c) 2009-2015, United States Government, as represented by the Secretary of Health and Human Services.
+ * All rights reserved.
  *
- * Redistribution and use in source and binary forms, with or without 
- * modification, are permitted provided that the following conditions are met: 
- *     * Redistributions of source code must retain the above 
- *       copyright notice, this list of conditions and the following disclaimer. 
- *     * Redistributions in binary form must reproduce the above copyright 
- *       notice, this list of conditions and the following disclaimer in the documentation 
- *       and/or other materials provided with the distribution. 
- *     * Neither the name of the United States Government nor the 
- *       names of its contributors may be used to endorse or promote products 
- *       derived from this software without specific prior written permission. 
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *     * Redistributions of source code must retain the above
+ *       copyright notice, this list of conditions and the following disclaimer.
+ *     * Redistributions in binary form must reproduce the above copyright
+ *       notice, this list of conditions and the following disclaimer in the documentation
+ *       and/or other materials provided with the distribution.
+ *     * Neither the name of the United States Government nor the
+ *       names of its contributors may be used to endorse or promote products
+ *       derived from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
- * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED 
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE 
- * DISCLAIMED. IN NO EVENT SHALL THE UNITED STATES GOVERNMENT BE LIABLE FOR ANY 
- * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES 
- * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; 
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND 
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT 
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS 
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE UNITED STATES GOVERNMENT BE LIABLE FOR ANY
+ * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 package gov.hhs.fha.nhinc.transform.subdisc;
 
@@ -42,7 +42,7 @@ import org.hl7.v3.PRPAMT201307UV02QueryByParameter;
 import org.hl7.v3.XActMoodIntentEvent;
 
 /**
- * 
+ *
  * @author vvickers
  */
 public class HL7PRPA201310Transforms {
@@ -61,6 +61,8 @@ public class HL7PRPA201310Transforms {
     private static final String REG_EVENT_MOOD_CODE = "REG";
     private static final String REG_EVENT_STATUS_CODE = "active";
     private static final String CONTROL_QUERY_RESPONSE_CODE = "OK";
+
+    private static HL7MessageIdGenerator idGenerator = new HL7MessageIdGenerator();
 
     public static PRPAIN201310UV02 createFaultPRPA201310() {
         return createPRPA201310("", "", "", "", "", null);
@@ -95,7 +97,7 @@ public class HL7PRPA201310Transforms {
         PRPAIN201310UV02 message = new PRPAIN201310UV02();
 
         message.setITSVersion(HL7Constants.ITS_VERSION);
-        message.setId(HL7MessageIdGenerator.generateHL7MessageId(localDeviceId));
+        message.setId(idGenerator.generateHL7MessageId(localDeviceId));
         message.setCreationTime(HL7DataTransformHelper.creationTimeFactory());
         message.setInteractionId(HL7DataTransformHelper.IIFactory(HL7Constants.INTERACTION_ID_ROOT,
                 INTERACTION_ID_EXTENSION));
@@ -201,7 +203,7 @@ public class HL7PRPA201310Transforms {
 
         PRPAMT201307UV02QueryByParameter queryParams = new PRPAMT201307UV02QueryByParameter();
 
-        queryParams.setQueryId(HL7MessageIdGenerator.generateHL7MessageId(null));
+        queryParams.setQueryId(idGenerator.generateHL7MessageId(null));
         queryParams.setStatusCode(HL7DataTransformHelper.CSFactory("new"));
 
         PRPAMT201307UV02ParameterList paramList = new PRPAMT201307UV02ParameterList();
@@ -220,5 +222,9 @@ public class HL7PRPA201310Transforms {
         queryAck.setQueryId(queryParam.getQueryId());
         queryAck.setQueryResponseCode(HL7DataTransformHelper.CSFactory(CONTROL_QUERY_RESPONSE_CODE));
         return queryAck;
+    }
+
+    protected void setHL7MessageIdGenerator(HL7MessageIdGenerator idGenerator) {
+        this.idGenerator = idGenerator;
     }
 }

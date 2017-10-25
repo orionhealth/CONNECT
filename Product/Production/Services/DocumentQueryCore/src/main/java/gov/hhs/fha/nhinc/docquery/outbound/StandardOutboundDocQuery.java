@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009-13, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2015, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -80,7 +80,7 @@ public class StandardOutboundDocQuery implements OutboundDocQuery {
     }
 
     /**
-     * 
+     *
      * @param adhocQueryRequest The AdhocQueryRequest message received.
      * @param assertion Assertion received.
      * @param targets Target to send request.
@@ -93,7 +93,7 @@ public class StandardOutboundDocQuery implements OutboundDocQuery {
         LOG.trace("EntityDocQueryOrchImpl.respondingGatewayCrossGatewayQuery...");
         AdhocQueryResponse response = null;
 
-        String sendingHCID = HomeCommunityMap.getLocalHomeCommunityId();
+        String sendingHCID = getSenderHcid();
         auditRequestFromAdapter(adhocQueryRequest, assertion, sendingHCID);
 
         OutboundDocQueryAggregate aggregate = new OutboundDocQueryAggregate();
@@ -152,7 +152,7 @@ public class StandardOutboundDocQuery implements OutboundDocQuery {
 
     /**
      * This method returns Response with RegistryErrorList if there is any failure.
-     * 
+     *
      * @param errorCode The ErrorCode that needs to be set to the AdhocQueryResponse (Errorcodes are defined in spec).
      * @param codeContext The codecontext defines the reason of failure of AdhocQueryRequest.
      * @return AdhocQueryResponse.
@@ -170,6 +170,10 @@ public class StandardOutboundDocQuery implements OutboundDocQuery {
     private void auditResponseToAdapter(AdhocQueryResponse response, AssertionType assertion, String sendingHCID) {
         getAuditLogger().auditDQResponse(response, assertion, NhincConstants.AUDIT_LOG_OUTBOUND_DIRECTION,
                 NhincConstants.AUDIT_LOG_ENTITY_INTERFACE, sendingHCID);
+    }
+
+    protected String getSenderHcid(){
+        return HomeCommunityMap.getLocalHomeCommunityId();
     }
 
 }

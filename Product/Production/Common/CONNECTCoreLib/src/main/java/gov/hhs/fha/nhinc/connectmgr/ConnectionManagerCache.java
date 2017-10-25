@@ -1,28 +1,28 @@
 /*
- * Copyright (c) 2009-2013, United States Government, as represented by the Secretary of Health and Human Services. 
- * All rights reserved. 
+ * Copyright (c) 2009-2015, United States Government, as represented by the Secretary of Health and Human Services.
+ * All rights reserved.
  *
- * Redistribution and use in source and binary forms, with or without 
- * modification, are permitted provided that the following conditions are met: 
- *     * Redistributions of source code must retain the above 
- *       copyright notice, this list of conditions and the following disclaimer. 
- *     * Redistributions in binary form must reproduce the above copyright 
- *       notice, this list of conditions and the following disclaimer in the documentation 
- *       and/or other materials provided with the distribution. 
- *     * Neither the name of the United States Government nor the 
- *       names of its contributors may be used to endorse or promote products 
- *       derived from this software without specific prior written permission. 
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *     * Redistributions of source code must retain the above
+ *       copyright notice, this list of conditions and the following disclaimer.
+ *     * Redistributions in binary form must reproduce the above copyright
+ *       notice, this list of conditions and the following disclaimer in the documentation
+ *       and/or other materials provided with the distribution.
+ *     * Neither the name of the United States Government nor the
+ *       names of its contributors may be used to endorse or promote products
+ *       derived from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
- * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED 
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE 
- * DISCLAIMED. IN NO EVENT SHALL THE UNITED STATES GOVERNMENT BE LIABLE FOR ANY 
- * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES 
- * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; 
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND 
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT 
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS 
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE UNITED STATES GOVERNMENT BE LIABLE FOR ANY
+ * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 package gov.hhs.fha.nhinc.connectmgr;
 
@@ -43,19 +43,20 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import org.uddi.api_v3.Name;
 import org.apache.log4j.Logger;
 import org.uddi.api_v3.BindingTemplate;
 import org.uddi.api_v3.BusinessDetail;
 import org.uddi.api_v3.BusinessEntity;
 import org.uddi.api_v3.BusinessService;
+import org.uddi.api_v3.IdentifierBag;
 import org.uddi.api_v3.KeyedReference;
+import org.uddi.api_v3.Name;
 
 /**
  * This class is used to manage the Connection Manager's cache. It handles both internal connection settings and UDDI
  * connection settings. If there is a collision for a connection between the UDDI and the Internal settings, the
  * internal one will be used.
- * 
+ *
  * @author Les Westberg, msw
  */
 public class ConnectionManagerCache implements ConnectionManager {
@@ -146,7 +147,7 @@ public class ConnectionManagerCache implements ConnectionManager {
     /**
      * This method simply checks to see if the cache is loaded. If it is not, then it is loaded as a byproduct of
      * calling this method.
-     * 
+     *
      * @throws gov.hhs.fha.nhinc.connectmgr.ConnectionManagerException
      */
     private void checkLoaded() throws ConnectionManagerException {
@@ -211,7 +212,7 @@ public class ConnectionManagerCache implements ConnectionManager {
     /**
      * This method will cause the ConnectionManagerCache to refresh the UDDI connection data by replacing the cached
      * UDDI information with the information in the uddiConnectionInfo.xml file.
-     * 
+     *
      * @throws ConnectionManagerException
      */
     public void forceRefreshUDDICache() throws ConnectionManagerException {
@@ -221,7 +222,7 @@ public class ConnectionManagerCache implements ConnectionManager {
     /**
      * This method will cause the ConnectionManagerCache to refresh the internal connection data by replacing the cached
      * internal connection information with the information in the internalConnectionInfo.xml file.
-     * 
+     *
      * @throws ConnectionManagerException
      */
     public void forceRefreshInternalConnectCache() throws ConnectionManagerException {
@@ -230,7 +231,7 @@ public class ConnectionManagerCache implements ConnectionManager {
 
     /**
      * This method checks to see if either cache has expired and forces a refresh if it has.
-     * 
+     *
      */
     private void refreshIfExpired() throws ConnectionManagerException {
         long lUDDILastModified = 0;
@@ -264,7 +265,7 @@ public class ConnectionManagerCache implements ConnectionManager {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see gov.hhs.fha.nhinc.connectmgr.ConnectionManager#getAllBusinessEntities()
      */
     @Override
@@ -303,7 +304,7 @@ public class ConnectionManagerCache implements ConnectionManager {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see gov.hhs.fha.nhinc.connectmgr.ConnectionManager#getBusinessEntity(java.lang.String)
      */
     @Override
@@ -344,7 +345,7 @@ public class ConnectionManagerCache implements ConnectionManager {
         }
         return oInternalEntity;
     }
-    
+
     @Override
     public String getBusinessEntityName(String homeCommunityId) throws ConnectionManagerException{
         BusinessEntity business = getBusinessEntity(homeCommunityId);
@@ -356,13 +357,13 @@ public class ConnectionManagerCache implements ConnectionManager {
                 }
             }
         }
-        
+
         return null;
     }
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see gov.hhs.fha.nhinc.connectmgr.ConnectionManager#getBusinessEntitySet(java.util.List)
      */
     @Override
@@ -393,7 +394,7 @@ public class ConnectionManagerCache implements ConnectionManager {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see gov.hhs.fha.nhinc.connectmgr.ConnectionManager#getBusinessEntityByServiceName(java.lang.String,
      * java.lang.String)
      */
@@ -477,7 +478,7 @@ public class ConnectionManagerCache implements ConnectionManager {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see gov.hhs.fha.nhinc.connectmgr.ConnectionManager#getBusinessEntityByHCID(java.lang.String)
      */
     @Override
@@ -534,7 +535,7 @@ public class ConnectionManagerCache implements ConnectionManager {
 
     /**
      * This method retrieves a set of URLs for that that service for all communities in the specified region or state.
-     * 
+     *
      * @param urlSet A set of unique URLs to add state URL information to
      * @param region Region or State name to filter on.
      * @param serviceName The name of the service to locate who URL is being requested.
@@ -569,7 +570,7 @@ public class ConnectionManagerCache implements ConnectionManager {
 
     /**
      * This method will print out the contents of a URL list.
-     * 
+     *
      * @param urlList List of URLs.
      * @return void.
      */
@@ -589,7 +590,7 @@ public class ConnectionManagerCache implements ConnectionManager {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see gov.hhs.fha.nhinc.connectmgr.ConnectionManager#getBusinessEntitySetByServiceName(java.util.List,
      * java.lang.String)
      */
@@ -615,7 +616,7 @@ public class ConnectionManagerCache implements ConnectionManager {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see gov.hhs.fha.nhinc.connectmgr.ConnectionManager#getAllBusinessEntitySetByServiceName(java.lang.String)
      */
     @Override
@@ -640,7 +641,7 @@ public class ConnectionManagerCache implements ConnectionManager {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see gov.hhs.fha.nhinc.connectmgr.ConnectionManager#getSpecVersions(java.lang.String,
      * gov.hhs.fha.nhinc.nhinclib.NhincConstants.NHIN_SERVICE_NAMES)
      */
@@ -662,7 +663,7 @@ public class ConnectionManagerCache implements ConnectionManager {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see gov.hhs.fha.nhinc.connectmgr.ConnectionManager#getAdapterEndpointURL(java.lang.String, java.lang.String,
      * gov.hhs.fha.nhinc.nhinclib.NhincConstants.ADAPTER_API_LEVEL)
      */
@@ -684,7 +685,7 @@ public class ConnectionManagerCache implements ConnectionManager {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see gov.hhs.fha.nhinc.connectmgr.ConnectionManager#getAdapterEndpointURL(java.lang.String,
      * gov.hhs.fha.nhinc.nhinclib.NhincConstants.ADAPTER_API_LEVEL)
      */
@@ -712,7 +713,7 @@ public class ConnectionManagerCache implements ConnectionManager {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see gov.hhs.fha.nhinc.connectmgr.ConnectionManager#getDefaultEndpointURLByServiceName(java.lang.String,
      * java.lang.String)
      */
@@ -764,7 +765,7 @@ public class ConnectionManagerCache implements ConnectionManager {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see gov.hhs.fha.nhinc.connectmgr.ConnectionManager#getDefaultEndpointURLByServiceName(java.lang.String,
      * java.lang.String)
      */
@@ -812,7 +813,7 @@ public class ConnectionManagerCache implements ConnectionManager {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see gov.hhs.fha.nhinc.connectmgr.ConnectionManager#getInternalEndpointURLByServiceName(java.lang.String)
      */
     @Override
@@ -830,7 +831,7 @@ public class ConnectionManagerCache implements ConnectionManager {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * gov.hhs.fha.nhinc.connectmgr.ConnectionManager#getEndpointURLFromNhinTarget(gov.hhs.fha.nhinc.common.nhinccommon
      * .NhinTargetSystemType, java.lang.String)
@@ -870,7 +871,7 @@ public class ConnectionManagerCache implements ConnectionManager {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * gov.hhs.fha.nhinc.connectmgr.ConnectionManager#getEndpointURLFromNhinTargetCommunities(gov.hhs.fha.nhinc.common
      * .nhinccommon.NhinTargetCommunitiesType, java.lang.String)
@@ -931,4 +932,52 @@ public class ConnectionManagerCache implements ConnectionManager {
         }
         return endpointUrlList;
     }
+
+    public boolean updateInternalServiceUrl(String serviceName, String url) throws Exception {
+        String sHomeCommunityId = getHomeCommunityFromPropFile();
+        String sHomeCommunityIDwithoutPrefix = HomeCommunityMap.formatHomeCommunityId(sHomeCommunityId);
+        String sHomeCommunityIDWithPrefix = HomeCommunityMap.getHomeCommunityIdWithPrefix(sHomeCommunityId);
+
+        ConnectionManagerCacheHelper helper = new ConnectionManagerCacheHelper();
+
+        BusinessEntity internalEntity = null;
+        if (m_hInternalConnectInfo.containsKey(sHomeCommunityIDwithoutPrefix)) {
+            internalEntity = m_hInternalConnectInfo.get(sHomeCommunityIDwithoutPrefix);
+        } else if (m_hInternalConnectInfo.containsKey(sHomeCommunityIDWithPrefix)){
+            internalEntity = m_hInternalConnectInfo.get(sHomeCommunityIDWithPrefix);
+        } else {
+            return false;
+        }
+
+        BusinessService service = helper.getBusinessServiceByServiceName(internalEntity, serviceName);
+
+        BindingTemplate serviceUrl = helper.findBindingTemplateByKey(service, AdapterEndpointManager.ADAPTER_API_LEVEL_KEY, NhincConstants.ADAPTER_API_LEVEL.LEVEL_a0.name());
+
+        serviceUrl.getAccessPoint().setValue(url);
+
+        BusinessDetail detail = getInternalConnectionManagerDAO().loadBusinessDetail();
+
+        for(BusinessEntity savedEntity : detail.getBusinessEntity()) {
+            String identifier = getHcidFromIdentifierBag(savedEntity);
+            if(identifier != null && (identifier.equals(sHomeCommunityIDwithoutPrefix) || identifier.equals(sHomeCommunityIDWithPrefix))) {
+                detail.getBusinessEntity().remove(savedEntity);
+                detail.getBusinessEntity().add(internalEntity);
+                break;
+            }
+        }
+
+        getInternalConnectionManagerDAO().saveBusinessDetail(detail);
+
+        return true;
+    }
+
+    private String getHcidFromIdentifierBag(BusinessEntity entity) {
+        for(KeyedReference ref : entity.getIdentifierBag().getKeyedReference()) {
+            if(ref.getTModelKey().equals("uddi:nhin:nhie:homecommunityid")) {
+                return ref.getKeyValue();
+            }
+        }
+        return null;
+    }
+
 }

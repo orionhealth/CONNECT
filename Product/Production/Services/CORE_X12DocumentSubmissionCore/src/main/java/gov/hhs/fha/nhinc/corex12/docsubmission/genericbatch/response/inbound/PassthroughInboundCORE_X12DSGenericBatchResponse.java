@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2015, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,6 +27,7 @@
 package gov.hhs.fha.nhinc.corex12.docsubmission.genericbatch.response.inbound;
 
 import gov.hhs.fha.nhinc.common.nhinccommon.AssertionType;
+import gov.hhs.fha.nhinc.corex12.docsubmission.audit.CORE_X12AuditLogger;
 import gov.hhs.fha.nhinc.corex12.docsubmission.genericbatch.response.adapter.proxy.AdapterCORE_X12DSGenericBatchResponseProxyObjectFactory;
 import org.caqh.soap.wsdl.corerule2_2_0.COREEnvelopeBatchSubmission;
 import org.caqh.soap.wsdl.corerule2_2_0.COREEnvelopeBatchSubmissionResponse;
@@ -41,7 +42,7 @@ public class PassthroughInboundCORE_X12DSGenericBatchResponse extends AbstractIn
      * Default constructor.
      */
     public PassthroughInboundCORE_X12DSGenericBatchResponse() {
-        this(new AdapterCORE_X12DSGenericBatchResponseProxyObjectFactory());
+        this(new AdapterCORE_X12DSGenericBatchResponseProxyObjectFactory(), new CORE_X12AuditLogger());
     }
 
     /**
@@ -49,8 +50,8 @@ public class PassthroughInboundCORE_X12DSGenericBatchResponse extends AbstractIn
      *
      * @param adapterFactory
      */
-    public PassthroughInboundCORE_X12DSGenericBatchResponse(AdapterCORE_X12DSGenericBatchResponseProxyObjectFactory adapterFactory) {
-        super(adapterFactory);
+    public PassthroughInboundCORE_X12DSGenericBatchResponse(AdapterCORE_X12DSGenericBatchResponseProxyObjectFactory adapterFactory, CORE_X12AuditLogger auditLogger) {
+        super(adapterFactory, auditLogger);
     }
 
     /**

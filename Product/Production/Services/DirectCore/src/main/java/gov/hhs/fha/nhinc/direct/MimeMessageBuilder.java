@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, United States Government, as represented by the Secretary of Health and Human Services.
+ * Copyright (c) 2009-2015, United States Government, as represented by the Secretary of Health and Human Services.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -67,7 +67,7 @@ public class MimeMessageBuilder {
 
     /**
      * Construct the Mime Message builder with required fields.
-     * 
+     *
      * @param session used to build the message.
      * @param fromAddress sender of the message.
      * @param recipients - list of recipients of the message.
@@ -104,7 +104,7 @@ public class MimeMessageBuilder {
         this.documents = directDocuments;
         return this;
     }
-    
+
     /**
      * @param str messageId for message
      * @return builder of mime messages.
@@ -134,7 +134,7 @@ public class MimeMessageBuilder {
 
     /**
      * Build the Mime Message.
-     * 
+     *
      * @return the Mime message.
      */
     public MimeMessage build() {
@@ -177,7 +177,7 @@ public class MimeMessageBuilder {
                 attachmentPart = createAttachmentFromSOAPRequest(attachment, attachmentName);
             } else {
                 throw new Exception(
-                        "Could not create attachment. Need documents and messageId or attachment and attachmentName.");
+                    "Could not create attachment. Need documents and messageId or attachment and attachmentName.");
             }
         } catch (Exception e) {
             throw new DirectException("Exception creating attachment: " + attachmentName, e);
@@ -209,7 +209,7 @@ public class MimeMessageBuilder {
     }
 
     private MimeBodyPart createAttachmentFromSOAPRequest(Document data, String name) throws MessagingException,
-            IOException {
+        IOException {
 
         InputStream is = null;
         DataSource source = null;

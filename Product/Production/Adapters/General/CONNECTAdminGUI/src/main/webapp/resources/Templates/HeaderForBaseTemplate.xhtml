@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
   /* 
-   * Copyright (c) 2009-2014, United States Government, as represented by the Secretary of Health and Human Services.
+   * Copyright (c) 2009-2015, United States Government, as represented by the Secretary of Health and Human Services.
    * All rights reserved. 
    *
    * Redistribution and use in source and binary forms, with or without  
@@ -45,7 +45,7 @@
                                     <p:menuitem>
                                         <p:graphicImage value="resources/images/logo-connect-108x40.png"/>
                                     </p:menuitem>
-                                    <p:submenu label="Logged in as #{loginBean.userName}">
+                                    <p:submenu label="Logged in as #{manageUserBean.currentUser}">
                                         <p:menuitem value="Log out" action="#{loginBean.logout}" ajax="false"/>
                                     </p:submenu>
                                     <p:submenu icon="ui-icon-wrench">

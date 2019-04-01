@@ -32,4 +32,24 @@
         <session-timeout>30</session-timeout>
     </session-config>
 
+    <security-constraint>
+        <web-resource-collection>
+            <web-resource-name>Secure Application</web-resource-name>
+            <description/>
+            <url-pattern>/*</url-pattern>
+        </web-resource-collection>
+        <auth-constraint>
+            <description/>
+            <role-name>validsubject</role-name>
+        </auth-constraint>
+    </security-constraint>
+    <login-config>
+        <auth-method>CLIENT-CERT</auth-method>
+        <realm-name>certificate</realm-name>
+    </login-config>
+    <security-role>
+        <description/>
+        <role-name>validsubject</role-name>
+    </security-role>
+
 </web-app>
